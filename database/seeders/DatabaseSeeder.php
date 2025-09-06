@@ -51,5 +51,17 @@ class DatabaseSeeder extends Seeder
             ]
         );
         $guruMi->assignRole($guruMiRole);
+
+        $this->call([
+            GuruMiSeeder::class,
+        ]);
+
+        $this->call([
+            SiswaMiSeeder::class,
+        ]);
+        
+        $this->call([
+            KelasMiSeeder::class,
+        ]);
     }
 }

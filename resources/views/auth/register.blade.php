@@ -1,3 +1,5 @@
+@section('title', 'Registrasi')
+
 <x-guest-layout>
     <div class="min-h-screen flex justify-center items-start bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 px-4 pt-20">
         <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
@@ -51,11 +53,17 @@
                 </div>
 
                 <!-- Role -->
-                <<select id="role" name="role" required>
-                    <option value="admin">Admin</option>
-                    <option value="guru_tk">Guru TK</option>
-                    <option value="guru_mi">Guru MI</option>
-                </select>
+                <div class="mb-4">
+                    <x-input-label for="role" :value="__('Role')" class="text-gray-700" />
+                    <select id="role" name="role" required
+                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm
+                            focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
+                        <option value="admin">Admin</option>
+                        <option value="guru_tk">Guru TK</option>
+                        <option value="guru_mi">Guru MI</option>
+                    </select>
+                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
+                </div>
 
                 <!-- Register Button -->
                 <x-primary-button

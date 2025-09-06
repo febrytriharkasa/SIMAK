@@ -20,13 +20,13 @@ class GuruMiController extends Controller
         // Pagination
         $guru = $query->paginate(10);
 
-        return view('guru-mi.index', compact('guru'));
+        return view('mi.guru-mi.index', compact('guru'));
     }
 
     // Form tambah guru
     public function create()
     {
-        return view('guru-mi.create');
+        return view('mi.guru-mi.create');
     }
 
     // Simpan data guru
@@ -48,7 +48,7 @@ class GuruMiController extends Controller
     public function edit($id)
     {
         $guru = Guru_MI::findOrFail($id);
-        return view('guru-mi.edit', compact('guru'));
+        return view('mi.guru-mi.edit', compact('guru'));
     }
 
     // Update data guru

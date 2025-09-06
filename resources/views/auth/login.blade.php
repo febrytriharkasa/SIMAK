@@ -1,3 +1,5 @@
+@section('title', 'Selamat Datang')
+
 <x-guest-layout>
     <div class="min-h-screen flex justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 px-4 pt-10">
 
@@ -62,21 +64,21 @@
                 </x-primary-button>
             </form>
 
-            <!-- Divider -->
+            <!-- Divider 
             <div class="flex items-center my-6">
                 <hr class="flex-grow border-gray-300">
                 <span class="mx-2 text-gray-500 text-sm">OR</span>
                 <hr class="flex-grow border-gray-300">
-            </div>
+            </div> -->
 
-            <!-- Register Link -->
+            <!-- Register Link 
             <div class="text-center">
                 <span class="text-sm text-gray-600">{{ __("Don't have an account?") }}</span>
                 <a href="{{ route('register') }}"
                     class="ml-2 text-sm font-semibold text-green-600 hover:underline">
                     {{ __('Register') }}
                 </a>
-            </div>
+            </div> -->
         </div>
     </div>
 </x-guest-layout>

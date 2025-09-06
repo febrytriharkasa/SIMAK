@@ -2,17 +2,17 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Kwitansi Pembayaran</title>
+    <title>Kwitansi Pembayaran MI</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .kwitansi { width: 600px; margin: auto; border: 1px solid #000; padding: 20px; }
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h2 { margin: 0; }
-        .details { margin-bottom: 20px; }
-        .details table { width: 100%; }
-        .details td { padding: 5px 0; }
-        .footer { text-align: right; margin-top: 40px; }
-        .jumlah { font-weight: bold; font-size: 18px; }
+        body { font-family: Arial, sans-serif; margin: 10px; font-size: 12px; }
+        .kwitansi { width: 100%; border: 1px solid #000; padding: 10px; }
+        .header { text-align: center; margin-bottom: 10px; }
+        .header h2 { margin: 0; font-size: 16px; }
+        .details { margin-bottom: 10px; }
+        .details table { width: 100%; font-size: 12px; }
+        .details td { padding: 3px 0; }
+        .footer { text-align: right; margin-top: 20px; font-size: 12px; }
+        .jumlah { font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -48,15 +48,9 @@
         </div>
 
         <div class="footer">
-            Mojokerto, {{ \Carbon\Carbon::now()->format('d-m-Y') }}<br>
-            <br><br><br>
-            <u>Petugas</u>
+            Mojokerto, {{ \Carbon\Carbon::now()->format('d-m-Y') }}<br><br><br>
+            <u>{{ Auth::user()->name }}</u> {{-- 🔥 User login --}}
         </div>
     </div>
-
-    <script>
-        // Otomatis print saat terbuka
-        window.onload = function() { window.print(); }
-    </script>
 </body>
 </html>

@@ -1,5 +1,7 @@
 @extends('layouts.sbadmin')
 
+@section('title', 'Data Guru MI')
+
 @section('content')
 <div class="container-fluid">
     <h1 class="h3 mb-4 text-gray-800">Data Guru MI</h1>
@@ -45,24 +47,23 @@
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-2">
 
-                                    <!-- Edit Card -->
-                                    <a href="{{ route('guru-mi.edit', $g->id) }}" class="text-decoration-none">
-                                        <div class="card shadow-sm action-card edit-card">
-                                            <i class="bi bi-pencil-fill"></i>
-                                        </div>
+                                    {{-- Tombol Edit --}}
+                                    <a href="{{ route('guru-mi.edit', $g->id) }}" 
+                                        class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
                                     </a>
 
-                                    <!-- Hapus Card -->
-                                    <form action="{{ route('guru-mi.destroy', $g->id) }}" method="POST" onsubmit="return confirm('Yakin hapus data ini?')">
+                                    {{-- Tombol Hapus --}}
+                                    <form action="{{ route('guru-mi.destroy', $g->id) }}"
+                                            method="POST" 
+                                            onsubmit="return confirm('Yakin hapus data ini?')" 
+                                            style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn p-0 border-0" style="background:none;">
-                                            <div class="card shadow-sm action-card delete-card">
-                                                <i class="bi bi-trash-fill"></i>
-                                            </div>
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> 
                                         </button>
                                     </form>
-
                                 </div>
                             </td>
                         </tr>
@@ -73,9 +74,7 @@
             </table>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-center">
-                {{ $guru->appends(['nip' => request('nip')])->links() }}
-            </div>
+            {{ $guru->withQueryString()->links() }}
         </div>
     </div>
 </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@yield('title','Dashboard')</title>
+    <title>@yield('title') - {{ config('app.name', 'Yayasan Faisal') }}</title>
     <link rel="icon" href="{{ asset('download.png') }}" type="image/png">
     <!-- SB Admin 2 CSS -->
     <link href="{{ asset('sb-admin-2/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Siswa_MI;
+use App\Models\Kelas_Mi;
 use Illuminate\Http\Request;
 
 class SiswaMiController extends Controller
@@ -20,15 +21,16 @@ class SiswaMiController extends Controller
 
         $siswa = $query->paginate(10);
 
-        return view('siswa-mi.index', compact('siswa'));
+        return view('mi.siswa-mi.index', compact('siswa'));
     }
 
     public function create()
     {
-        return view('siswa-mi.create');
+        $kelas = \App\Models\Kelas_Mi::orderBy('tingkat')->get();
+        return view('mi.siswa-mi.create', compact('kelas'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
             'nama'          => 'required|string|max:255',
@@ -37,16 +39,29 @@ class SiswaMiController extends Controller
             'no_hp_wali'    => 'required|string|max:20',
             'alamat_siswa'  => 'required|string|max:255',
             'nama_wali'     => 'required|string|max:255',
+            'kelas_id'      => 'nullable|exists:kelas_mi,id',
         ]);
 
-        Siswa_MI::create($request->all());
+        $data = $request->all();
+
+        // Jika kelas tidak dipilih, default ke kelas 1
+        if (empty($data['kelas_id'])) {
+            $kelasAwal = \App\Models\Kelas_Mi::where('tingkat', 1)->first();
+            if ($kelasAwal) {
+                $data['kelas_id'] = $kelasAwal->id;
+            }
+        }
+
+        Siswa_MI::create($data);
+
         return redirect()->route('siswa-mi.index')->with('success', 'Data berhasil ditambahkan');
     }
 
     public function edit($id)
     {
         $siswa = Siswa_MI::findOrFail($id);
-        return view('siswa-mi.edit', compact('siswa'));
+        $kelas = \App\Models\Kelas_Mi::orderBy('tingkat')->get();
+        return view('mi.siswa-mi.edit', compact('siswa', 'kelas'));
     }
 
     public function update(Request $request, $id)
@@ -61,6 +76,32 @@ class SiswaMiController extends Controller
         $siswa = Siswa_MI::findOrFail($id);
         $siswa->delete();
         return redirect()->route('siswa-mi.index')->with('success', 'Data berhasil dihapus');
+    }
+
+    public function naikKelas()
+    {
+        $siswas = Siswa_MI::with('kelas')->get();
+
+        foreach ($siswas as $siswa) {
+            // jika belum punya kelas, set default ke Kelas 1
+            if (!$siswa->kelas) {
+                $kelasAwal = Kelas_MI::where('tingkat', 1)->first();
+                if ($kelasAwal) {
+                    $siswa->update(['kelas_id' => $kelasAwal->id]);
+                }
+                continue; // lanjut ke siswa berikutnya
+            }
+
+            $kelasSekarang = $siswa->kelas;
+            $kelasBerikut = Kelas_MI::where('tingkat', $kelasSekarang->tingkat + 1)->first();
+
+            if ($kelasBerikut) {
+                $siswa->update(['kelas_id' => $kelasBerikut->id]);
+            }
+            // kalau sudah "Lulus" (tingkat 7), biarkan tetap
+        }
+
+        return redirect()->back()->with('success', 'Proses kenaikan kelas selesai!');
     }
 }
 
