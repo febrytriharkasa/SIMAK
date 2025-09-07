@@ -4,7 +4,9 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Data User Yayasan</h1>
+    <div class="page-heading mb-40">
+        <h3 class="ms-5">Data User Yayasan</h3>
+    </div>
 
     {{-- Baris atas: tombol tambah + form search --}}
     <!-- Form<div class="d-flex justify-content-between mb-3">

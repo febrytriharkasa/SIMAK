@@ -25,22 +25,25 @@
                         <input type="hidden" name="bulan" value="{{ request('bulan') }}">
                         <input type="hidden" name="tahun" value="{{ request('tahun') }}">
                         <input type="hidden" name="id_tk" value="{{ request('id_tk') }}">
-                        <input type="hidden" name="tahun_angkatan" value="{{ request('tahun_angkatan') }}">
+                        <input type="hidden" name="kelas_id" value="{{ request('kelas_id') }}">
                         
-                        {{-- Pilih Siswa --}}
+                         {{-- Pilih Siswa --}}
                         <div class="mb-3">
                             <label for="siswa_id" class="form-label fw-semibold">Pilih Siswa</label>
-                            <select name="siswa_id" id="siswa_id" class="form-control" required>
+                            <select name="siswa_id" id="siswa_id" class="form-control" style="width: 100%;" required>
                                 <option value="">-- Pilih Siswa --</option>
                                 @foreach($siswa as $s)
-                                    <option value="{{ $s->id }}" 
-                                            data-nama="{{ $s->nama }}" 
-                                            data-id_tk="{{ $s->id_tk }}">
-                                        {{ $s->id_tk }} - {{ $s->nama }}
-                                    </option>
+                                    <option value="{{ $s->id }}">{{ $s->id_tk }} - {{ $s->nama }}</option>
                                 @endforeach
                             </select>
                             @error('siswa_id') <div class="text-danger small">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Kelas (readonly) --}}
+                        <div class="mb-3">
+                            <label for="kelas_nama" class="form-label fw-semibold">Kelas</label>
+                            <input type="text" id="kelas_nama" class="form-control" readonly>
+                            <input type="hidden" name="kelas_id" id="kelas_id">
                         </div>
 
                         {{-- Jumlah --}}
@@ -78,7 +81,7 @@
                                         'bulan' => request('bulan'),
                                         'tahun' => request('tahun'),
                                         'id_tk' => request('id_tk'),
-                                        'tahun_angkatan' => request('tahun_angkatan')
+                                        'kelas_id' => request('kelas_id')
                                     ]) }}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Batal
                             </a>
@@ -100,31 +103,31 @@
 
 <script>
     $(document).ready(function() {
-        function formatSiswa(option) {
-            if (!option.id) return option.text;
-            let nama = $(option.element).data('nama');
-            let id_tk  = $(option.element).data('id_tk');
-            return $(`
-                <div>
-                    <div><strong>${id_tk} - ${nama}</strong></div>
-                    <div class="text-muted small">${nama}</div>
-                </div>
-            `);
-        }
-
-        function formatSiswaSelection(option) {
-            if (!option.id) return option.text;
-            let nama = $(option.element).data('nama');
-            let id_tk  = $(option.element).data('id_tk');
-            return `${id_tk} - ${nama}`;
-        }
-
+        // init select2
         $('#siswa_id').select2({
             theme: "bootstrap4",
-            placeholder: "-- Pilih Siswa --",
             allowClear: true,
-            templateResult: formatSiswa,
-            templateSelection: formatSiswaSelection
+            placeholder: "-- Pilih Siswa --"
+        });
+
+        // ketika siswa dipilih
+        $('#siswa_id').on('change', function() {
+            let siswaId = $(this).val();
+            $('#kelas_nama').val('');
+            $('#kelas_id').val('');
+
+            if(siswaId) {
+                $.ajax({
+                    url: '/get-siswa-detail/' + siswaId,
+                    type: 'GET',
+                    success: function(data) {
+                        if (data) {
+                            $('#kelas_nama').val(data.kelas_nama);
+                            $('#kelas_id').val(data.kelas_id);
+                        }
+                    }
+                });
+            }
         });
     });
 </script>

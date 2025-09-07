@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\PembayaranTk;
 use App\Models\SiswaTk;
+use App\Models\KelasTk;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -14,8 +15,8 @@ class PembayaranTkController extends Controller
     {
         $query = PembayaranTk::with('siswa');
 
-        // Ambil daftar tahun unik dari siswa TK
-        $tahunList = SiswaTk::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
+        // Ambil semua daftar kelas
+        $kelasList = KelasTk::orderBy('tingkat', 'asc')->get();
 
         // Filter No Induk
         if ($request->filled('id_tk')) {
@@ -24,10 +25,10 @@ class PembayaranTkController extends Controller
             });
         }
 
-        // Filter Tahun Angkatan
-        if ($request->filled('tahun_angkatan')) {
-            $query->whereHas('siswa', function($q) use ($request) {
-                $q->where('tahun', $request->tahun_angkatan);
+        // 🔥 Filter Kelas
+        if ($request->filled('kelas_id')) {
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('kelas_id', $request->kelas_id);
             });
         }
 
@@ -42,7 +43,7 @@ class PembayaranTkController extends Controller
             $pembayaran = collect([]); // kosongkan jika belum pilih bulan
         }
 
-        return view('tk.pembayaran-tk.index', compact('pembayaran', 'tahunList'));
+        return view('tk.pembayaran-tk.index', compact('pembayaran', 'kelasList'));
     }
 
     // 📌 Cetak kwitansi per pembayaran
@@ -60,8 +61,8 @@ class PembayaranTkController extends Controller
     public function create()
     {
         $siswa = SiswaTk::all();
-        $tahunList = SiswaTk::select('tahun')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
-        return view('tk.pembayaran-tk.create', compact('siswa', 'tahunList'));
+        $kelasList = KelasTk::orderBy('tingkat', 'asc')->get();
+        return view('tk.pembayaran-tk.create', compact('siswa', 'kelasList'));
     }
 
     // 📌 Simpan pembayaran baru
@@ -83,7 +84,7 @@ class PembayaranTkController extends Controller
             ->first();
 
         if ($cek) {
-            return back()->with('error', 'Pembayaran untuk bulan ini sudah ada.');
+            return redirect()->back()->with('error', 'Pembayaran untuk siswa ini di bulan tersebut sudah ada.');
         }
 
         $pembayaran = PembayaranTk::create($request->all());
@@ -92,7 +93,7 @@ class PembayaranTkController extends Controller
             'bulan' => $request->input('bulan'),
             'tahun' => $request->input('tahun'),
             'id_tk' => $request->input('id_tk'),
-            'tahun_angkatan' => $request->input('tahun_angkatan'), // tambahan
+            'kelas_id' => $request->input('kelas_id'), // tambahan
         ])->with('success', 'Pembayaran untuk siswa '
             . $pembayaran->siswa->id_tk . ' - ' . $pembayaran->siswa->nama . ' berhasil ditambahkan.');
     }
@@ -102,7 +103,8 @@ class PembayaranTkController extends Controller
     {
         $pembayaran = PembayaranTk::findOrFail($id);
         $siswa = SiswaTk::all();
-        return view('tk.pembayaran-tk.edit', compact('pembayaran', 'siswa'));
+        $kelasList = KelasTk::all();
+        return view('tk.pembayaran-tk.edit', compact('pembayaran', 'siswa', 'kelasList'));
     }
 
     // 📌 Update pembayaran
@@ -110,12 +112,12 @@ class PembayaranTkController extends Controller
     {
         $pembayaran = PembayaranTk::findOrFail($id);
 
-        $pembayaran->update([
-            'siswa_id' => $request->siswa_id,
-            'jumlah'   => $request->jumlah,
-            'tanggal'  => $request->tanggal,
-            'status'   => strtolower($request->status), // selalu simpan lowercase
-        ]);
+        // $pembayaran->update([
+        //     'siswa_id' => $request->siswa_id,
+        //     'jumlah'   => $request->jumlah,
+        //     'tanggal'  => $request->tanggal,
+        //     'status'   => strtolower($request->status), // selalu simpan lowercase
+        // ]);
 
         $bulan = \Carbon\Carbon::parse($request->tanggal)->month;
         $tahun = \Carbon\Carbon::parse($request->tanggal)->year;
@@ -128,7 +130,7 @@ class PembayaranTkController extends Controller
             ->first();
 
         if ($cek) {
-            return back()->with('error', 'Pembayaran untuk bulan ini sudah ada.');
+            return redirect()->back()->with('error', 'Pembayaran untuk siswa ini di bulan tersebut sudah ada.');
         }
 
         $pembayaran->update($request->all());
@@ -137,7 +139,7 @@ class PembayaranTkController extends Controller
             'bulan' => $request->input('bulan'),
             'tahun' => $request->input('tahun'),
             'id_tk' => $request->input('id_tk'),
-            'tahun_angkatan' => $request->input('tahun_angkatan'),
+            'kelas_id' => $request->input('kelas_id'),
         ])->with('success', 'Pembayaran untuk siswa '
             . $pembayaran->siswa->id_tk . ' - ' . $pembayaran->siswa->nama . ' berhasil diperbarui.');
     }
@@ -155,7 +157,7 @@ class PembayaranTkController extends Controller
             'bulan' => $request->input('bulan'),
             'tahun' => $request->input('tahun'),
             'id_tk' => $request->input('id_tk'),
-            'tahun_angkatan' => $request->input('tahun_angkatan'),
+            'kelas_id' => $request->input('kelas_id'),
         ])->with('success', 'Pembayaran untuk siswa '
             . $id_tk . ' - ' . $nama. ' berhasil dihapus.');
     }
@@ -171,12 +173,16 @@ class PembayaranTkController extends Controller
             $query->whereHas('siswa', function($q) use ($request) {
                 $q->where('id_tk', 'like', '%'.$request->id_tk.'%');
             });
-        }
+        }   
 
-        if ($request->filled('tahun')) {
-            $tahun = $request->tahun;
-            $query->whereHas('siswa', fn($q) => $q->where('tahun', (int) $tahun));
-            $angkatanLabel = $tahun . '/' . ((int)$tahun + 1);
+        // 🔥 Filter Kelas
+        if ($request->filled('kelas_id')) {
+            $kelas = KelasTk::find($request->kelas_id);
+            $kelasLabel = $kelas ? $kelas->nama_kelas : null;
+
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('kelas_id', $request->kelas_id);
+            });
         }
 
         if ($request->filled('bulan')) {
@@ -189,12 +195,39 @@ class PembayaranTkController extends Controller
         }
 
         $pembayaran = $query->get();
-        $total = $pembayaran->where('status', 'lunas')->sum('jumlah');
+        // Hitung total hanya yang lunas
+        $total = $pembayaran->filter(fn($p) => strtolower($p->status) === 'lunas')
+            ->sum('jumlah');
 
         $pdf = Pdf::loadView('tk.pembayaran-tk.export-pdf', compact(
-            'pembayaran', 'total', 'bulan', 'tahun', 'angkatanLabel'
+            'pembayaran', 'total', 'bulan', 'tahun', 'kelasLabel'
         ))->setPaper('A4', 'portrait');
 
-        return $pdf->stream('laporan-pembayaran-' . $bulan->format('F-Y') . '.pdf');
+        $namaFile = 'laporan-pembayaran-' . $bulan->translatedFormat('F-Y');
+        if ($kelasLabel) {
+            $namaFile .= '-kelas-' . $kelasLabel;
+        }
+        $namaFile .= '.pdf';
+
+        return $pdf->stream($namaFile);
+    }
+
+    public function getSiswaDetail($siswaId)
+    {
+        $siswa = SiswaTk::with('kelas')
+                ->where('id', $siswaId)
+                ->first(['id', 'nama', 'id_tk', 'kelas_id']);
+
+        if ($siswa) {
+            return response()->json([
+                'id' => $siswa->id,
+                'nama' => $siswa->nama,
+                'id_tk' => $siswa->id_tk,
+                'kelas_id' => $siswa->kelas_id,
+                'kelas_nama' => $siswa->kelas ? $siswa->kelas->nama_kelas : null
+            ]);
+        }
+
+        return response()->json(null, 404);
     }
 }

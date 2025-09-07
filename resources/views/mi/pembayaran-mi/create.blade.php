@@ -24,7 +24,7 @@
 
                         <input type="hidden" name="bulan" value="{{ request('bulan') }}">
                         <input type="hidden" name="tahun" value="{{ request('tahun') }}">
-                        <input type="hidden" name="id_tk" value="{{ request('id_tk') }}">
+                        <input type="hidden" name="nisn" value="{{ request('nisn') }}">
                         <input type="hidden" name="kelas_id" value="{{ request('kelas_id') }}">
                         
                        {{-- Pilih Siswa --}}
@@ -103,7 +103,7 @@
 
 <script>
 
-    $(document).ready(function() {
+     $(document).ready(function() {
         // init select2
         $('#siswa_id').select2({
             theme: "bootstrap4",
@@ -131,7 +131,6 @@
             }
         });
     });
-
 </script>
 
 {{-- Styling tambahan Select2 biar pas dengan Bootstrap --}}

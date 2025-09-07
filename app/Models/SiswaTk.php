@@ -18,10 +18,16 @@ class SiswaTk extends Model
         'nama_wali',
         'no_hp_wali',
         'alamat_siswa',
+        'kelas_id',
     ];
 
     public function pembayarans()
     {
         return $this->hasMany(PembayaranTk::class);
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(KelasTk::class, 'kelas_id');
     }
 }

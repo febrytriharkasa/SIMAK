@@ -26,7 +26,7 @@ class SiswaMiController extends Controller
 
     public function create()
     {
-        $kelas = \App\Models\Kelas_Mi::orderBy('tingkat')->get();
+        $kelas = Kelas_Mi::orderBy('tingkat')->get();
         return view('mi.siswa-mi.create', compact('kelas'));
     }
 
@@ -103,6 +103,13 @@ class SiswaMiController extends Controller
 
         return redirect()->back()->with('success', 'Proses kenaikan kelas selesai!');
     }
+
+    public function show($id)
+    {
+        $siswa = Siswa_MI::with('kelas')->findOrFail($id);
+        return view('mi.siswa-mi.show', compact('siswa'));
+    }
+
 }
 
 

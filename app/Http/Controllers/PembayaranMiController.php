@@ -46,16 +46,6 @@ class PembayaranMiController extends Controller
         return view('mi.pembayaran-mi.index', compact('pembayaran', 'kelasList'));
     }
 
-    public function kwitansiPdf($id)
-    {
-        $pembayaran = Pembayaran_MI::with('siswa')->findOrFail($id);
-        $pdf = Pdf::loadView('mi.pembayaran-mi.kwitansi', compact('pembayaran'))
-            ->setPaper([0, 0, 595.28, 280], 'portrait'); // 1/3 A4
-
-        $namaFile = 'kwitansi-' . $pembayaran->id . '.pdf';
-        return $pdf->stream($namaFile);
-    }
-
     // Form tambah pembayaran
     public function create()
     {
@@ -202,6 +192,16 @@ class PembayaranMiController extends Controller
         return $pdf->stream($namaFile);
     }
 
+    public function kwitansiPdf($id)
+    {
+        $pembayaran = Pembayaran_MI::with('siswa')->findOrFail($id);
+        $pdf = Pdf::loadView('mi.pembayaran-mi.kwitansi', compact('pembayaran'))
+            ->setPaper([0, 0, 595.28, 320], 'portrait'); // 1/3 A4
+
+        $namaFile = 'kwitansi-' . $pembayaran->id . '.pdf';
+        return $pdf->stream($namaFile);
+    }
+
     public function getSiswaDetail($siswaId)
     {
         $siswa = \App\Models\Siswa_MI::with('kelas')
@@ -219,5 +219,5 @@ class PembayaranMiController extends Controller
         }
 
         return response()->json(null, 404);
-        }
+    }
 }

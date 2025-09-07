@@ -4,8 +4,9 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Data Pembayaran TK</h1>
-
+    <div class="page-heading mb-40">
+        <h3 class="ms-5">Administrasi TK</h3>
+    </div>
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
@@ -19,7 +20,7 @@
                         'bulan' => request('bulan'),
                         'tahun' => request('tahun'),
                         'id_tk' => request('id_tk'),
-                        'tahun_angkatan' => request('tahun_angkatan')
+                        'kelas_id' => request('kelas_id')
                     ]) }}" class="btn btn-primary">
                     + Tambah Pembayaran
                 </a>
@@ -44,14 +45,14 @@
                            value="{{ request('bulan') }}">
                 </div>
 
-                {{-- Filter Tahun Angkatan --}}
+                {{-- Filter Kelas --}}
                 <div class="col-md-3">
-                    <label for="tahun_angkatan" class="form-label">Tahun Angkatan</label>
-                    <select name="tahun_angkatan" class="form-control">
-                        <option value="">-- Semua Angkatan --</option> {{-- default semua --}}
-                        @foreach($tahunList as $tahun)
-                            <option value="{{ $tahun }}" {{ request('tahun_angkatan') == $tahun ? 'selected' : '' }}>
-                                {{ $tahun }}/{{ $tahun + 1 }}
+                    <label for="kelas_id" class="form-label">Kelas</label>
+                    <select name="kelas_id" class="form-control">
+                        <option value="">-- Semua Kelas --</option>
+                        @foreach($kelasList as $kelas)
+                            <option value="{{ $kelas->id }}" {{ request('kelas_id') == $kelas->id ? 'selected' : '' }}>
+                                {{ $kelas->nama_kelas }}
                             </option>
                         @endforeach
                     </select>
@@ -74,7 +75,7 @@
                 'bulan' => request('bulan'),
                 'tk_id' => request('tk_id'),
                 'tahun' => request('tahun'),
-                'tahun_angkatan' => request('tahun_angkatan')
+                'kelas_id' => request('kelas_id')
             ]) }}" 
             class="btn btn-danger" target="_blank">
                 <i class="fas fa-file-pdf"></i> Cetak Laporan Pembayaran
@@ -98,7 +99,7 @@
                         <th>No</th>
                         <th>No Induk</th>
                         <th>Nama Siswa</th>
-                        <th>Bulan</th>
+                        <th>Kelas</th>
                         <th>Jumlah</th>
                         <th>Tanggal Bayar</th>
                         <th>Status</th>
@@ -116,7 +117,7 @@
                                 <td>{{ $loop->iteration + ($pembayaran->currentPage()-1) * $pembayaran->perPage() }}</td>
                                 <td>{{ $p->siswa->id_tk ?? '-' }}</td>
                                 <td>{{ $p->siswa->nama ?? '-' }}</td>
-                                <td>{{ \Carbon\Carbon::createFromDate($p->tahun, $p->bulan, 1)->translatedFormat('F Y') }}</td>
+                                <td>{{ $p->siswa->kelas->nama_kelas ?? '-' }}</td>
                                 <td>Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
                                 <td>{{ $p->tanggal ? \Carbon\Carbon::parse($p->tanggal)->format('d-m-Y') : '-' }}</td>
                                 <td>
@@ -133,7 +134,7 @@
                                                     'bulan' => request('bulan'),
                                                     'tahun' => request('tahun'),
                                                     'id_tk' => request('id_tk'),
-                                                    'tahun_angkatan' => request('tahun_angkatan')
+                                                    'kelas_id' => request('kelas_id')
                                                 ]) }}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-edit"></i>
                                         </a>
@@ -150,7 +151,7 @@
                                                 'bulan' => request('bulan'),
                                                 'tahun' => request('tahun'),
                                                 'id_tk' => request('id_tk'),
-                                                'tahun_angkatan' => request('tahun_angkatan')
+                                                'kelas_id' => request('kelas_id')
                                             ]) }}" method="POST" onsubmit="return confirm('Yakin hapus data ini?')">
                                             @csrf
                                             @method('DELETE')

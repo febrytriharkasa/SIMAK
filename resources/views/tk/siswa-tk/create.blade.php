@@ -41,6 +41,22 @@
                             @error('tahun') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
+                        {{-- Pilih Kelas (Opsional) --}}
+                        <div class="mb-3">
+                            <label for="kelas_id" class="form-label fw-semibold">Kelas</label>
+                            <select name="kelas_id" id="kelas_id" 
+                                    class="form-select @error('kelas_id') is-invalid @enderror">
+                                <option value="">-- Pilih Kelas (default: Kelas A) --</option>
+                                @foreach($kelas as $k)
+                                    <option value="{{ $k->id }}" 
+                                        {{ old('kelas_id') == $k->id ? 'selected' : '' }}>
+                                        {{ $k->nama_kelas }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('kelas_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+
                         {{-- Nama Wali --}}
                         <div class="mb-3">
                             <label for="nama_wali" class="form-label fw-semibold">Nama Wali</label>

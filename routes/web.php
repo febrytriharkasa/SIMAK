@@ -10,14 +10,16 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SiswaTkController;
 use App\Http\Controllers\GuruTkController;
 use App\Http\Controllers\PembayaranTkController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// ================== DASHBOARD ==================
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // ================== ADMIN ==================
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -36,8 +38,9 @@ Route::middleware(['auth', 'role:admin|guru_mi'])->group(function () {
             ->name('pembayaran-mi.kwitansi-pdf');
     Route::get('/pembayaran-mi/export-pdf', [PembayaranMiController::class, 'exportPdf'])
             ->name('pembayaran-mi.export-pdf');
-    Route::get('/naik-kelas', [SiswaMiController::class, 'naikKelas'])->name('siswa.naikKelas');
+    Route::get('/naik-kelas-mi', [SiswaMiController::class, 'naikKelas'])->name('siswa.naikKelas');
     Route::get('/get-siswa-detail/{id}', [PembayaranMiController::class, 'getSiswaDetail']);
+    Route::get('/siswa-mi/{id}', [SiswaMiController::class, 'show'])->name('siswa-mi.show');
 });
 
 // ================== ADMIN DAN GURU TK==================
@@ -49,6 +52,9 @@ Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
             ->name('pembayaran-tk.kwitansi-pdf');
     Route::get('/pembayaran-tk/export-pdf', [PembayaranTkController::class, 'exportPdf'])
             ->name('pembayaran-tk.export-pdf');
+    Route::get('/naik-kelas-tk', [SiswaTkController::class, 'naikKelasTk'])->name('siswa.naikKelasTk');
+    Route::get('/get-siswa-detail/{id}', [PembayaranTkController::class, 'getSiswaDetail']);
+    Route::get('/siswa-mi/{id}', [SiswaTkController::class, 'show'])->name('siswa-tk.show');
 });
 // ================== PROFILE ==================
 Route::middleware('auth')->group(function () {

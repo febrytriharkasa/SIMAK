@@ -63,5 +63,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             KelasMiSeeder::class,
         ]);
+
+        $this->call([
+            KelasTkSeeder::class,
+        ]);
     }
 }

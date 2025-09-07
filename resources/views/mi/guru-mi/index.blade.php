@@ -4,14 +4,16 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Data Guru MI</h1>
+    <div class="page-heading mb-40">
+        <h3 class="ms-5">Data Guru MI</h3>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     <div class="d-flex justify-content-between mb-3">
-        <a href="{{ route('guru-mi.create') }}" class="btn btn-primary">+ Tambah Guru</a>
+        <a href="{{ route('guru-mi.create') }}" class="btn btn-primary ms-5">+ Tambah Guru</a>
 
         <!-- Form Search -->
         <form action="{{ route('guru-mi.index') }}" method="GET" class="d-flex" style="max-width:300px;">
@@ -51,6 +53,12 @@
                                     <a href="{{ route('guru-mi.edit', $g->id) }}" 
                                         class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    {{-- Tombol Show --}}
+                                    <a href="{{ route('guru-mi.show', $g->id) }}" 
+                                        class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
                                     </a>
 
                                     {{-- Tombol Hapus --}}

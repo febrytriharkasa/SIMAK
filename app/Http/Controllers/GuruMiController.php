@@ -74,5 +74,11 @@ class GuruMiController extends Controller
         Guru_MI::findOrFail($id)->delete();
         return redirect()->route('guru-mi.index')->with('success', 'Data Guru berhasil dihapus.');
     }
+
+    public function show($id)
+    {
+        $guru = Guru_MI::findOrFail($id);
+        return view('mi.guru-mi.show', compact('guru'));
+    }
 }
 

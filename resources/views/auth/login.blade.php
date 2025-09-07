@@ -1,84 +1,112 @@
-@section('title', 'Selamat Datang')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SIMAK</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-screen bg-cover bg-center flex items-center justify-center"
+      style="background-image: url('{{ asset('bg/bg0.jpg') }}');">
 
-<x-guest-layout>
-    <div class="min-h-screen flex justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 px-4 pt-10">
-
-        <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
-            
-            <!-- Logo -->
-            <div class="flex justify-center mb-6 -mt-4">
-                <img src="{{ asset('download.png') }}" 
-                     alt="Logo" 
-                     class="w-28 h-28 object-contain">
-            </div>
-
-            <!-- Judul -->
-            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Login to Your Account</h2>
-
-            <!-- Session Status -->
-            <x-auth-session-status class="mb-4" :status="session('status')" />
-
-            <form method="POST" action="{{ route('login') }}">
-                @csrf
-
-                <!-- Email -->
-                <div class="mb-4">
-                    <x-input-label for="email" :value="__('Email')" class="text-gray-700" />
-                    <x-text-input id="email"
-                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        type="email" name="email" :value="old('email')" required autofocus
-                        autocomplete="username" />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                </div>
-
-                <!-- Password -->
-                <div class="mb-4">
-                    <x-input-label for="password" :value="__('Password')" class="text-gray-700" />
-                    <x-text-input id="password"
-                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        type="password" name="password" required autocomplete="current-password" />
-                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                </div>
-
-                <!-- Remember Me -->
-                <div class="flex items-center justify-between mb-4">
-                    <label for="remember_me" class="flex items-center space-x-2">
-                        <input id="remember_me" type="checkbox"
-                            class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                            name="remember">
-                        <span class="text-sm text-gray-600">{{ __('Remember me') }}</span>
-                    </label>
-
-                    @if (Route::has('password.request'))
-                        <a class="text-sm text-indigo-600 hover:underline"
-                            href="{{ route('password.request') }}">
-                            {{ __('Forgot password?') }}
-                        </a>
-                    @endif
-                </div>
-
-                <!-- Login Button -->
-                <x-primary-button
-                    class="w-full justify-center py-3 rounded-xl text-white font-semibold bg-indigo-600 hover:bg-indigo-700 transition">
-                    {{ __('Log in') }}
-                </x-primary-button>
-            </form>
-
-            <!-- Divider 
-            <div class="flex items-center my-6">
-                <hr class="flex-grow border-gray-300">
-                <span class="mx-2 text-gray-500 text-sm">OR</span>
-                <hr class="flex-grow border-gray-300">
-            </div> -->
-
-            <!-- Register Link 
-            <div class="text-center">
-                <span class="text-sm text-gray-600">{{ __("Don't have an account?") }}</span>
-                <a href="{{ route('register') }}"
-                    class="ml-2 text-sm font-semibold text-green-600 hover:underline">
-                    {{ __('Register') }}
-                </a>
-            </div> -->
-        </div>
+  <!-- Kotak Login -->
+  <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl w-[400px] p-8">
+    <!-- Logo -->
+    <div class="flex justify-center mb-6">
+      <img src="{{ asset('logo/intel amfibi.png') }}" alt="Logo" 
+           class="h-16 w-16 object-contain rounded-full shadow-md">
     </div>
-</x-guest-layout>
+
+    <!-- Judul -->
+    <h2 class="text-center text-2xl font-bold text-gray-800">Sign in with email</h2>
+    <p class="text-center text-gray-500 text-sm mb-6">
+      Masukkan email dan password untuk masuk ke dashboard.
+    </p>
+
+    <!-- Form -->
+    <form action="{{ route('login') }}" method="POST" class="space-y-4">
+      @csrf
+      <!-- Email -->
+      <div>
+        <input type="email" name="email" placeholder="Email" required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                 focus:ring-2 focus:ring-sky-400 focus:outline-none">
+      </div>
+
+      <!-- Password + Eye -->
+      <div class="relative">
+        <input id="password" type="password" name="password" placeholder="Password" required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg 
+                 focus:ring-2 focus:ring-sky-400 focus:outline-none pr-10">
+        
+        <!-- Tombol Eye -->
+        <button type="button" onclick="togglePassword()" 
+          class="absolute right-3 top-2.5 text-gray-500 hover:text-sky-600">
+          <!-- Eye Open -->
+          <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" 
+               class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 
+                 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 
+                 7-4.477 0-8.268-2.943-9.542-7z" />
+          </svg>
+          <!-- Eye Closed -->
+          <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" 
+               class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 
+                 0-8.268-2.943-9.542-7a9.956 9.956 0 
+                 012.122-3.592m3.977-2.56A9.953 9.953 0 
+                 0112 5c4.477 0 8.268 2.943 9.542 
+                 7a9.956 9.956 0 01-4.043 5.132M15 
+                 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 3l18 18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Tombol Login -->
+      <button type="submit"
+        class="w-full bg-black text-white py-2 rounded-lg font-semibold 
+               hover:bg-gray-800 transition">
+        Login
+      </button>
+
+      <!-- Lupa Password + Register -->
+      <div class="flex justify-between text-sm mt-2">
+        <a href="{{ route('password.request') }}" 
+           class="text-sky-600 hover:underline">
+          Lupa Password?
+        </a>
+        <a href="{{ route('register') }}" 
+           class="text-sky-600 hover:underline">
+            Belum punya akun? Daftar
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- Script Toggle Password -->
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const eyeOpen = document.getElementById('eyeOpen');
+      const eyeClosed = document.getElementById('eyeClosed');
+
+      if (input.type === "password") {
+        input.type = "text";
+        eyeOpen.classList.add("hidden");
+        eyeClosed.classList.remove("hidden");
+      } else {
+        input.type = "password";
+        eyeOpen.classList.remove("hidden");
+        eyeClosed.classList.add("hidden");
+      }
+    }
+  </script>
+
+</body>
+</html>

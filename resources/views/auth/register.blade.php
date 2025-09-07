@@ -1,92 +1,110 @@
-@section('title', 'Registrasi')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - SIMAK</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-screen bg-cover bg-center flex items-center justify-center"
+      style="background-image: url('{{ asset('bg/bg0.jpg') }}');">
 
-<x-guest-layout>
-    <div class="min-h-screen flex justify-center items-start bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 px-4 pt-20">
-        <div class="w-full max-w-md bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-8">
-            <!-- Logo -->
-            <div class="flex justify-center mb-6 -mt-4">
-                <img src="{{ asset('download.png') }}" 
-                     alt="Logo" 
-                     class="w-28 h-28 object-contain">
-            </div>
-            
-            <!-- Judul -->
-            <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Create an Account</h2>
-
-            <form method="POST" action="{{ route('register') }}">
-                @csrf
-
-                <!-- Name -->
-                <div class="mb-4">
-                    <x-input-label for="name" :value="__('Name')" class="text-gray-700" />
-                    <x-text-input id="name"
-                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-                    <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                </div>
-
-                <!-- Email -->
-                <div class="mb-4">
-                    <x-input-label for="email" :value="__('Email')" class="text-gray-700" />
-                    <x-text-input id="email"
-                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        type="email" name="email" :value="old('email')" required autocomplete="username" />
-                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
-                </div>
-
-                <!-- Password -->
-                <div class="mb-4">
-                    <x-input-label for="password" :value="__('Password')" class="text-gray-700" />
-                    <x-text-input id="password"
-                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        type="password" name="password" required autocomplete="new-password" />
-                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                </div>
-
-                <!-- Confirm Password -->
-                <div class="mb-4">
-                    <x-input-label for="password_confirmation" :value="__('Confirm Password')" class="text-gray-700" />
-                    <x-text-input id="password_confirmation"
-                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                        type="password" name="password_confirmation" required autocomplete="new-password" />
-                    <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-                </div>
-
-                <!-- Role -->
-                <div class="mb-4">
-                    <x-input-label for="role" :value="__('Role')" class="text-gray-700" />
-                    <select id="role" name="role" required
-                        class="block mt-1 w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm
-                            focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition bg-white">
-                        <option value="admin">Admin</option>
-                        <option value="guru_tk">Guru TK</option>
-                        <option value="guru_mi">Guru MI</option>
-                    </select>
-                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
-                </div>
-
-                <!-- Register Button -->
-                <x-primary-button
-                    class="w-full justify-center py-3 rounded-xl text-white font-semibold bg-indigo-600 hover:bg-indigo-700 transition">
-                    {{ __('Register') }}
-                </x-primary-button>
-            </form>
-
-            <!-- Divider -->
-            <div class="flex items-center my-6">
-                <hr class="flex-grow border-gray-300">
-                <span class="mx-2 text-gray-500 text-sm">OR</span>
-                <hr class="flex-grow border-gray-300">
-            </div>
-
-            <!-- Login Link -->
-            <div class="text-center">
-                <span class="text-sm text-gray-600">{{ __("Already have an account?") }}</span>
-                <a href="{{ route('login') }}"
-                    class="ml-2 text-sm font-semibold text-indigo-600 hover:underline">
-                    {{ __('Login') }}
-                </a>
-            </div>
-        </div>
+  <!-- Card Register -->
+  <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl w-[400px] p-8">
+    <!-- Logo -->
+    <div class="flex justify-center mb-6">
+      <img src="{{ asset('logo/intel amfibi.png') }}" alt="Logo"
+           class="h-16 w-16 object-contain rounded-full shadow-md">
     </div>
-</x-guest-layout>
+
+    <!-- Judul -->
+    <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Create an Account</h2>
+
+    <!-- Form -->
+    <form method="POST" action="{{ route('register') }}" class="space-y-4">
+      @csrf
+
+      <!-- Name -->
+      <div>
+        <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus autocomplete="name"
+          placeholder="Full Name"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
+      </div>
+
+      <!-- Email -->
+      <div>
+        <input id="email" name="email" type="email" value="{{ old('email') }}" required autocomplete="username"
+          placeholder="Email"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
+      </div>
+
+      <!-- Password -->
+      <div class="relative">
+        <input id="password" name="password" type="password" required autocomplete="new-password"
+          placeholder="Password"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
+        <button type="button" onclick="togglePassword('password', this)" 
+          class="absolute right-3 top-2.5 text-gray-500 hover:text-sky-600">
+          👁
+        </button>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="relative">
+        <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
+          placeholder="Confirm Password"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
+        <button type="button" onclick="togglePassword('password_confirmation', this)" 
+          class="absolute right-3 top-2.5 text-gray-500 hover:text-sky-600">
+          👁
+        </button>
+      </div>
+
+      <!-- Role -->
+      <div>
+        <select id="role" name="role" required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
+          <option value="">-- Select Jabatan --</option>
+          <option value="guru_tk">Guru TK</option>
+          <option value="guru_mi">Guru MI</option>
+        </select>
+      </div>
+
+      <!-- Button -->
+      <button type="submit"
+        class="w-full bg-black text-white py-2 rounded-lg font-semibold hover:bg-gray-800 transition">
+        Register
+      </button>
+    </form>
+
+    <!-- Divider -->
+    <div class="flex items-center my-6">
+      <div class="flex-grow h-px bg-gray-300"></div>
+      <span class="px-3 text-sm text-gray-500">Already registered?</span>
+      <div class="flex-grow h-px bg-gray-300"></div>
+    </div>
+
+    <!-- Login Link -->
+    <div class="text-center">
+      <a href="{{ route('login') }}" class="text-sm font-semibold text-sky-600 hover:underline">
+        Login here
+      </a>
+    </div>
+  </div>
+
+  <!-- Script Eye Toggle -->
+  <script>
+    function togglePassword(id, btn) {
+      const input = document.getElementById(id);
+      if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "🙈";
+      } else {
+        input.type = "password";
+        btn.textContent = "👁";
+      }
+    }
+  </script>
+
+</body>
+</html>

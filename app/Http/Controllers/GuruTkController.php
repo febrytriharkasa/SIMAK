@@ -73,4 +73,10 @@ class GuruTkController extends Controller
         return redirect()->route('guru-tk.index')
                          ->with('success', 'Data guru berhasil dihapus.');
     }
+
+    public function show($id)
+    {
+        $guru = GuruTk::findOrFail($id);
+        return view('tk.guru-tk.show', compact('guru'));
+    }
 }

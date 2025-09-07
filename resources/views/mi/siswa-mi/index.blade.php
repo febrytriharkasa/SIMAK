@@ -4,13 +4,15 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Data Siswa MI</h1>
+    <div class="page-heading mb-40">
+        <h3 class="ms-5">Data Siswa MI</h3>
+    </div>
 
     {{-- Baris atas: tombol tambah + form search --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="d-flex gap-2">
             {{-- Tombol Tambah Siswa --}}
-            <a href="{{ route('siswa-mi.create') }}" class="btn btn-primary">+ Tambah Siswa</a>
+            <a href="{{ route('siswa-mi.create') }}" class="btn btn-primary ms-5">+ Tambah Siswa</a>
 
             {{-- Tombol Naik Kelas --}}
             <a href="{{ route('siswa.naikKelas') }}" 
@@ -61,6 +63,12 @@
                                 <a href="{{ route('siswa-mi.edit', $row->id) }}" 
                                     class="btn btn-sm btn-warning">
                                     <i class="fas fa-edit"></i>
+                                </a>
+
+                                {{-- Tombol Show --}}
+                                <a href="{{ route('siswa-mi.show', $row->id) }}" 
+                                    class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
                                 </a>
 
                                 {{-- Tombol Hapus --}}

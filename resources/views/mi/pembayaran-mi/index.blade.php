@@ -4,7 +4,9 @@
 
 @section('content')
 <div class="container-fluid">
-    <h1 class="h3 mb-4 text-gray-800">Data Pembayaran MI</h1>
+    <div class="page-heading mb-40">
+        <h3 class="ms-5">Administrasi MI</h3>
+    </div>
 
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -116,7 +118,7 @@
                                 <td>{{ $loop->iteration + ($pembayaran->currentPage()-1) * $pembayaran->perPage() }}</td>
                                 <td>{{ $p->siswa->nisn ?? '-' }}</td>
                                 <td>{{ $p->siswa->nama ?? '-' }}</td>
-                               <td>{{ $p->siswa->kelas->nama_kelas ?? '-' }}</td>
+                                <td>{{ $p->siswa->kelas->nama_kelas ?? '-' }}</td>
                                 <td>Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
                                 <td>{{ $p->tanggal ? \Carbon\Carbon::parse($p->tanggal)->format('d-m-Y') : '-' }}</td>
                                 <td>
