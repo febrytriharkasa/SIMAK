@@ -4,53 +4,42 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Tampilkan form registrasi
      */
-    public function create(): View
+    public function create()
     {
         return view('auth.register');
     }
 
     /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Simpan data registrasi (status = pending)
      */
     public function store(Request $request): RedirectResponse
     {
-        // Validasi input termasuk role
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'string', 'in:admin,guru_tk,guru_mi'], // validasi role
+            'nip'   => ['required', 'string', 'max:50', 'unique:users,nip'],
+            'name'  => ['required', 'string', 'max:255'], // jabatan
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'role'  => ['required', 'in:guru_tk,guru_mi'], 
         ]);
 
-        // Buat user baru
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        // Simpan user dengan status pending, tanpa password
+        User::create([
+            'nip'    => $request->nip,
+            'name'   => $request->name,
+            'email'  => $request->email,
+            'role'   => $request->role,
+            'status' => 'pending',
+            'password' => bcrypt('temporary'), // sementara
         ]);
 
-        // Assign role langsung (pastikan Spatie Roles & Permissions sudah terpasang)
-        $user->assignRole($request->role);
-
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('login')
+            ->with('success', 'Registrasi berhasil! Menunggu persetujuan admin.');
     }
 }

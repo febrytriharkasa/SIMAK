@@ -18,53 +18,38 @@
     </div>
 
     <!-- Judul -->
-    <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Create an Account</h2>
+    <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Registrasi Akun</h2>
 
     <!-- Form -->
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
       @csrf
 
-      <!-- Name -->
+      <!-- NIP -->
       <div>
-        <input id="name" name="name" type="text" value="{{ old('name') }}" required autofocus autocomplete="name"
-          placeholder="Full Name"
+        <input id="nip" name="nip" type="text" value="{{ old('nip') }}" required
+          placeholder="NIP"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
+      </div>
+
+      <!-- Jabatan -->
+      <div>
+        <input id="name" name="name" type="text" value="{{ old('name') }}" required
+          placeholder="Jabatan"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
       </div>
 
       <!-- Email -->
       <div>
-        <input id="email" name="email" type="email" value="{{ old('email') }}" required autocomplete="username"
+        <input id="email" name="email" type="email" value="{{ old('email') }}" required
           placeholder="Email"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
-      </div>
-
-      <!-- Password -->
-      <div class="relative">
-        <input id="password" name="password" type="password" required autocomplete="new-password"
-          placeholder="Password"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
-        <button type="button" onclick="togglePassword('password', this)" 
-          class="absolute right-3 top-2.5 text-gray-500 hover:text-sky-600">
-          👁
-        </button>
-      </div>
-
-      <!-- Confirm Password -->
-      <div class="relative">
-        <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
-          placeholder="Confirm Password"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
-        <button type="button" onclick="togglePassword('password_confirmation', this)" 
-          class="absolute right-3 top-2.5 text-gray-500 hover:text-sky-600">
-          👁
-        </button>
       </div>
 
       <!-- Role -->
       <div>
         <select id="role" name="role" required
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
-          <option value="">-- Select Jabatan --</option>
+          <option value="">-- Pilih Jabatan --</option>
           <option value="guru_tk">Guru TK</option>
           <option value="guru_mi">Guru MI</option>
         </select>
@@ -73,38 +58,24 @@
       <!-- Button -->
       <button type="submit"
         class="w-full bg-black text-white py-2 rounded-lg font-semibold hover:bg-gray-800 transition">
-        Register
+        Daftar
       </button>
     </form>
 
     <!-- Divider -->
     <div class="flex items-center my-6">
       <div class="flex-grow h-px bg-gray-300"></div>
-      <span class="px-3 text-sm text-gray-500">Already registered?</span>
+      <span class="px-3 text-sm text-gray-500">Sudah punya akun?</span>
       <div class="flex-grow h-px bg-gray-300"></div>
     </div>
 
     <!-- Login Link -->
     <div class="text-center">
       <a href="{{ route('login') }}" class="text-sm font-semibold text-sky-600 hover:underline">
-        Login here
+        Login di sini
       </a>
     </div>
   </div>
-
-  <!-- Script Eye Toggle -->
-  <script>
-    function togglePassword(id, btn) {
-      const input = document.getElementById(id);
-      if (input.type === "password") {
-        input.type = "text";
-        btn.textContent = "🙈";
-      } else {
-        input.type = "password";
-        btn.textContent = "👁";
-      }
-    }
-  </script>
 
 </body>
 </html>
