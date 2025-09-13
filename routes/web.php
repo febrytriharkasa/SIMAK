@@ -11,7 +11,7 @@ use App\Http\Controllers\SiswaTkController;
 use App\Http\Controllers\GuruTkController;
 use App\Http\Controllers\PembayaranTkController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\UserApprovalController;
+use App\Http\Controllers\Admin\UserApprovalController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -47,10 +47,9 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('users', UserController::class);
 
-    // Approval User
     Route::get('/user-approvals', [UserApprovalController::class, 'index'])->name('user.approvals.index');
-    Route::post('/user-approvals/{id}/approve', [UserApprovalController::class, 'approve'])->name('user.approvals.approve');
-    Route::post('/user-approvals/{id}/reject', [UserApprovalController::class, 'reject'])->name('user.approvals.reject');
+    Route::post('/user-approvals/{id}/approve', [UserApprovalController::class, 'approve'])->name('admin.approvals.approve');
+    Route::post('/user-approvals/{id}/reject', [UserApprovalController::class, 'reject'])->name('admin.approvals.reject');
 });
 
 // ================== ADMIN DAN GURU MI ==================

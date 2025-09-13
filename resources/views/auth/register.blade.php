@@ -24,17 +24,17 @@
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
       @csrf
 
+      <!-- Nama -->
+      <div>
+        <input id="name" name="name" type="text" value="{{ old('name') }}" required
+          placeholder="Nama"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
+      </div>
+
       <!-- NIP -->
       <div>
         <input id="nip" name="nip" type="text" value="{{ old('nip') }}" required
           placeholder="NIP"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
-      </div>
-
-      <!-- Jabatan -->
-      <div>
-        <input id="name" name="name" type="text" value="{{ old('name') }}" required
-          placeholder="Jabatan"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 focus:outline-none">
       </div>
 

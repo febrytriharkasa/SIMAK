@@ -23,20 +23,20 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
+            'name'  => ['required', 'string', 'max:255'], // nama user
             'nip'   => ['required', 'string', 'max:50', 'unique:users,nip'],
-            'name'  => ['required', 'string', 'max:255'], // jabatan
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'role'  => ['required', 'in:guru_tk,guru_mi'], 
         ]);
 
-        // Simpan user dengan status pending, tanpa password
+        // Simpan user dengan status pending, password sementara
         User::create([
-            'nip'    => $request->nip,
             'name'   => $request->name,
+            'nip'    => $request->nip,
             'email'  => $request->email,
             'role'   => $request->role,
             'status' => 'pending',
-            'password' => bcrypt('temporary'), // sementara
+            'password' => bcrypt('temporary'), // akan diganti saat approve
         ]);
 
         return redirect()->route('login')

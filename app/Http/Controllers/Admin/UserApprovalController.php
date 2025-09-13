@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Controller;
 
 class UserApprovalController extends Controller
 {
@@ -14,7 +15,11 @@ class UserApprovalController extends Controller
      */
     public function index()
     {
-       $admins = User::where('role', 'admin')->get(); 
+        // Ambil semua user non-admin
+        $users = User::where('role', '!=', 'admin')
+            ->whereIn('status', ['pending', 'approved', 'rejected'])
+            ->get();
+
         return view('admin.user-approvals.index', compact('users'));
     }
 
@@ -22,31 +27,34 @@ class UserApprovalController extends Controller
      * Approve user → ubah status jadi approved + set password default.
      */
     public function approve($id)
-    {
+{
         $user = User::findOrFail($id);
 
-        // Cek apakah sudah approved
         if ($user->status === 'approved') {
             return redirect()->route('user.approvals.index')
                 ->with('info', 'User ini sudah pernah di-approve.');
         }
 
         $user->status = 'approved';
-        $user->password = Hash::make('password123'); // password default
+        $defaultPassword = env('DEFAULT_USER_PASSWORD', 'password123');
+        $user->password = Hash::make($defaultPassword);
         $user->save();
 
-        // Kirim email pemberitahuan
+        // Kirim email pemberitahuan password default
         try {
-            Mail::raw("Akun Anda sudah disetujui. Silakan login dengan password default: password123", function ($message) use ($user) {
-                $message->to($user->email)
-                    ->subject('Akun Disetujui - SIMAK');
-            });
+            Mail::raw(
+                "Akun Anda sudah disetujui oleh admin SIMAK.\n\nSilakan login dengan email: {$user->email}\nPassword default Anda: {$defaultPassword}\n\nSegera ganti password setelah login.",
+                function ($message) use ($user) {
+                    $message->to($user->email)
+                        ->subject('Akun SIMAK Disetujui & Password Default');
+                }
+            );
         } catch (\Exception $e) {
             // Jika email gagal, tetap lanjut
         }
 
         return redirect()->route('user.approvals.index')
-            ->with('success', 'User berhasil di-approve!');
+            ->with('success', 'User berhasil di-approve dan email sudah dikirim!');
     }
 
     /**
@@ -67,10 +75,13 @@ class UserApprovalController extends Controller
 
         // Kirim email pemberitahuan
         try {
-            Mail::raw("Maaf, registrasi Anda ditolak. Silakan hubungi admin.", function ($message) use ($user) {
-                $message->to($user->email)
-                    ->subject('Akun Ditolak - SIMAK');
-            });
+            Mail::raw(
+                "Maaf, registrasi Anda ditolak. Silakan hubungi admin.",
+                function ($message) use ($user) {
+                    $message->to($user->email)
+                        ->subject('Akun Ditolak - SIMAK');
+                }
+            );
         } catch (\Exception $e) {
             // Jika email gagal, tetap lanjut
         }

@@ -175,7 +175,7 @@
         <!-- Topbar -->
         <nav class="navbar navbar-expand navbar-light bg-white topbar fixed-top shadow">
             <div class="container-fluid">
-                <h3 class="fw-bold mb-0 text-primary" style="margin-left: 30px;">Sistem Menejemen Al Kush...</h3>
+                <h3 class="fw-bold mb-0 text-primary" style="margin-left: 30px;">Sistem Menejemen Al Kushnaniyah</h3>
 
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
