@@ -20,6 +20,17 @@
     <!-- Judul -->
     <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Registrasi Akun</h2>
 
+    <!-- Error Message -->
+      @if ($errors->any())
+        <div class="mb-4 text-red-600">
+          <ul>
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
     <!-- Form -->
     <form method="POST" action="{{ route('register') }}" class="space-y-4">
       @csrf

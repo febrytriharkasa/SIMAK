@@ -47,23 +47,38 @@
 
         <hr class="sidebar-divider my-2">
 
-        <!-- Dashboard -->
+        <!-- Dashboard Admin -->
+        @role('admin')
         <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
             <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('dashboard') }}">
                 <i class="fas fa-fw fa-tachometer-alt me-2"></i>
                 <span class="sidebar-text">Dashboard</span>
             </a>
         </li>
+        @endrole
 
         <!-- Dashboard Guru -->
-        @hasanyrole('guru_mi|guru_tk')
-        <li class="nav-item {{ request()->is('guru/dashboard') ? 'active' : '' }}">
-            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('guru.dashboard') }}">
+       @role('guru_mi')
+        <li class="nav-item {{ request()->is('guru/mi/dashboard') ? 'active' : '' }}">
+            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" 
+            href="{{ route('guru-mi.dashboard') }}">
                 <i class="bi bi-speedometer2 me-2"></i>
-                <span class="sidebar-text">Dashboard Guru</span>
+                <span class="sidebar-text">Dashboard Guru MI</span>
             </a>
         </li>
-        @endhasanyrole
+        @endrole
+
+        @role('guru_tk')
+        <li class="nav-item {{ request()->is('guru/tk/dashboard') ? 'active' : '' }}">
+            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" 
+            href="{{ route('guru-tk.dashboard') }}">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span class="sidebar-text">Dashboard Guru TK</span>
+            </a>
+        </li>
+        @endrole
+
+        
 
         <!-- Manajemen MI -->
         @hasanyrole('admin|guru_mi')

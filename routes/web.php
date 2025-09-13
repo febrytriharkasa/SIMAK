@@ -12,29 +12,40 @@ use App\Http\Controllers\GuruTkController;
 use App\Http\Controllers\PembayaranTkController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserApprovalController;
+use App\Http\Controllers\GuruMiDbController;
+use App\Http\Controllers\GuruTkDbController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 // ================== DASHBOARD ==================
-// Dashboard umum → bisa redirect otomatis sesuai role
+// Dashboard umum → redirect otomatis sesuai role
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+// Dashboard umum → redirect otomatis sesuai role
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 // Dashboard khusus Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('dashboard.admin'); // file: resources/views/dashboard/admin.blade.php
-    })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])
+        ->name('admin.dashboard');
 });
 
-// Dashboard khusus Guru (MI & TK)
-Route::middleware(['auth', 'role:guru_mi|guru_tk'])->group(function () {
-    Route::get('/guru/dashboard', function () {
-        return view('dashboard.guru'); // file: resources/views/dashboard/guru.blade.php
-    })->name('guru.dashboard');
+// Dashboard khusus Guru TK
+Route::middleware(['auth', 'role:guru_tk'])->group(function () {
+    Route::get('/guru/tk/dashboard', [GuruTkDbController::class, 'index'])
+        ->name('guru-tk.dashboard');
+});
+
+// Dashboard khusus Guru MI
+Route::middleware(['auth', 'role:guru_mi'])->group(function () {
+    Route::get('/guru/mi/dashboard', [GuruMiDbController::class, 'index'])
+        ->name('guru-mi.dashboard');
 });
 
 // ================== REGISTER (PUBLIC) ==================
@@ -57,12 +68,6 @@ Route::middleware(['auth', 'role:admin|guru_mi'])->group(function () {
     Route::resource('siswa-mi', SiswaMiController::class);
     Route::resource('guru-mi', GuruMiController::class);
     Route::resource('pembayaran-mi', PembayaranMiController::class)->except(['show']);
-    
-    // Route::get('pembayaran-mi/{id}/kwitansi-pdf', [PembayaranMiController::class, 'kwitansiPdf'])->name('pembayaran-mi.kwitansi-pdf');
-    // Route::get('/pembayaran-mi/export-pdf', [PembayaranMiController::class, 'exportPdf'])->name('pembayaran-mi.export-pdf');
-    // Route::get('/naik-kelas-mi', [SiswaMiController::class, 'naikKelas'])->name('siswa.naikKelas');
-    // Route::get('/get-siswa-detail/{id}', [PembayaranMiController::class, 'getSiswaDetail']);
-    // Route::get('/siswa-mi/{id}', [SiswaMiController::class, 'show'])->name('siswa-mi.show');
 });
 
 // ================== ADMIN DAN GURU TK ==================
@@ -70,7 +75,7 @@ Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
     Route::resource('siswa-tk', SiswaTkController::class);
     Route::resource('guru-tk', GuruTkController::class);
     Route::resource('pembayaran-tk', PembayaranTkController::class)->except(['show']);
-    
+
     Route::get('pembayaran-tk/{id}/kwitansi-pdf', [PembayaranTkController::class, 'kwitansiPdf'])->name('pembayaran-tk.kwitansi-pdf');
     Route::get('/pembayaran-tk/export-pdf', [PembayaranTkController::class, 'exportPdf'])->name('pembayaran-tk.export-pdf');
     Route::get('/naik-kelas-tk', [SiswaTkController::class, 'naikKelasTk'])->name('siswa.naikKelasTk');
