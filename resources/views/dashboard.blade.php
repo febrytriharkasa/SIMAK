@@ -3,6 +3,22 @@
 @section('title', 'Dashboard')
 
 @section('content')
+<style>
+/* Light mode */
+[data-bs-theme="light"] #content-wrapper,
+[data-bs-theme="light"] .container-fluid {
+    background-color: #FFFFFFFF !important; 
+    color: #181515;
+}
+
+/* Dark mode */
+[data-bs-theme="dark"] #content-wrapper,
+[data-bs-theme="dark"] .container-fluid {
+    background-color: #1B1B1DFF !important; 
+    color: #fff;
+}
+</style> 
+    
 <div class="page-heading mb-40">
     <h3 class="ms-5">Dashboard Statistik</h3>
 </div>
