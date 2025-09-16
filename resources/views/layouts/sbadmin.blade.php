@@ -249,6 +249,13 @@
                 <span class="sidebar-text">Dashboard</span>
             </a>
         </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('evaluasi.index') }}">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Evaluasi Kinerja</span>
+            </a>
+        </li>
         @endrole
 
         <!-- Dashboard Guru -->

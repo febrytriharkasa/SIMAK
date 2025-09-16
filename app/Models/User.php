@@ -6,14 +6,11 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-// 👉 tambahkan ini
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
-    use HasRoles; // 👉 tambahkan trait ini
+    use HasFactory, Notifiable, HasRoles;
 
     protected $fillable = [
         'nip',
@@ -35,4 +32,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * Relasi: User memiliki banyak Evaluasi Kinerja
+     */
+    public function evaluasiKinerja()
+    {
+        return $this->hasMany(EvaluasiKinerja::class);
+    }
 }
