@@ -31,26 +31,25 @@ class RegisteredUserController extends Controller
     {
         // Validasi input termasuk role
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'  => ['required', 'string', 'max:255'], // nama user
+            'nip'   => ['required', 'string', 'max:50', 'unique:users,nip'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'role' => ['required', 'string', 'in:admin,guru_tk,guru_mi'], // validasi role
         ]);
 
         // Buat user baru
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'   => $request->name,
+            'nip'    => $request->nip,
+            'email'  => $request->email,
+            'status' => 'pending',
+            'password' => bcrypt('temporary'), // akan diganti saat approve
         ]);
 
         // Assign role langsung (pastikan Spatie Roles & Permissions sudah terpasang)
         $user->assignRole($request->role);
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('login')
+            ->with('success', 'Registrasi berhasil! Menunggu persetujuan admin.');
     }
 }

@@ -118,7 +118,7 @@
 
             if(siswaId) {
                 $.ajax({
-                    url: '/get-siswa-detail/' + siswaId,
+                    url: '/get-siswa-detail-tk/' + siswaId,
                     type: 'GET',
                     success: function(data) {
                         if (data) {

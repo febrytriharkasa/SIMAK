@@ -20,6 +20,11 @@ class Siswa_MI extends Model
     {
         return $this->belongsTo(Kelas_Mi::class, 'kelas_id');
     }
+    
+    public function nilais()
+    {
+        return $this->hasMany(NilaiMi::class, 'siswa_id');
+    }
 
 }
 

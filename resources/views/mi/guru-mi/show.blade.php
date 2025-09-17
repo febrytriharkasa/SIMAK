@@ -22,7 +22,13 @@
                         </tr>
                         <tr>
                             <th>Mata Pelajaran</th>
-                            <td>{{ $guru->mapel }}</td>
+                            <td>
+                                @if($guru->mapels->isNotEmpty())
+                                    {{ $guru->mapels->pluck('nama_mapel')->join(', ') }}
+                                @else
+                                    <em>-</em>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th>No HP</th>

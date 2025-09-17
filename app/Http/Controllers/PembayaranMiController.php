@@ -7,6 +7,7 @@ use App\Models\Siswa_MI;
 use App\Models\Kelas_Mi;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PembayaranMiController extends Controller
 {
@@ -40,7 +41,7 @@ class PembayaranMiController extends Controller
 
             $pembayaran = $query->paginate(10);
         } else {
-            $pembayaran = collect([]);
+            $pembayaran = new LengthAwarePaginator([], 0, 10);
         }
 
         return view('mi.pembayaran-mi.index', compact('pembayaran', 'kelasList'));
@@ -66,6 +67,13 @@ class PembayaranMiController extends Controller
         $bulan = \Carbon\Carbon::parse($request->tanggal)->month;
         $tahun = \Carbon\Carbon::parse($request->tanggal)->year;
 
+        $siswa = Siswa_Mi::with('kelas')->find($request->siswa_id);
+
+        // Cek jika siswa sudah lulus (kelas_id = 7)
+        if ($siswa->kelas_id == 7) {
+            return redirect()->back()->with('error', 'Pembayaran tidak dapat dilakukan. Siswa sudah lulus.');
+        }
+
         $cekPembayaran = Pembayaran_MI::where('siswa_id', $request->siswa_id)
             ->whereMonth('tanggal', $bulan)
             ->whereYear('tanggal', $tahun)
@@ -89,7 +97,8 @@ class PembayaranMiController extends Controller
     public function edit($id)
     {
         $pembayaran = Pembayaran_MI::findOrFail($id);
-        $siswa = Siswa_MI::all();
+        $siswa = Siswa_Mi::all();
+        // $siswa = Siswa_Mi::where('kelas_id', '!=', 7)->get();
         $kelasList = Kelas_Mi::all();
         return view('mi.pembayaran-mi.edit', compact('pembayaran', 'siswa', 'kelasList'));
     }
@@ -101,6 +110,13 @@ class PembayaranMiController extends Controller
 
         $bulan = \Carbon\Carbon::parse($request->tanggal)->month;
         $tahun = \Carbon\Carbon::parse($request->tanggal)->year;
+        
+        $siswa = Siswa_Mi::with('kelas')->find($request->siswa_id);
+
+        // Cek jika siswa sudah lulus (kelas_id = 7)
+        if ($siswa->kelas_id == 7) {
+            return redirect()->back()->with('error', 'Pembayaran tidak dapat dilakukan. Siswa sudah lulus.');
+        }
 
         $cekPembayaran = Pembayaran_MI::where('siswa_id', $request->siswa_id)
             ->whereMonth('tanggal', $bulan)
@@ -204,7 +220,7 @@ class PembayaranMiController extends Controller
 
     public function getSiswaDetail($siswaId)
     {
-        $siswa = \App\Models\Siswa_MI::with('kelas')
+        $siswa = Siswa_MI::with('kelas')
                 ->where('id', $siswaId)
                 ->first(['id', 'nama', 'nisn', 'kelas_id']);
 
@@ -219,5 +235,66 @@ class PembayaranMiController extends Controller
         }
 
         return response()->json(null, 404);
+    }
+
+    // Form Generate SPP
+    public function generateFormMI()
+    {
+        $kelasList = Kelas_Mi::orderBy('tingkat', 'asc')->get();
+        return view('mi.pembayaran-mi.generate', compact('kelasList'));
+    }
+
+    // Proses Generate SPP
+   public function generateSPPMI(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas_mi,id',
+            'tahun'    => 'required|digits:4',
+            'bulan'    => 'required|numeric|min:1|max:12',
+            'jumlah_default' => 'required|numeric'
+        ]);
+
+        $kelas = Kelas_Mi::findOrFail($request->kelas_id);
+        $siswaList = Siswa_MI::where('kelas_id', $kelas->id)->get();
+
+        $generated = 0;
+        $tanggal = \Carbon\Carbon::createFromDate($request->tahun, $request->bulan, 1);
+
+        foreach ($siswaList as $siswa) {
+            $cek = Pembayaran_MI::where('siswa_id', $siswa->id)
+                ->whereMonth('tanggal', $tanggal->month)
+                ->whereYear('tanggal', $tanggal->year)
+                ->first();
+
+            if (!$cek) {
+                Pembayaran_MI::create([
+                    'siswa_id' => $siswa->id,
+                    'jumlah'   => $request->jumlah_default,
+                    'tanggal'  => $tanggal,
+                    'status'   => 'belum', // atau 'Belum Lunas'
+                    'tanggal_bayar' => null
+                ]);
+                $generated++;
+            }
+        }
+
+        return redirect()->route('pembayaran-mi.index', [
+            'bulan' => $tanggal->format('Y-m'),
+            'kelas_id' => $request->kelas_id
+        ])->with('success', "SPP berhasil digenerate untuk $generated siswa di kelas {$kelas->nama_kelas}.");
+    }
+
+    public function approvePembayaran($id)
+    {
+        $pembayaran = Pembayaran_MI::findOrFail($id);
+
+        if ($pembayaran->status == 'belum') {
+            $pembayaran->update([
+                'status' => 'lunas',
+                'tanggal_bayar' => now()
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Pembayaran siswa {$pembayaran->siswa->nama} telah disetujui.");
     }
 }

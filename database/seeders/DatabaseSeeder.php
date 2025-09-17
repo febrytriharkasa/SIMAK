@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
@@ -15,16 +15,18 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Buat role
-        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-        $guruTkRole = Role::firstOrCreate(['name' => 'guru_tk', 'guard_name' => 'web']);
-        $guruMiRole = Role::firstOrCreate(['name' => 'guru_mi', 'guard_name' => 'web']);
+        $adminRole   = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $guruTkRole  = Role::firstOrCreate(['name' => 'guru_tk', 'guard_name' => 'web']);
+        $guruMiRole  = Role::firstOrCreate(['name' => 'guru_mi', 'guard_name' => 'web']);
 
         // Buat user admin
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@admin.com'],
+         $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
             [
-                'name' => 'Admin Super',
-                'password' => bcrypt('12345678'),
+                'nip' => '12345',
+                'name' => 'Administrator',
+                'password' => bcrypt('admin123'),
+                'status' => 'approved',
                 'email_verified_at' => now(),
             ]
         );
@@ -32,10 +34,12 @@ class DatabaseSeeder extends Seeder
 
         // Buat user guru TK
         $guruTk = User::firstOrCreate(
-            ['email' => 'guru_tk@sekolah.com'],
+            ['email' => 'guru_tk@example.com'],
             [
+                'nip' => '54321',
                 'name' => 'Guru TK',
-                'password' => bcrypt('password123'),
+                'password' => Hash::make('password123'),
+                'status' => 'approved',
                 'email_verified_at' => now(),
             ]
         );
@@ -43,28 +47,20 @@ class DatabaseSeeder extends Seeder
 
         // Buat user guru MI
         $guruMi = User::firstOrCreate(
-            ['email' => 'guru_mi@sekolah.com'],
+            ['email' => 'guru_mi@example.com'],
             [
+                'nip' => '67890',
                 'name' => 'Guru MI',
-                'password' => bcrypt('password123'),
+                'password' => Hash::make('password123'),
+                'status' => 'approved',
                 'email_verified_at' => now(),
             ]
         );
         $guruMi->assignRole($guruMiRole);
 
         $this->call([
-            GuruMiSeeder::class,
-        ]);
-
-        $this->call([
-            SiswaMiSeeder::class,
-        ]);
-        
-        $this->call([
             KelasMiSeeder::class,
-        ]);
-
-        $this->call([
+            MapelMiSeeder::class,
             KelasTkSeeder::class,
         ]);
     }

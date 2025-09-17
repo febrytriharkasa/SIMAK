@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use App\Models\NilaiMi;
+use App\Observers\NilaiMiObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,5 +25,7 @@ class AppServiceProvider extends ServiceProvider
         // Pilih sesuai versi Bootstrap
         Paginator::useBootstrapFive(); // kalau pakai Bootstrap 5
         // Paginator::useBootstrapFour(); // kalau pakai Bootstrap 4
+        NilaiMi::observe(NilaiMiObserver::class);
     }
+    
 }

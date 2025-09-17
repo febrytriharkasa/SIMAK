@@ -7,6 +7,45 @@
     <h3 class="ms-5">Dashboard Statistik</h3>
 </div>
 
+<div class="card shadow-sm mb-4 border-0">
+    <div class="card-body">
+        <form action="{{ route('dashboard') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="tahun" class="form-label fw-bold text-primary">
+                    <i class="fas fa-calendar-alt me-1"></i> Filter Tahun
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light">
+                        <i class="fas fa-filter text-secondary"></i>
+                    </span>
+                    <select name="tahun" id="tahun" class="form-select">
+                        <option value="">-- Semua Tahun --</option>
+                        @foreach(range(date('Y'), date('Y')-5) as $t) 
+                            <option value="{{ $t }}" {{ request('tahun') == $t ? 'selected' : '' }}>
+                                {{ $t }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100 shadow-sm">
+                    <i class="fas fa-search"></i> Tampilkan
+                </button>
+            </div>
+
+            @if(request('tahun'))
+            <div class="col-md-2 d-flex align-items-end">
+                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary w-100 shadow-sm">
+                    <i class="fas fa-undo"></i> Reset
+                </a>
+            </div>
+            @endif
+        </form>
+    </div>
+</div>
+
 @hasanyrole('admin|guru_mi')
 {{-- ================= MI ================= --}}
 <h4 class="mb-3 ms-2">📘 Manajemen MI</h4>
@@ -248,10 +287,5 @@
         labels: Object.keys(@json($jumlahSiswaPerTahunTk)),
     }).render();
 
-    new ApexCharts(document.querySelector("#chart-guru-tk"), {
-        series: Object.values(@json($jumlahGuruPerMapelTk)),
-        chart:{ type: 'pie', height: 350 },
-        labels: Object.keys(@json($jumlahGuruPerMapelTk)),
-    }).render();
 </script>
 @endpush

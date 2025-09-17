@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Siswa_MI;
 use App\Models\Kelas_Mi;
+use App\Models\MapelMi;
 use Illuminate\Http\Request;
 
 class SiswaMiController extends Controller
@@ -80,25 +81,34 @@ class SiswaMiController extends Controller
 
     public function naikKelas()
     {
-        $siswas = Siswa_MI::with('kelas')->get();
+        $siswas = Siswa_MI::with('kelas','nilais')->get();
+        $totalMapel = MapelMi::count(); // total mapel wajib, misalnya 20
 
         foreach ($siswas as $siswa) {
-            // jika belum punya kelas, set default ke Kelas 1
-            if (!$siswa->kelas) {
-                $kelasAwal = Kelas_MI::where('tingkat', 1)->first();
-                if ($kelasAwal) {
-                    $siswa->update(['kelas_id' => $kelasAwal->id]);
+            if (!$siswa->kelas) continue;
+
+            // Hitung jumlah mapel yang sudah diisi nilainya
+            $jumlahNilai = $siswa->nilais()
+                ->where('kelas_id', $siswa->kelas_id)
+                ->count();
+
+            // Kalau jumlah nilai kurang dari jumlah mapel → tidak bisa naik
+            if ($jumlahNilai < $totalMapel) {
+                continue;
+            }
+
+            // Hitung rata-rata semua nilai akhir
+            $rataNilai = $siswa->nilais()
+                ->where('kelas_id', $siswa->kelas_id)
+                ->avg('nilai_akhir');
+
+            // Syarat minimal rata-rata 70
+            if ($rataNilai >= 70) {
+                $kelasBerikut = Kelas_MI::where('tingkat', $siswa->kelas->tingkat + 1)->first();
+                if ($kelasBerikut) {
+                    $siswa->update(['kelas_id' => $kelasBerikut->id]);
                 }
-                continue; // lanjut ke siswa berikutnya
             }
-
-            $kelasSekarang = $siswa->kelas;
-            $kelasBerikut = Kelas_MI::where('tingkat', $kelasSekarang->tingkat + 1)->first();
-
-            if ($kelasBerikut) {
-                $siswa->update(['kelas_id' => $kelasBerikut->id]);
-            }
-            // kalau sudah "Lulus" (tingkat 7), biarkan tetap
         }
 
         return redirect()->back()->with('success', 'Proses kenaikan kelas selesai!');

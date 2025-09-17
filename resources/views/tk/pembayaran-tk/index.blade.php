@@ -24,7 +24,15 @@
                     ]) }}" class="btn btn-primary">
                     + Tambah Pembayaran
                 </a>
+
+                {{-- Tombol Generate SPP --}}
+                <a href="{{ route('pembayaran-mi.generateForm-tk') }}" class="btn btn-success">
+                    <i class="fas fa-cogs"></i> Generate SPP
+                </a>
+
             </div>
+
+           
 
             <form action="{{ route('pembayaran-tk.index') }}" method="GET" class="row g-3 align-items-end">
                 
@@ -101,6 +109,7 @@
                         <th>Nama Siswa</th>
                         <th>Kelas</th>
                         <th>Jumlah</th>
+                        <th>Bulan</th>
                         <th>Tanggal Bayar</th>
                         <th>Status</th>
                         <th style="width:280px;">Aksi</th>
@@ -109,7 +118,7 @@
                 <tbody>
                     @if(!request('bulan'))
                         <tr>
-                            <td colspan="8" class="text-center">Pilih bulan & tahun terlebih dahulu.</td>
+                            <td colspan="9" class="text-center">Pilih bulan & tahun terlebih dahulu.</td>
                         </tr>
                     @else
                         @forelse ($pembayaran as $p)
@@ -119,7 +128,8 @@
                                 <td>{{ $p->siswa->nama ?? '-' }}</td>
                                 <td>{{ $p->siswa->kelas->nama_kelas ?? '-' }}</td>
                                 <td>Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
-                                <td>{{ $p->tanggal ? \Carbon\Carbon::parse($p->tanggal)->format('d-m-Y') : '-' }}</td>
+                                <td>{{ $p->tanggal ? \Carbon\Carbon::parse($p->tanggal)->translatedFormat('F Y') : '-' }}</td>
+                                <td>{{ $p->tanggal_bayar ? \Carbon\Carbon::parse($p->tanggal_bayar)->format('d-m-Y') : '-' }}</td>
                                 <td>
                                     @if($p->status == 'belum')
                                         <span class="badge bg-danger">Belum Lunas</span>
@@ -129,6 +139,14 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
+                                        @if($p->status == 'belum')
+                                            <form action="{{ route('pembayaran-tk.approve', $p->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check"></i> Approve
+                                                </button>
+                                            </form>
+                                        @endif
                                         <a href="{{ route('pembayaran-tk.edit', [
                                                     'pembayaran_tk' => $p->id,
                                                     'bulan' => request('bulan'),

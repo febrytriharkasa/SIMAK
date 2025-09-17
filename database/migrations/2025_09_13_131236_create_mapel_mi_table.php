@@ -9,14 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+   public function up()
     {
-        Schema::create('gurus_mi', function (Blueprint $table) {
+        Schema::create('mapel_mi', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('nip')->unique();
-            $table->string('no_hp_guru');
-            $table->string('alamat_guru');
+            $table->string('nama_mapel');
+            $table->string('kode_mapel')->nullable(); // opsional
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gurus_mi');
+        Schema::dropIfExists('mapel_mi');
     }
 };

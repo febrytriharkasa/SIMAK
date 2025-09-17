@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Kwitansi Pembayaran MI</title>
+    <title>Kwitansi Pembayaran TK</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 10px; font-size: 12px; }
         .kwitansi { width: 100%; border: 1px solid #000; padding: 10px; }
@@ -18,7 +18,7 @@
 <body>
     <div class="kwitansi">
         <div class="header">
-            <h2>Kwitansi Pembayaran MI</h2>
+            <h2>Kwitansi Pembayaran TK</h2>
             <p>No: {{ $pembayaran->id }}/{{ \Carbon\Carbon::parse($pembayaran->tanggal)->format('Y') }}</p>
         </div>
 

@@ -46,22 +46,12 @@ class PembayaranTkController extends Controller
         return view('tk.pembayaran-tk.index', compact('pembayaran', 'kelasList'));
     }
 
-    // 📌 Cetak kwitansi per pembayaran
-    public function kwitansiPdf($id)
-    {
-        $pembayaran = PembayaranTk::with('siswa')->findOrFail($id);
-
-        $pdf = Pdf::loadView('tk.pembayaran-tk.kwitansi', compact('pembayaran'))
-                  ->setPaper([0, 0, 595.28, 280], 'portrait'); // 1/3 A4
-
-        return $pdf->stream('kwitansi-' . $pembayaran->id . '.pdf');
-    }
-
     // 📌 Form tambah pembayaran
     public function create()
     {
         $siswa = SiswaTk::all();
         $kelasList = KelasTk::orderBy('tingkat', 'asc')->get();
+        
         return view('tk.pembayaran-tk.create', compact('siswa', 'kelasList'));
     }
 
@@ -76,6 +66,13 @@ class PembayaranTkController extends Controller
 
         $bulan = \Carbon\Carbon::parse($request->tanggal)->month;
         $tahun = \Carbon\Carbon::parse($request->tanggal)->year;
+
+        $siswa = SiswaTk::with('kelas')->find($request->siswa_id);
+
+        // Cek jika siswa sudah lulus (kelas_id = 7)
+        if ($siswa->kelas_id == 7) {
+            return redirect()->back()->with('error', 'Pembayaran tidak dapat dilakukan. Siswa sudah lulus.');
+        }
 
         // Cek duplikat pembayaran di bulan/tahun untuk siswa tsb
         $cek = PembayaranTk::where('siswa_id', $request->siswa_id)
@@ -118,6 +115,13 @@ class PembayaranTkController extends Controller
         //     'tanggal'  => $request->tanggal,
         //     'status'   => strtolower($request->status), // selalu simpan lowercase
         // ]);
+
+        $siswa = SiswaTk::with('kelas')->find($request->siswa_id);
+
+        // Cek jika siswa sudah lulus (kelas_id = 7)
+        if ($siswa->kelas_id == 7) {
+            return redirect()->back()->with('error', 'Pembayaran tidak dapat dilakukan. Siswa sudah lulus.');
+        }
 
         $bulan = \Carbon\Carbon::parse($request->tanggal)->month;
         $tahun = \Carbon\Carbon::parse($request->tanggal)->year;
@@ -166,8 +170,8 @@ class PembayaranTkController extends Controller
     public function exportPdf(Request $request)
     {
         $query = PembayaranTk::with('siswa');
-        $tahun = null;
-        $angkatanLabel = null;
+        $kelas = null;
+        $kelasLabel = null;
 
         if ($request->filled('id_tk')) {
             $query->whereHas('siswa', function($q) use ($request) {
@@ -200,16 +204,27 @@ class PembayaranTkController extends Controller
             ->sum('jumlah');
 
         $pdf = Pdf::loadView('tk.pembayaran-tk.export-pdf', compact(
-            'pembayaran', 'total', 'bulan', 'tahun', 'kelasLabel'
+            'pembayaran', 'total', 'bulan', 'kelasLabel'
         ))->setPaper('A4', 'portrait');
 
-        $namaFile = 'laporan-pembayaran-' . $bulan->translatedFormat('F-Y');
+        $namaFile = 'laporan-pembayaran-tk' . $bulan->translatedFormat('F-Y');
         if ($kelasLabel) {
             $namaFile .= '-kelas-' . $kelasLabel;
         }
         $namaFile .= '.pdf';
 
         return $pdf->stream($namaFile);
+    }
+
+     // 📌 Cetak kwitansi per pembayaran
+    public function kwitansiPdf($id)
+    {
+        $pembayaran = PembayaranTk::with('siswa')->findOrFail($id);
+
+        $pdf = Pdf::loadView('tk.pembayaran-tk.kwitansi', compact('pembayaran'))
+                  ->setPaper([0, 0, 595.28, 320], 'portrait'); // 1/3 A4
+
+        return $pdf->stream('kwitansi-' . $pembayaran->id . '.pdf');
     }
 
     public function getSiswaDetail($siswaId)
@@ -229,5 +244,64 @@ class PembayaranTkController extends Controller
         }
 
         return response()->json(null, 404);
+    }
+
+    // Form Generate SPP
+    public function generateFormTK()
+    {
+        $kelasList = KelasTk::orderBy('tingkat', 'asc')->get();
+        return view('mi.pembayaran-mi.generate', compact('kelasList'));
+    }
+
+    public function generateSPPTK(Request $request)
+    {
+        $request->validate([
+            'kelas_id' => 'required|exists:kelas_mi,id',
+            'tahun'    => 'required|digits:4',
+            'bulan'    => 'required|numeric|min:1|max:12',
+            'jumlah_default' => 'required|numeric'
+        ]);
+
+        $kelas = KelasTk::findOrFail($request->kelas_id);
+        $siswa = SiswaTk::where('kelas_id', $kelas->id)->get();
+
+        $generated = 0;
+        $tanggal = \Carbon\Carbon::createFromDate($request->tahun, $request->bulan, 1);
+
+        foreach ($siswa as $siswa) {
+            $cek = PembayaranTk::where('siswa_id', $siswa->id)
+                ->whereMonth('tanggal', $tanggal->month)
+                ->whereYear('tanggal', $tanggal->year)
+                ->first();
+
+            if (!$cek) {
+                PembayaranTk::create([
+                    'siswa_id' => $siswa->id,
+                    'jumlah'   => '100000',
+                    'tanggal'  => $tanggal,
+                    'status'   => 'belum' // atau 'Belum Lunas'
+                ]);
+                $generated++;
+            }
+        }
+
+        return redirect()->route('pembayaran-tk.index', [
+            'bulan' => $tanggal->format('Y-m'),
+            'kelas_id' => $request->kelas_id
+        ])->with('success', "SPP berhasil digenerate untuk $generated siswa di kelas {$kelas->nama_kelas}.");
+    }
+
+    public function approvePembayaran($id)
+    {
+        $pembayaran = PembayaranTk::findOrFail($id);
+
+        if ($pembayaran->status == 'belum') {
+            $pembayaran->update([
+                'status' => 'lunas',
+                'tanggal_bayar' => now()
+            ]);
+        }
+
+        return redirect()->back()->with('success', "Pembayaran siswa {$pembayaran->siswa->nama} telah disetujui.");
     }
 }

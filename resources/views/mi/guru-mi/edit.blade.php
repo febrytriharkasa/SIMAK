@@ -23,7 +23,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('guru-tk.update', $guru->id) }}" method="POST">
+                    <form action="{{ route('guru-mi.update', $guru->id) }}" method="POST">
                         @csrf
                         @method('PUT')
 
@@ -47,21 +47,25 @@
 
                         {{-- Mata Pelajaran --}}
                         <div class="mb-3">
-                            <label for="mapel" class="form-label fw-semibold">Mata Pelajaran</label>
-                            <select name="mapel" id="mapel" 
-                                    class="form-control @error('mapel') is-invalid @enderror" required>
-                                <option value="">-- Pilih Mata Pelajaran --</option>
-                                <option value="Matematika" {{ old('mapel', $guru->mapel)=='Matematika' ? 'selected' : '' }}>Matematika</option>
-                                <option value="Bahasa Indonesia" {{ old('mapel', $guru->mapel)=='Bahasa Indonesia' ? 'selected' : '' }}>Bahasa Indonesia</option>
-                                <option value="IPA" {{ old('mapel', $guru->mapel)=='IPA' ? 'selected' : '' }}>IPA</option>
-                                <option value="IPS" {{ old('mapel', $guru->mapel)=='IPS' ? 'selected' : '' }}>IPS</option>
-                                <option value="PKN" {{ old('mapel', $guru->mapel)=='PKN' ? 'selected' : '' }}>PKN</option>
-                                <option value="Bahasa Arab" {{ old('mapel', $guru->mapel)=='Bahasa Arab' ? 'selected' : '' }}>Bahasa Arab</option>
-                                <option value="Pendidikan Agama Islam" {{ old('mapel', $guru->mapel)=='Pendidikan Agama Islam' ? 'selected' : '' }}>Pendidikan Agama Islam</option>
-                                <option value="PJOK" {{ old('mapel', $guru->mapel)=='PJOK' ? 'selected' : '' }}>PJOK</option>
-                                <option value="Seni Budaya" {{ old('mapel', $guru->mapel)=='Seni Budaya' ? 'selected' : '' }}>Seni Budaya</option>
-                            </select>
-                            @error('mapel') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <label class="form-label fw-semibold">Mata Pelajaran</label>
+                            <div class="d-flex flex-wrap">
+                                @foreach($mapelList as $mapel)
+                                    <div class="form-check me-3 mb-2">
+                                        <input 
+                                            type="checkbox" 
+                                            name="mapel[]" 
+                                            id="mapel_{{ $mapel->id }}" 
+                                            value="{{ $mapel->id }}"
+                                            class="form-check-input"
+                                            {{-- centang otomatis kalau sudah dipilih --}}
+                                            {{ (collect(old('mapel', $guru->mapels->pluck('id')->toArray()))->contains($mapel->id)) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="mapel_{{ $mapel->id }}">
+                                            {{ $mapel->nama_mapel }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('mapel') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                         </div>
 
                         {{-- No HP --}}

@@ -46,20 +46,16 @@
                         </div>
 
                         {{-- Mata Pelajaran --}}
+                        @php
+                            $mapels = ['Matematika','Bahasa Indonesia','IPA','IPS','PKN','Bahasa Arab','Pendidikan Agama Islam','PJOK','Seni Budaya'];
+                        @endphp
                         <div class="mb-3">
                             <label for="mapel" class="form-label fw-semibold">Mata Pelajaran</label>
-                            <select name="mapel" id="mapel" 
-                                    class="form-control @error('mapel') is-invalid @enderror" required>
+                            <select name="mapel" id="mapel" class="form-control @error('mapel') is-invalid @enderror" required>
                                 <option value="">-- Pilih Mata Pelajaran --</option>
-                                <option value="Matematika" {{ old('mapel', $guru->mapel)=='Matematika' ? 'selected' : '' }}>Matematika</option>
-                                <option value="Bahasa Indonesia" {{ old('mapel', $guru->mapel)=='Bahasa Indonesia' ? 'selected' : '' }}>Bahasa Indonesia</option>
-                                <option value="IPA" {{ old('mapel', $guru->mapel)=='IPA' ? 'selected' : '' }}>IPA</option>
-                                <option value="IPS" {{ old('mapel', $guru->mapel)=='IPS' ? 'selected' : '' }}>IPS</option>
-                                <option value="PKN" {{ old('mapel', $guru->mapel)=='PKN' ? 'selected' : '' }}>PKN</option>
-                                <option value="Bahasa Arab" {{ old('mapel', $guru->mapel)=='Bahasa Arab' ? 'selected' : '' }}>Bahasa Arab</option>
-                                <option value="Pendidikan Agama Islam" {{ old('mapel', $guru->mapel)=='Pendidikan Agama Islam' ? 'selected' : '' }}>Pendidikan Agama Islam</option>
-                                <option value="PJOK" {{ old('mapel', $guru->mapel)=='PJOK' ? 'selected' : '' }}>PJOK</option>
-                                <option value="Seni Budaya" {{ old('mapel', $guru->mapel)=='Seni Budaya' ? 'selected' : '' }}>Seni Budaya</option>
+                                @foreach($mapels as $mapel)
+                                    <option value="{{ $mapel }}" {{ old('mapel', $guru->mapel) == $mapel ? 'selected' : '' }}>{{ $mapel }}</option>
+                                @endforeach
                             </select>
                             @error('mapel') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>

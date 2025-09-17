@@ -13,79 +13,97 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // ===================== Statistik MI =====================
-        $jumlahSiswaMi = Siswa_MI::count();
-        $jumlahGuruMi = Guru_MI::count();
-        $totalPembayaranMi = Pembayaran_MI::where('status','lunas')->sum('jumlah');
-        $jumlahTransaksiMi = Pembayaran_MI::where('status','lunas')->count();
+        $tahun = $request->tahun; // ambil filter tahun
 
-        // Chart pembayaran & transaksi per bulan MI
+        // ===================== Statistik MI =====================
+        $queryPembayaranMi = Pembayaran_MI::where('status', 'lunas');
+        if ($tahun) {
+            $queryPembayaranMi->whereYear('tanggal', $tahun);
+        }
+
+        $totalPembayaranMi = $queryPembayaranMi->sum('jumlah');
+        $jumlahTransaksiMi = $queryPembayaranMi->count();
+
+        // Per bulan
         $pembayaranPerBulanMi = [];
         $transaksiPerBulanMi = [];
-        for($i=1; $i<=12; $i++){
-            $pembayaranPerBulanMi[] = Pembayaran_MI::where('status','lunas')
+        for ($i = 1; $i <= 12; $i++) {
+            $pembayaranPerBulanMi[] = (clone $queryPembayaranMi)
                 ->whereMonth('tanggal', $i)
                 ->sum('jumlah');
 
-            $transaksiPerBulanMi[] = Pembayaran_MI::where('status','lunas')
+            $transaksiPerBulanMi[] = (clone $queryPembayaranMi)
                 ->whereMonth('tanggal', $i)
                 ->count();
         }
 
-        // Chart jumlah siswa per tahun MI
+        $jumlahSiswaMi = $tahun 
+            ? Siswa_MI::where('tahun', $tahun)->count()
+            : Siswa_MI::count();
+
+        $jumlahGuruMi = Guru_MI::count();
+
         $jumlahSiswaPerTahunMi = Siswa_MI::select('tahun', DB::raw('count(*) as total'))
             ->groupBy('tahun')
-            ->pluck('total','tahun')
+            ->pluck('total', 'tahun')
             ->toArray();
 
-        // Chart jumlah guru per mapel MI
-        $jumlahGuruPerMapelMi = Guru_MI::select('mapel', DB::raw('count(*) as total'))
-            ->groupBy('mapel')
-            ->pluck('total','mapel')
+        $jumlahGuruPerMapelMi = DB::table('guru_mi_mapel')
+            ->join('mapel_mi', 'guru_mi_mapel.mapel_id', '=', 'mapel_mi.id')
+            ->select('mapel_mi.nama_mapel as mapel', DB::raw('count(guru_mi_mapel.guru_mi_id) as total'))
+            ->groupBy('mapel_mi.nama_mapel')
+            ->pluck('total', 'mapel')
             ->toArray();
 
         // ===================== Statistik TK =====================
-        $jumlahSiswaTk = SiswaTk::count();
-        $jumlahGuruTk = GuruTk::count();
-        $totalPembayaranTk = PembayaranTk::where('status','lunas')->sum('jumlah');
-        $jumlahTransaksiTk = PembayaranTk::where('status','lunas')->count();
+        $queryPembayaranTk = PembayaranTk::where('status', 'lunas');
+        if ($tahun) {
+            $queryPembayaranTk->whereYear('tanggal', $tahun);
+        }
 
-        // Chart pembayaran & transaksi per bulan TK
+        $totalPembayaranTk = $queryPembayaranTk->sum('jumlah');
+        $jumlahTransaksiTk = $queryPembayaranTk->count();
+
         $pembayaranPerBulanTk = [];
         $transaksiPerBulanTk = [];
-        for($i=1; $i<=12; $i++){
-            $pembayaranPerBulanTk[] = PembayaranTk::where('status','lunas')
+        for ($i = 1; $i <= 12; $i++) {
+            $pembayaranPerBulanTk[] = (clone $queryPembayaranTk)
                 ->whereMonth('tanggal', $i)
                 ->sum('jumlah');
 
-            $transaksiPerBulanTk[] = PembayaranTk::where('status','lunas')
+            $transaksiPerBulanTk[] = (clone $queryPembayaranTk)
                 ->whereMonth('tanggal', $i)
                 ->count();
         }
 
-        // Chart jumlah siswa per tahun TK
+        $jumlahSiswaTk = $tahun 
+            ? SiswaTk::where('tahun', $tahun)->count()
+            : SiswaTk::count();
+
+        $jumlahGuruTk = GuruTk::count();
+
         $jumlahSiswaPerTahunTk = SiswaTk::select('tahun', DB::raw('count(*) as total'))
             ->groupBy('tahun')
-            ->pluck('total','tahun')
+            ->pluck('total', 'tahun')
             ->toArray();
 
-        // Chart jumlah guru per mapel TK
-        $jumlahGuruPerMapelTk = GuruTk::select('mapel', DB::raw('count(*) as total'))
-            ->groupBy('mapel')
-            ->pluck('total','mapel')
-            ->toArray();
+        // $jumlahGuruPerMapelTk = GuruTk::select('mapel', DB::raw('count(*) as total'))
+        //     ->groupBy('mapel')
+        //     ->pluck('total', 'mapel')
+        //     ->toArray();
 
         // ===================== RETURN =====================
         return view('dashboard', compact(
+            'tahun',
             // MI
-            'jumlahSiswaMi','jumlahGuruMi','totalPembayaranMi','jumlahTransaksiMi',
-            'pembayaranPerBulanMi','transaksiPerBulanMi','jumlahSiswaPerTahunMi','jumlahGuruPerMapelMi',
-
+            'jumlahSiswaMi', 'jumlahGuruMi', 'totalPembayaranMi', 'jumlahTransaksiMi',
+            'pembayaranPerBulanMi', 'transaksiPerBulanMi', 'jumlahSiswaPerTahunMi', 'jumlahGuruPerMapelMi',
             // TK
-            'jumlahSiswaTk','jumlahGuruTk','totalPembayaranTk','jumlahTransaksiTk',
-            'pembayaranPerBulanTk','transaksiPerBulanTk','jumlahSiswaPerTahunTk','jumlahGuruPerMapelTk'
+            'jumlahSiswaTk', 'jumlahGuruTk', 'totalPembayaranTk', 'jumlahTransaksiTk',
+            'pembayaranPerBulanTk', 'transaksiPerBulanTk', 'jumlahSiswaPerTahunTk' //, 'jumlahGuruPerMapelTk'
         ));
     }
+
 }
