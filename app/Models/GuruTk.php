@@ -11,11 +11,10 @@ class GuruTk extends Model
 
     protected $table = 'guru_tk';
 
-    protected $fillable = [
-        'nama',
-        'nip',
-        'mapel',
-        'no_hp_guru',
-        'alamat_guru',
-    ];
+    protected $fillable = ['nama', 'nip', 'no_hp_guru', 'alamat_guru'];
+
+    public function mapels()
+    {
+        return $this->belongsToMany(MapelTk::class, 'guru_tk_mapel', 'guru_tk_id', 'mapel_id');
+    }
 }

@@ -11,8 +11,8 @@ class KelasTk extends Model
     protected $table = 'kelas_tk';
     protected $fillable = ['nama_kelas', 'tingkat'];
 
-    public function kelas()
+    public function siswas()
     {
-        return $this->belongsTo(SiswaTk::class, 'kelas_id');
+        return $this->hasMany(SiswaTk::class, 'kelas_id');
     }
 }

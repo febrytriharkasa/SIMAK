@@ -30,4 +30,9 @@ class SiswaTk extends Model
     {
         return $this->belongsTo(KelasTk::class, 'kelas_id');
     }
+
+    public function nilais()
+    {
+        return $this->hasMany(NilaiTk::class, 'siswa_id');
+    }
 }

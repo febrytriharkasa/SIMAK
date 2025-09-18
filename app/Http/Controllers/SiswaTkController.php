@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SiswaTk;
 use App\Models\KelasTk;
+use App\Models\MapelTk;
 use Illuminate\Http\Request;
 
 class SiswaTkController extends Controller
@@ -48,6 +49,13 @@ class SiswaTkController extends Controller
             }
         }
 
+        if (empty($data['kelas_id'])) {
+            $kelasAwal = \App\Models\Kelas_Mi::where('tingkat', 1)->first();
+            if ($kelasAwal) {
+                $data['kelas_id'] = $kelasAwal->id;
+            }
+        }
+
         SiswaTk::create($data);
 
         return redirect()->route('siswa-tk.index')
@@ -79,36 +87,45 @@ class SiswaTkController extends Controller
                          ->with('success', 'Data siswa berhasil dihapus.');
     }
 
-    public function naikKelasTk()
-    {
-        $siswas = SiswaTk::with('kelas')->get();
-
-        foreach ($siswas as $siswa) {
-            // Jika belum punya kelas, set default ke Kelas A (tingkat 1)
-            if (!$siswa->kelas) {
-                $kelasAwal = KelasTk::where('tingkat', 1)->first();
-                if ($kelasAwal) {
-                    $siswa->update(['kelas_id' => $kelasAwal->id]);
-                }
-                continue;
-            }
-
-            $kelasSekarang = $siswa->kelas;
-            $kelasBerikut = KelasTk::where('tingkat', $kelasSekarang->tingkat + 1)->first();
-
-            if ($kelasBerikut) {
-                $siswa->update(['kelas_id' => $kelasBerikut->id]);
-            }
-            // Kalau sudah "Lulus", biarkan tetap
-        }
-
-        return redirect()->back()->with('success', 'Proses kenaikan kelas selesai!');
-    }
-
     public function show($id)
     {
         $siswa = SiswaTk::with('kelas')->findOrFail($id);
         return view('tk.siswa-tk.show', compact('siswa'));
+    }
+
+    public function naikKelasTk()
+    {
+        $siswas = SiswaTk::with('kelas','nilais')->get();
+        $totalMapel = MapelTk::count(); // total mapel wajib, misalnya 20
+
+       foreach ($siswas as $siswa) {
+            if (!$siswa->kelas) continue;
+
+            // Hitung jumlah mapel yang sudah diisi nilainya
+            $jumlahNilai = $siswa->nilais()
+                ->where('kelas_id', $siswa->kelas_id)
+                ->count();
+
+            // Kalau jumlah nilai kurang dari jumlah mapel → tidak bisa naik
+            if ($jumlahNilai < $totalMapel) {
+                continue;
+            }
+
+            // Hitung rata-rata semua nilai akhir
+            $rataNilai = $siswa->nilais()
+                ->where('kelas_id', $siswa->kelas_id)
+                ->avg('nilai_akhir');
+
+            // Syarat minimal rata-rata 70
+            if ($rataNilai >= 70) {
+                $kelasBerikut = KelasTk::where('tingkat', $siswa->kelas->tingkat + 1)->first();
+                if ($kelasBerikut) {
+                    $siswa->update(['kelas_id' => $kelasBerikut->id]);
+                }
+            }
+        }
+
+        return redirect()->back()->with('success', 'Proses kenaikan kelas selesai!');
     }
 
 }

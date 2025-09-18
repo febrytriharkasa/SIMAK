@@ -89,10 +89,12 @@ class DashboardController extends Controller
             ->pluck('total', 'tahun')
             ->toArray();
 
-        // $jumlahGuruPerMapelTk = GuruTk::select('mapel', DB::raw('count(*) as total'))
-        //     ->groupBy('mapel')
-        //     ->pluck('total', 'mapel')
-        //     ->toArray();
+         $jumlahGuruPerMapelTk = DB::table('guru_tk_mapel')
+            ->join('mapel_tk', 'guru_tk_mapel.mapel_id', '=', 'mapel_tk.id')
+            ->select('mapel_tk.nama_mapel as mapel', DB::raw('count(guru_tk_mapel.guru_tk_id) as total'))
+            ->groupBy('mapel_tk.nama_mapel')
+            ->pluck('total', 'mapel')
+            ->toArray();
 
         // ===================== RETURN =====================
         return view('dashboard', compact(
@@ -102,7 +104,7 @@ class DashboardController extends Controller
             'pembayaranPerBulanMi', 'transaksiPerBulanMi', 'jumlahSiswaPerTahunMi', 'jumlahGuruPerMapelMi',
             // TK
             'jumlahSiswaTk', 'jumlahGuruTk', 'totalPembayaranTk', 'jumlahTransaksiTk',
-            'pembayaranPerBulanTk', 'transaksiPerBulanTk', 'jumlahSiswaPerTahunTk' //, 'jumlahGuruPerMapelTk'
+            'pembayaranPerBulanTk', 'transaksiPerBulanTk', 'jumlahSiswaPerTahunTk' , 'jumlahGuruPerMapelTk'
         ));
     }
 

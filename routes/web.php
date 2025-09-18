@@ -13,27 +13,42 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\UserApprovalController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\NilaiMiController;
+use App\Http\Controllers\NilaiTkController;
+use App\Http\Controllers\Admin\EvaluasiKinerjaController;
+use App\Http\Controllers\GuruMiDbController;
+use App\Http\Controllers\GuruTkDbController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 // ================== DASHBOARD ==================
-// Route::get('/dashboard', [DashboardController::class, 'index'])
-//     ->middleware(['auth', 'verified'])
-//     ->name('dashboard');
+// Dashboard umum → redirect otomatis sesuai role
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
+// Dashboard umum → redirect otomatis sesuai role
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 // Dashboard khusus Admin
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+        ->name('admin.dashboard');
 });
 
-// Dashboard khusus Guru (MI & TK)
-Route::middleware(['auth', 'role:guru_mi|guru_tk'])->group(function () {
-    Route::get('/guru/dashboard', function () {
-        return view('guru.dashboard'); // file: resources/views/guru/dashboard.blade.php
-    })->name('guru.dashboard');
+// Dashboard khusus Guru TK
+Route::middleware(['auth', 'role:guru_tk'])->group(function () {
+    Route::get('/guru/tk/dashboard', [GuruTkDbController::class, 'index'])
+        ->name('guru-tk.dashboard');
+});
+
+// Dashboard khusus Guru MI
+Route::middleware(['auth', 'role:guru_mi'])->group(function () {
+    Route::get('/guru/mi/dashboard', [GuruMiDbController::class, 'index'])
+        ->name('guru-mi.dashboard');
 });
 
 // ================== ADMIN ==================
@@ -46,6 +61,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('admin-register', [RegisteredUserController::class, 'create'])->name('admin.register');
     Route::post('admin-register-add', [RegisteredUserController::class, 'store']);
+    Route::resource('evaluasi', EvaluasiKinerjaController::class);
 });
 
 // ================== ADMIN DAN GURU MI==================
@@ -65,7 +81,7 @@ Route::middleware(['auth', 'role:admin|guru_mi'])->group(function () {
     Route::post('/pembayaran-mi/{id}/approve', [PembayaranMIController::class, 'approvePembayaran'])
             ->name('pembayaran-mi.approve');
     Route::resource('nilai', NilaiMiController::class);
-    Route::get('nilai/{siswaId}', [NilaiMiController::class, 'show'])->name('nilai.show');
+    Route::get('nilai/siswa/{siswaId}', [NilaiMiController::class, 'show'])->name('nilai.show');
 });
 
 // ================== ADMIN DAN GURU TK==================
@@ -84,6 +100,11 @@ Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
     Route::post('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateSPPTK'])->name('pembayaran-mi.generate-tk');
      Route::post('/pembayaran-tk/{id}/approve', [PembayaranTkController::class, 'approvePembayaran'])
             ->name('pembayaran-tk.approve');
+    Route::resource('nilai-tk', NilaiTkController::class)->parameters([
+        'nilai-tk' => 'nilai'
+    ]);
+
+    Route::get('nilai-tk/siswa/{siswaId}', [NilaiTkController::class, 'show'])->name('nilai-tk.show');
 });
 // ================== PROFILE ==================
 Route::middleware('auth')->group(function () {

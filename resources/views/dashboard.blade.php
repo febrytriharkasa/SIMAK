@@ -3,47 +3,24 @@
 @section('title', 'Dashboard')
 
 @section('content')
+<style>
+/* Light mode */
+[data-bs-theme="light"] #content-wrapper,
+[data-bs-theme="light"] .container-fluid {
+    background-color: #FFFFFFFF !important; 
+    color: #181515;
+}
+
+/* Dark mode */
+[data-bs-theme="dark"] #content-wrapper,
+[data-bs-theme="dark"] .container-fluid {
+    background-color: #1B1B1DFF !important; 
+    color: #fff;
+}
+</style> 
+    
 <div class="page-heading mb-40">
     <h3 class="ms-5">Dashboard Statistik</h3>
-</div>
-
-<div class="card shadow-sm mb-4 border-0">
-    <div class="card-body">
-        <form action="{{ route('dashboard') }}" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-4">
-                <label for="tahun" class="form-label fw-bold text-primary">
-                    <i class="fas fa-calendar-alt me-1"></i> Filter Tahun
-                </label>
-                <div class="input-group">
-                    <span class="input-group-text bg-light">
-                        <i class="fas fa-filter text-secondary"></i>
-                    </span>
-                    <select name="tahun" id="tahun" class="form-select">
-                        <option value="">-- Semua Tahun --</option>
-                        @foreach(range(date('Y'), date('Y')-5) as $t) 
-                            <option value="{{ $t }}" {{ request('tahun') == $t ? 'selected' : '' }}>
-                                {{ $t }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            
-            <div class="col-md-2 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100 shadow-sm">
-                    <i class="fas fa-search"></i> Tampilkan
-                </button>
-            </div>
-
-            @if(request('tahun'))
-            <div class="col-md-2 d-flex align-items-end">
-                <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary w-100 shadow-sm">
-                    <i class="fas fa-undo"></i> Reset
-                </a>
-            </div>
-            @endif
-        </form>
-    </div>
 </div>
 
 @hasanyrole('admin|guru_mi')
@@ -59,7 +36,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-0">Jumlah Siswa MI</h6>
-                    <h4 class="fw-bold mb-0">{{ $jumlahSiswaMi }}</h4>
+                    <h4 class="fw-bold mb-0">{{ $jumlahSiswaMi ?? 0 }}</h4>
                 </div>
             </div>
         </div>
@@ -73,7 +50,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-0">Jumlah Guru MI</h6>
-                    <h4 class="fw-bold mb-0">{{ $jumlahGuruMi }}</h4>
+                    <h4 class="fw-bold mb-0">{{ $jumlahGuruMi ?? 0}}</h4>
                 </div>
             </div>
         </div>
@@ -87,7 +64,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-0">Total Pembayaran MI</h6>
-                    <h4 class="fw-bold mb-0">Rp {{ number_format($totalPembayaranMi,0,',','.') }}</h4>
+                    <h4 class="fw-bold mb-0">Rp {{ number_format($totalPembayaranMi ?? 0 ,0,',','.') }}</h4>
                 </div>
             </div>
         </div>
@@ -101,7 +78,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-0">Jumlah Transaksi MI</h6>
-                    <h4 class="fw-bold mb-0">{{ $jumlahTransaksiMi }}</h4>
+                    <h4 class="fw-bold mb-0">{{ $jumlahTransaksiMi ?? 0 }}</h4>
                 </div>
             </div>
         </div>
@@ -153,7 +130,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-0">Jumlah Siswa TK</h6>
-                    <h4 class="fw-bold mb-0">{{ $jumlahSiswaTk }}</h4>
+                    <h4 class="fw-bold mb-0">{{ $jumlahSiswaTk ?? 0 }}</h4>
                 </div>
             </div>
         </div>
@@ -167,7 +144,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-0">Jumlah Guru TK</h6>
-                    <h4 class="fw-bold mb-0">{{ $jumlahGuruTk }}</h4>
+                    <h4 class="fw-bold mb-0">{{ $jumlahGuruTk ?? 0 }}</h4>
                 </div>
             </div>
         </div>
@@ -181,7 +158,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-0">Total Pembayaran TK</h6>
-                    <h4 class="fw-bold mb-0">Rp {{ number_format($totalPembayaranTk,0,',','.') }}</h4>
+                    <h4 class="fw-bold mb-0">Rp {{ number_format($totalPembayaranTk ?? 0 ,0,',','.') }}</h4>
                 </div>
             </div>
         </div>
@@ -195,7 +172,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-0">Jumlah Transaksi TK</h6>
-                    <h4 class="fw-bold mb-0">{{ $jumlahTransaksiTk }}</h4>
+                    <h4 class="fw-bold mb-0">{{ $jumlahTransaksiTk ?? 0 }}</h4>
                 </div>
             </div>
         </div>
@@ -240,52 +217,57 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     // ================= MI =================
-    new ApexCharts(document.querySelector("#chart-pembayaran-mi"), {
-        series:[{ name: 'Pembayaran MI', data: @json($pembayaranPerBulanMi) }],
+    new ApexCharts(document.querySelector("#chart-pembayaran-mi"), { 
+        series:[{ name: 'Pembayaran MI', data: @json($pembayaranPerBulanMi ?? 0) }],
         chart:{ type: 'bar', height: 350 },
         xaxis:{ categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] },
         colors:['#435ebe']
     }).render();
 
     new ApexCharts(document.querySelector("#chart-transaksi-mi"), {
-        series:[{ name: 'Transaksi MI', data: @json($transaksiPerBulanMi) }],
+        series:[{ name: 'Transaksi MI', data: @json($transaksiPerBulanMi ?? 0) }],
         chart:{ type: 'line', height: 350 },
         xaxis:{ categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] },
         colors:['#f39c12']
     }).render();
 
     new ApexCharts(document.querySelector("#chart-siswa-mi"), {
-        series: Object.values(@json($jumlahSiswaPerTahunMi)),
+        series: Object.values(@json($jumlahSiswaPerTahunMi ?? 0 )),
         chart:{ type: 'donut', height: 350 },
-        labels: Object.keys(@json($jumlahSiswaPerTahunMi)),
+        labels: Object.keys(@json($jumlahSiswaPerTahunMi ?? 0 )),
     }).render();
 
     new ApexCharts(document.querySelector("#chart-guru-mi"), {
-        series: Object.values(@json($jumlahGuruPerMapelMi)),
+        series: Object.values(@json($jumlahGuruPerMapelMi ?? 0 )),
         chart:{ type: 'pie', height: 350 },
-        labels: Object.keys(@json($jumlahGuruPerMapelMi)),
+        labels: Object.keys(@json($jumlahGuruPerMapelMi ?? 0)),
     }).render();
 
     // ================= TK =================
     new ApexCharts(document.querySelector("#chart-pembayaran-tk"), {
-        series:[{ name: 'Pembayaran TK', data: @json($pembayaranPerBulanTk) }],
+        series:[{ name: 'Pembayaran TK', data: @json($pembayaranPerBulanTk ?? 0 ) }],
         chart:{ type: 'bar', height: 350 },
         xaxis:{ categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] },
         colors:['#3498db']
     }).render();
 
     new ApexCharts(document.querySelector("#chart-transaksi-tk"), {
-        series:[{ name: 'Transaksi TK', data: @json($transaksiPerBulanTk) }],
+        series:[{ name: 'Transaksi TK', data: @json($transaksiPerBulanTk ?? 0 ) }],
         chart:{ type: 'line', height: 350 },
         xaxis:{ categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'] },
         colors:['#2ecc71']
     }).render();
 
     new ApexCharts(document.querySelector("#chart-siswa-tk"), {
-        series: Object.values(@json($jumlahSiswaPerTahunTk)),
+        series: Object.values(@json($jumlahSiswaPerTahunTk ?? 0 )),
         chart:{ type: 'donut', height: 350 },
-        labels: Object.keys(@json($jumlahSiswaPerTahunTk)),
+        labels: Object.keys(@json($jumlahSiswaPerTahunTk ?? 0 )),
     }).render();
 
+    new ApexCharts(document.querySelector("#chart-guru-tk"), {
+        series: Object.values(@json($jumlahGuruPerMapelTk ?? 0 )),
+        chart:{ type: 'pie', height: 350 },
+        labels: Object.keys(@json($jumlahGuruPerMapelTk ?? 0 )),
+    }).render();
 </script>
 @endpush

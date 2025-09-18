@@ -43,7 +43,13 @@
                             <td>{{ $loop->iteration + ($guru->currentPage()-1) * $guru->perPage() }}</td>
                             <td>{{ $g->nip }}</td>
                             <td>{{ $g->nama }}</td>
-                            <td>{{ $g->mapel }}</td>
+                            <td>
+                                @if($g->mapels->isNotEmpty())
+                                    {{ $g->mapels->pluck('nama_mapel')->join(', ') }}
+                                @else
+                                    <em>-</em>
+                                @endif
+                            </td>
                             <td>{{ $g->no_hp_guru }}</td>
                             <td>{{ $g->alamat_guru }}</td>
                             <td class="text-center">

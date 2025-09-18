@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class NilaiMi extends Model
+class NilaiTk extends Model
 {
 
     use HasFactory;
 
-    protected $table = 'nilai_mi';
+    protected $table = 'nilai_tk';
     protected $primaryKey = 'id';
     protected $fillable = [
         'siswa_id', 'guru_id', 'mapel_id', 'kelas_id',
@@ -23,21 +23,21 @@ class NilaiMi extends Model
 
     public function siswa()
     {
-        return $this->belongsTo(Siswa_MI::class, 'siswa_id');
+        return $this->belongsTo(SiswaTk::class, 'siswa_id');
     }
 
     public function mapel()
     {
-        return $this->belongsTo(MapelMi::class, 'mapel_id');
+        return $this->belongsTo(MapelTk::class, 'mapel_id');
     }
 
     public function guru()
     {
-        return $this->belongsTo(Guru_MI::class, 'guru_id');
+        return $this->belongsTo(GuruTk::class, 'guru_id');
     }
 
     public function kelas()
     {
-        return $this->belongsTo(Kelas_MI::class);
+        return $this->belongsTo(KelasTk::class);
     }
 }

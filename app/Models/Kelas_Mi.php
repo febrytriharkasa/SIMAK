@@ -15,4 +15,5 @@ class Kelas_Mi extends Model
     {
         return $this->hasMany(Siswa_MI::class, 'kelas_id');
     }
+    
 }

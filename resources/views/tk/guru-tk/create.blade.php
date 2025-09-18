@@ -46,21 +46,24 @@
 
                         {{-- Mata Pelajaran --}}
                         <div class="mb-3">
-                            <label for="mapel" class="form-label fw-semibold">Mata Pelajaran</label>
-                            <select name="mapel" id="mapel" 
-                                    class="form-control @error('mapel') is-invalid @enderror">
-                                <option value="">-- Pilih Mata Pelajaran --</option>
-                                <option value="Matematika" {{ old('mapel')=='Matematika' ? 'selected' : '' }}>Matematika</option>
-                                <option value="Bahasa Indonesia" {{ old('mapel')=='Bahasa Indonesia' ? 'selected' : '' }}>Bahasa Indonesia</option>
-                                <option value="IPA" {{ old('mapel')=='IPA' ? 'selected' : '' }}>IPA</option>
-                                <option value="IPS" {{ old('mapel')=='IPS' ? 'selected' : '' }}>IPS</option>
-                                <option value="PKN" {{ old('mapel')=='PKN' ? 'selected' : '' }}>PKN</option>
-                                <option value="Bahasa Arab" {{ old('mapel')=='Bahasa Arab' ? 'selected' : '' }}>Bahasa Arab</option>
-                                <option value="Pendidikan Agama Islam" {{ old('mapel')=='Pendidikan Agama Islam' ? 'selected' : '' }}>Pendidikan Agama Islam</option>
-                                <option value="PJOK" {{ old('mapel')=='PJOK' ? 'selected' : '' }}>PJOK</option>
-                                <option value="Seni Budaya" {{ old('mapel')=='Seni Budaya' ? 'selected' : '' }}>Seni Budaya</option>
-                            </select>
-                            @error('mapel') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            <label class="form-label fw-semibold">Mata Pelajaran</label>
+                            <div class="d-flex flex-wrap">
+                                @foreach($mapelList as $mapel)
+                                    <div class="form-check me-3 mb-2">
+                                        <input 
+                                            type="checkbox" 
+                                            name="mapel[]" 
+                                            id="mapel_{{ $mapel->id }}" 
+                                            value="{{ $mapel->id }}"
+                                            class="form-check-input"
+                                            {{ (collect(old('mapel'))->contains($mapel->id)) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="mapel_{{ $mapel->id }}">
+                                            {{ $mapel->nama_mapel }}
+                                        </label>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('mapel') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                         </div>
 
                         {{-- No HP --}}

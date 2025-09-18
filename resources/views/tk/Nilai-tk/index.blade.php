@@ -1,17 +1,17 @@
 @extends('layouts.sbadmin')
 
-@section('title', 'Data Nilai Siswa MI')
+@section('title', 'Data Nilai Siswa TK')
 
 @section('content')
 <div class="container-fluid">
     <div class="page-heading mb-40">
-        <h3 class="ms-5">Nilai MI</h3>
+        <h3 class="ms-5">Nilai TK</h3>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <a href="{{ route('nilai.create') }}" class="btn btn-primary ms-5">+ Tambah Nilai</a>
+        <a href="{{ route('nilai-tk.create') }}" class="btn btn-primary ms-5">+ Tambah Nilai</a>
 
-        <form action="{{ route('nilai.index') }}" method="GET" class="d-flex align-items-center">
+        <form action="{{ route('nilai-tk.index') }}" method="GET" class="d-flex align-items-center">
             <label for="kelas_id" class="me-2 mb-0">Filter Kelas:</label>
             <select name="kelas_id" id="kelas_id" class="form-control me-2" style="width:200px;">
                 <option value="">-- Semua Kelas --</option>
@@ -43,7 +43,7 @@
                             <td>{{ $siswa->nama }}</td>
                             <td>{{ $siswa->kelas ? $siswa->kelas->nama_kelas : '-' }}</td>
                             <td>
-                                <a href="{{ route('nilai.show', $siswa->id) }}" class="btn btn-info btn-sm">
+                                <a href="{{ route('nilai-tk.show', $siswa->id) }}" class="btn btn-info btn-sm">
                                     <i class="bi bi-eye"></i> Lihat Nilai
                                 </a>
                             </td>

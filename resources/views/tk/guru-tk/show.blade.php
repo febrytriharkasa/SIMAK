@@ -22,7 +22,13 @@
                         </tr>
                         <tr>
                             <th>Mata Pelajaran</th>
-                            <td>{{ $guru->mapel }}</td>
+                            <td>
+                                @if($guru->mapels->isNotEmpty())
+                                    {{ $guru->mapels->pluck('nama_mapel')->join(', ') }}
+                                @else
+                                    <em>-</em>
+                                @endif
+                            </td>
                         </tr>
                         <tr>
                             <th>No HP</th>
@@ -44,7 +50,7 @@
                                 <i class="fas fa-trash"></i> Hapus
                             </button>
                         </form>
-                        <a href="{{ route('guru-mi.index') }}" class="btn btn-secondary">
+                        <a href="{{ route('guru-tk.index') }}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left-circle"></i> Kembali
                         </a>
                     </div>

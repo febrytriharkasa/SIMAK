@@ -13,13 +13,6 @@
         <div class="d-flex gap-2">
             {{-- Tombol Tambah Siswa --}}
             <a href="{{ route('siswa-tk.create') }}" class="btn btn-primary ms-5">+ Tambah Siswa</a>
-
-            {{-- Tombol Naik Kelas --}}
-            <a href="{{ route('siswa.naikKelasTk') }}" 
-                class="btn btn-success"
-                onclick="return confirm('Yakin ingin proses kenaikan kelas untuk semua siswa?')">
-                <i class="fas fa-level-up-alt"></i> Naik Kelas
-            </a>
         </div>
 
         <!-- Form Pencarian -->

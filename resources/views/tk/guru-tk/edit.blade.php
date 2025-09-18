@@ -46,18 +46,26 @@
                         </div>
 
                         {{-- Mata Pelajaran --}}
-                        @php
-                            $mapels = ['Matematika','Bahasa Indonesia','IPA','IPS','PKN','Bahasa Arab','Pendidikan Agama Islam','PJOK','Seni Budaya'];
-                        @endphp
                         <div class="mb-3">
-                            <label for="mapel" class="form-label fw-semibold">Mata Pelajaran</label>
-                            <select name="mapel" id="mapel" class="form-control @error('mapel') is-invalid @enderror" required>
-                                <option value="">-- Pilih Mata Pelajaran --</option>
-                                @foreach($mapels as $mapel)
-                                    <option value="{{ $mapel }}" {{ old('mapel', $guru->mapel) == $mapel ? 'selected' : '' }}>{{ $mapel }}</option>
+                            <label class="form-label fw-semibold">Mata Pelajaran</label>
+                            <div class="d-flex flex-wrap">
+                                @foreach($mapelList as $mapel)
+                                    <div class="form-check me-3 mb-2">
+                                        <input 
+                                            type="checkbox" 
+                                            name="mapel[]" 
+                                            id="mapel_{{ $mapel->id }}" 
+                                            value="{{ $mapel->id }}"
+                                            class="form-check-input"
+                                            {{-- centang otomatis kalau sudah dipilih --}}
+                                            {{ (collect(old('mapel', $guru->mapels->pluck('id')->toArray()))->contains($mapel->id)) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="mapel_{{ $mapel->id }}">
+                                            {{ $mapel->nama_mapel }}
+                                        </label>
+                                    </div>
                                 @endforeach
-                            </select>
-                            @error('mapel') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            @error('mapel') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
                         </div>
 
                         {{-- No HP --}}

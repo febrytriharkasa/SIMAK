@@ -61,7 +61,7 @@ class SiswaMiController extends Controller
     public function edit($id)
     {
         $siswa = Siswa_MI::findOrFail($id);
-        $kelas = \App\Models\Kelas_Mi::orderBy('tingkat')->get();
+        $kelas = Kelas_Mi::orderBy('tingkat')->get();
         return view('mi.siswa-mi.edit', compact('siswa', 'kelas'));
     }
 

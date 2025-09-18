@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@yield('title') - {{ config('app.name') }}</title>
-    <link rel="icon" href="{{ asset('logo/intel amfibi.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('download.png') }}" type="image/png">
 
     <!-- SB Admin 2 CSS -->
     <link href="{{ asset('sb-admin-2/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
@@ -15,7 +15,22 @@
 
     <style>
         /* === SIDEBAR === */
-        .sidebar { background: linear-gradient(180deg, #4e73df, #224abe); border-radius: 12px; box-shadow: 2px 4px 12px rgba(0,0,0,0.15); padding: 0.5rem 0; width: 220px; position: fixed; top: 70px; left: 0; height: calc(100vh - 70px); transition: transform 0.3s ease; overflow-x: hidden; z-index: 1040; }
+        .sidebar { 
+            background: linear-gradient(180deg, #4e73df, #224abe); 
+            border-radius: 12px; 
+            box-shadow: 2px 4px 12px rgba(0,0,0,0.15); 
+            padding: 0.5rem 0; 
+            width: 220px; 
+            position: fixed; 
+            top: 70px; 
+            left: 0; 
+            height: calc(100vh - 70px); 
+            transition: transform 0.3s ease; 
+            overflow-x: hidden; 
+            z-index: 1040; 
+            display: flex;
+            flex-direction: column;
+        }
         .sidebar.collapsed { transform: translateX(-100%); }
         .sidebar.collapsed .sidebar-text { opacity: 0; transition: opacity 0.2s ease; }
         .hover-bg-light:hover { background-color: rgba(255,255,255,0.15); transition: all 0.3s ease; }
@@ -28,11 +43,185 @@
         /* === CONTENT WRAPPER === */
         #content-wrapper { margin-left: 220px; padding-top: 80px; transition: margin-left 0.3s ease; }
         .sidebar.collapsed ~ #content-wrapper { margin-left: 0; }
+
+        /* Light mode (default) */
+        [data-bs-theme="light"] .sidebar {
+            background: linear-gradient(180deg, #4e73df, #224abe);
+            color: #fff;
+        }
+
+        /* Dark mode */
+        [data-bs-theme="dark"] .sidebar {
+            background: linear-gradient(180deg, #1f1f2e, #111827);
+            color: #f8f9fa;
+        }
+        [data-bs-theme="dark"] .sidebar .nav-link {
+            color: #f8f9fa;
+        }
+        [data-bs-theme="dark"] .sidebar .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        [data-bs-theme="dark"] .sidebar .nav-link.active {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* BODY */
+        [data-bs-theme="light"] body {
+            background-color: #f8f9fc;
+            color: #000;
+        }
+        [data-bs-theme="dark"] body {
+            background-color: #1e1e2f;
+            color: #f8f9fa;
+        }
+
+        /* TOPBAR */
+        [data-bs-theme="light"] .topbar {
+            background-color: #ffffff !important;
+            color: #000 !important;
+        }
+        [data-bs-theme="dark"] .topbar {
+            background-color: #2c2c3c !important;
+            color: #f8f9fa !important;
+        }
+
+        /* FOOTER */
+        [data-bs-theme="light"] .sticky-footer {
+            background-color: #ffffff !important;
+            color: #000 !important;
+        }
+        [data-bs-theme="dark"] .sticky-footer {
+            background-color: #2c2c3c !important;
+            color: #f8f9fa !important;
+        }
+
+        /* CARD */
+        [data-bs-theme="light"] .card {
+            background-color: #ffffff;
+            color: #000;
+        }
+        [data-bs-theme="dark"] .card {
+            background-color: #2a2a3b;
+            color: #f8f9fa;
+            border-color: #444;
+        }
+
+        /* CONTENT WRAPPER */
+        [data-bs-theme="dark"] #content-wrapper {
+            background-color: #1e1e2f;
+        }
+
+        .logout-item {
+            margin-top: 400px;
+        }
+
+        /* ========================= */
+        /* === TEKS SESUAI TEMA === */
+        /* ========================= */
+
+        /* Default Light */
+        [data-bs-theme="light"] body,
+        [data-bs-theme="light"] #content-wrapper,
+        [data-bs-theme="light"] .sidebar,
+        [data-bs-theme="light"] .topbar,
+        [data-bs-theme="light"] .sticky-footer {
+            color: #212529 !important; /* teks gelap */
+        }
+
+        /* Dark */
+        [data-bs-theme="dark"] body,
+        [data-bs-theme="dark"] #content-wrapper,
+        [data-bs-theme="dark"] .sidebar,
+        [data-bs-theme="dark"] .topbar,
+        [data-bs-theme="dark"] .sticky-footer {
+            color: #f8f9fa !important; /* teks terang */
+        }
+
+        /* Pastikan heading dan span ikut */
+        [data-bs-theme="light"] h1, 
+        [data-bs-theme="light"] h2, 
+        [data-bs-theme="light"] h3, 
+        [data-bs-theme="light"] h4, 
+        [data-bs-theme="light"] h5, 
+        [data-bs-theme="light"] h6,
+        [data-bs-theme="light"] p,
+        [data-bs-theme="light"] span,
+        [data-bs-theme="light"] a,
+        [data-bs-theme="light"] li {
+            color: #212529 !important;
+        }
+
+        [data-bs-theme="dark"] h1, 
+        [data-bs-theme="dark"] h2, 
+        [data-bs-theme="dark"] h3, 
+        [data-bs-theme="dark"] h4, 
+        [data-bs-theme="dark"] h5, 
+        [data-bs-theme="dark"] h6,
+        [data-bs-theme="dark"] p,
+        [data-bs-theme="dark"] span,
+        [data-bs-theme="dark"] a,
+        [data-bs-theme="dark"] li {
+            color: #f8f9fa !important;
+        }
+
+        /* ========================= */
+        /* === KUNCI TEKS SIDEBAR === */
+        /* ========================= */
+
+        .sidebar-brand-text {
+            color: #fff !important;
+        }
+        /* Semua teks sidebar tetap putih */
+        .sidebar .nav-link,
+        .sidebar .nav-link i,
+        .sidebar .sidebar-heading,
+        .sidebar .nav-item,
+        .sidebar .nav-item a,
+        .sidebar .nav-item span {
+            color: #ffffff !important;
+        }
+
+        /* Aktif tetap kontras */
+        .sidebar .nav-link.active {
+            background-color: rgba(255,255,255,0.25) !important;
+            font-weight: 600;
+            color: #ffffff !important;
+        }
+
+        /* Hover tetap terang */
+        .sidebar .nav-link:hover {
+            color: #f8f9fa !important;
+            background-color: rgba(255,255,255,0.15) !important;
+        }
+
+
     </style>
+
+    <script>
+    function setTheme(theme) {
+        localStorage.setItem("data-bs-theme", theme);
+        if (theme === "system") {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-bs-theme", theme);
+
+        // ubah ikon utama dropdown sesuai tema
+        let icon = document.getElementById("themeIcon");
+        if (theme === "light") {
+            icon.className = "bi bi-sun";
+        } else if (theme === "dark") {
+            icon.className = "bi bi-moon";
+        } else {
+            icon.className = "bi bi-laptop";
+        }
+    }
+</script>
+
 </head>
 
 <body id="page-top">
 <div id="wrapper">
+
     <!-- Sidebar -->
     <ul id="sidebar" class="navbar-nav sidebar sidebar-dark">
         <!-- Sidebar Brand -->
@@ -47,7 +236,13 @@
 
         <hr class="sidebar-divider my-2">
 
-        <!-- Dashboard -->
+        <!-- Dashboard Admin -->
+        @role('admin')
+        <hr class="sidebar-divider my-2">
+            <div class="sidebar-heading px-3 text-uppercase text-white fw-bold sidebar-text" style="font-size:0.85rem; opacity:0.8;">
+                Main Menu
+            </div>
+
         <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
             <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('dashboard') }}">
                 <i class="fas fa-fw fa-tachometer-alt me-2"></i>
@@ -55,15 +250,36 @@
             </a>
         </li>
 
-        <!-- Dashboard Guru -->
-        @hasanyrole('guru_mi|guru_tk')
-        <li class="nav-item {{ request()->is('guru/dashboard') ? 'active' : '' }}">
-            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('guru.dashboard') }}">
-                <i class="bi bi-speedometer2 me-2"></i>
-                <span class="sidebar-text">Dashboard Guru</span>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('evaluasi.index') }}">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Evaluasi Kinerja</span>
             </a>
         </li>
-        @endhasanyrole
+        @endrole
+
+        <!-- Dashboard Guru -->
+       @role('guru_mi')
+        <li class="nav-item {{ request()->is('guru/mi/dashboard') ? 'active' : '' }}">
+            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" 
+            href="{{ route('guru-mi.dashboard') }}">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span class="sidebar-text">Dashboard Guru MI</span>
+            </a>
+        </li>
+        @endrole
+
+        @role('guru_tk')
+        <li class="nav-item {{ request()->is('guru/tk/dashboard') ? 'active' : '' }}">
+            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" 
+            href="{{ route('guru-tk.dashboard') }}">
+                <i class="bi bi-speedometer2 me-2"></i>
+                <span class="sidebar-text">Dashboard Guru TK</span>
+            </a>
+        </li>
+        @endrole
+
+        
 
         <!-- Manajemen MI -->
         @hasanyrole('admin|guru_mi')
@@ -93,7 +309,7 @@
                 </a>
             </li>
 
-            <li class="nav-item {{ request()->is('nilai*') ? 'active' : '' }}">
+            <li class="nav-item {{ request()->is('nilai') || request()->is('nilai/*') ? 'active' : '' }}">
                 <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('nilai.index') }}">
                     <i class="fas fa-chart-bar"></i>
                     <span class="sidebar-text">Input Nilai</span>
@@ -128,7 +344,15 @@
                     <span class="sidebar-text">Administrasi</span>
                 </a>
             </li>
+
+            <li class="nav-item {{ request()->is('nilai-tk') || request()->is('nilai-tk/*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('nilai-tk.index') }}">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="sidebar-text">Input Nilai</span>
+                </a>
+            </li>
         @endhasanyrole
+
 
         <!-- Manajemen User (Admin) -->
         @role('admin')
@@ -144,8 +368,8 @@
                 </a>
             </li>
 
-            <li class="nav-item {{ request()->is('admin-register') ? 'active' : '' }}">
-                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('admin.register') }}">
+            <li class="nav-item {{ request()->is('register') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('register') }}">
                     <i class="fas fa-user-plus me-2"></i>
                     <span class="sidebar-text">Registrasi</span>
                 </a>
@@ -160,16 +384,16 @@
         @endrole
 
         <!-- Logout -->
-        <li class="nav-item">
-            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="#"
-            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fas fa-sign-out-alt me-2"></i>
-                <span class="sidebar-text">Logout</span>
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                @csrf
-            </form>
-        </li>
+            <li class="nav-item logout-item d-flex justify-content-center">
+                <a class="nav-link d-flex align-items-center justify-content-center py-3 px-3 rounded hover-bg-light"
+                href="#"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt fa-5x"></i> 
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
+            </li>
     </ul>
 
     <!-- Toggle Sidebar Button -->
@@ -179,34 +403,67 @@
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
-        <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar fixed-top shadow">
-            <div class="container-fluid">
-                <h3 class="fw-bold mb-0 text-primary" style="margin-left: 30px;">Sistem Menejemen Al Kushnaniyah</h3>
+    <!-- Topbar -->
+    <nav class="navbar navbar-expand navbar-light bg-white topbar fixed-top shadow">
+        <div class="container-fluid">
+            <h3 class="fw-bold mb-0 text-primary" style="margin-left: 30px;">
+                Sistem Menejemen Al Kushnaniyah
+            </h3>
 
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
-                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img class="img-profile rounded-circle me-2"
-                                 src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=435ebe&color=fff"
-                                 width="32" height="32">
-                            <span class="me-2 text-dark fw-bold small">{{ Auth::user()->name }}</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>
-                                        Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+            <!-- Right side navbar -->
+            <ul class="navbar-nav ms-auto">
+                <!-- Theme Dropdown -->
+                <li class="nav-item dropdown me-3">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="themeDropdown"
+                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i id="themeIcon" class="bi bi-brightness-high-fill me-1" style="font-size: 1.5rem;"></i>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeDropdown">
+                        <li>
+                            <a class="dropdown-item" href="javascript:setTheme('light')">
+                                <i class="bi bi-sun me-2 text-warning"></i> Light
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="javascript:setTheme('dark')">
+                                <i class="bi bi-moon me-2 text-primary"></i> Dark
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="javascript:setTheme('system')">
+                                <i class="bi bi-laptop me-2 text-secondary"></i> System
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+                <!-- User Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
+                    role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img class="img-profile rounded-circle me-2"
+                            src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=435ebe&color=fff"
+                            width="32" height="32">
+                        <span id="usernameText" class="fw-bold small">{{ Auth::user()->name }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+
         </nav>
 
         <!-- Main Content -->

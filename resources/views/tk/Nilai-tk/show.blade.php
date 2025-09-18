@@ -7,7 +7,7 @@
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
         <h4 class="fw-bold">Nilai Siswa: {{ $siswa->nama }}</h4>
-        <a href="{{ route('nilai.index') }}" class="btn btn-secondary">
+        <a href="{{ route('nilai-tk.index') }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left"></i> Kembali
         </a>
     </div>
@@ -22,7 +22,7 @@
                 </p>
             </div>
             {{-- Dropdown filter kelas --}}
-            <form action="{{ route('nilai.show', $siswa->id) }}" method="GET" class="d-flex align-items-center">
+            <form action="{{ route('nilai-tk.show', $siswa->id) }}" method="GET" class="d-flex align-items-center">
                 <label for="kelas_id" class="me-2 mb-0 fw-bold">Filter Kelas:</label>
                 <select name="kelas_id" id="kelas_id" class="form-select me-2" style="width:180px;">
                     @foreach($kelasList as $k)
@@ -73,7 +73,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('nilai.edit', $nilai->id) }}" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('nilai-tk.edit', $nilai->id) }}" class="btn btn-warning btn-sm">
                                         <i class="bi bi-pencil"></i> Edit
                                     </a>
                                 </td>

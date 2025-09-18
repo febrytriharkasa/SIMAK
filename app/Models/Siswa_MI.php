@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Siswa_MI extends Model
 {
     use HasFactory;
-    protected $table = 'siswas_mi';
+
+    protected $table = 'siswas_mi'; // pastikan ini benar
     protected $fillable = ['nama', 'nisn', 'tahun', 'no_hp_wali', 'alamat_siswa', 'nama_wali', 'kelas_id'];
 
     public function pembayarans()
@@ -25,6 +26,4 @@ class Siswa_MI extends Model
     {
         return $this->hasMany(NilaiMi::class, 'siswa_id');
     }
-
 }
-

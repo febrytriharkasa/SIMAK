@@ -1,11 +1,11 @@
 @extends('layouts.sbadmin')
 
-@section('title', 'Edit Nilai Siswa MI')
+@section('title', 'Edit Nilai Siswa TK')
 
 @section('content')
 <div class="container-fluid">
     <div class="page-heading mb-4 ms-5">
-        <h3>Edit Nilai Siswa MI</h3>
+        <h3>Edit Nilai Siswa TK</h3>
     </div>
 
     @if ($errors->any())
@@ -20,7 +20,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form action="{{ route('nilai.update', $nilai->id) }}" method="POST">
+            <form action="{{ route('nilai-tk.update', $nilai->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -93,7 +93,7 @@
                     <button type="submit" class="btn btn-success me-2">
                         <i class="bi bi-check-circle"></i> Update
                     </button>
-                    <a href="{{ route('nilai.index') }}" class="btn btn-secondary">
+                    <a href="{{ route('nilai-tk.index') }}" class="btn btn-secondary">
                         <i class="bi bi-x-circle"></i> Batal
                     </a>
                 </div>
