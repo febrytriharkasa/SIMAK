@@ -3,6 +3,33 @@
 @section('title', 'Tambah Guru TK')
 
 @section('content')
+    {{-- ===================== CSS Custom (Light & Dark Mode) ===================== --}}
+    <style>
+        /* Light mode */
+        [data-bs-theme="light"] #content-wrapper,
+        [data-bs-theme="light"] .container,
+        [data-bs-theme="light"] .card {
+            background-color: #fff !important;
+            color: #181515;
+        }
+        [data-bs-theme="light"] .card-header {
+            background-color: #f8f9fa !important;
+            color: #000;
+        }
+
+        /* Dark mode */
+        [data-bs-theme="dark"] #content-wrapper,
+        [data-bs-theme="dark"] .container,
+        [data-bs-theme="dark"] .card {
+            background-color: #1B1B1DFF !important;
+            color: #fff;
+        }
+        [data-bs-theme="dark"] .card-header {
+            background-color: #2c2c2e !important;
+            color: #fff;
+        }
+    </style>
+    
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">

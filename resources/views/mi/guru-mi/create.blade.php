@@ -3,6 +3,52 @@
 @section('title', 'Tambah Guru MI')
 
 @section('content')
+    {{-- ===================== CSS Custom (Light & Dark Mode) ===================== --}}
+    <style>
+        /* Light mode */
+        [data-bs-theme="light"] #content-wrapper,
+        [data-bs-theme="light"] .container-fluid {
+            background-color: #fff !important;
+            color: #181515;
+        }
+        [data-bs-theme="light"] .card {
+            background-color: #ffffff !important;
+            color: #181515;
+        }
+        [data-bs-theme="light"] .card-header {
+            background-color: #0d6efd !important;
+            color: #ffffff !important;
+        }
+
+        /* Dark mode */
+        [data-bs-theme="dark"] #content-wrapper,
+        [data-bs-theme="dark"] .container-fluid {
+            background-color: #1B1B1DFF !important;
+            color: #fff;
+        }
+        [data-bs-theme="dark"] .card {
+            background-color: #2c2c2e !important;
+            color: #ffffff;
+        }
+        [data-bs-theme="dark"] .card-header {
+            background-color: #1a1a1a !important;
+            color: #f8f9fa !important;
+        }
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select,
+        [data-bs-theme="dark"] textarea {
+            background-color: #3b3b3b !important;
+            color: #f8f9fa !important;
+            border: 1px solid #555 !important;
+        }
+        [data-bs-theme="dark"] .form-control:focus,
+        [data-bs-theme="dark"] .form-select:focus,
+        [data-bs-theme="dark"] textarea:focus {
+            background-color: #444 !important;
+            color: #ffffff !important;
+        }
+    </style>
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">

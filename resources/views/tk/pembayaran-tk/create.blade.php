@@ -1,91 +1,93 @@
 @extends('layouts.sbadmin')
 
-@section('title', 'Pembayaran TK')
+@section('title', 'Generate SPP')
 
 @section('content')
+{{-- ===================== CSS Custom (Light & Dark Mode) ===================== --}}
+<style>
+    /* ================== Light Mode ================== */
+    [data-bs-theme="light"] #content-wrapper,
+    [data-bs-theme="light"] .container,
+    [data-bs-theme="light"] .card {
+        background-color: #fff !important;
+        color: #181515;
+    }
+    [data-bs-theme="light"] .card-header {
+        background-color: #f8f9fa !important;
+        color: #000;
+    }
+    [data-bs-theme="light"] .form-select,
+    [data-bs-theme="light"] .form-control {
+        background-color: #fff !important;
+        color: #181515 !important;
+        border: 1px solid #ccc !important;
+    }
+    [data-bs-theme="light"] .form-select option {
+        background-color: #fff !important;
+        color: #181515 !important;
+    }
+
+    /* ================== Dark Mode ================== */
+    [data-bs-theme="dark"] #content-wrapper,
+    [data-bs-theme="dark"] .container,
+    [data-bs-theme="dark"] .card {
+        background-color: #1B1B1DFF !important;
+        color: #fff;
+    }
+    [data-bs-theme="dark"] .card-header {
+        background-color: #2c2c2e !important;
+        color: #fff;
+    }
+    [data-bs-theme="dark"] .form-select,
+    [data-bs-theme="dark"] .form-control {
+        background-color: #2c2c2e !important;
+        color: #fff !important;
+        border: 1px solid #444 !important;
+    }
+    [data-bs-theme="dark"] .form-select option {
+        background-color: #2c2c2e !important;
+        color: #fff !important;
+    }
+</style>
+
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="card shadow-lg border-0 rounded-3">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow border-0 rounded-3">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Tambah Pembayaran TK</h5>
+                    <h5 class="mb-0">Generate SPP</h5>
                 </div>
                 <div class="card-body">
-
-                    {{-- Alert --}}
-                    @if(session('error'))
-                        <div class="alert alert-danger">
-                            {{ session('error') }}
-                        </div>
-                    @endif
-
-                    <form action="{{ route('pembayaran-tk.store') }}" method="POST">
+                    <form action="{{ route('pembayaran-mi.generate-mi') }}" method="POST">
                         @csrf
-                        
-                        <input type="hidden" name="bulan" value="{{ request('bulan') }}">
-                        <input type="hidden" name="tahun" value="{{ request('tahun') }}">
-                        <input type="hidden" name="id_tk" value="{{ request('id_tk') }}">
-                        <input type="hidden" name="kelas_id" value="{{ request('kelas_id') }}">
-                        
-                         {{-- Pilih Siswa --}}
                         <div class="mb-3">
-                            <label for="siswa_id" class="form-label fw-semibold">Pilih Siswa</label>
-                            <select name="siswa_id" id="siswa_id" class="form-control" style="width: 100%;" required>
-                                <option value="">-- Pilih Siswa --</option>
-                                @foreach($siswa as $s)
-                                    <option value="{{ $s->id }}">{{ $s->id_tk }} - {{ $s->nama }}</option>
+                            <label for="kelas_id" class="form-label fw-semibold">Pilih Kelas</label>
+                            <select name="kelas_id" id="kelas_id" class="form-select" required>
+                                <option value="">-- Pilih Kelas --</option>
+                                @foreach($kelasList as $kelas)
+                                    <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }}</option>
                                 @endforeach
                             </select>
-                            @error('siswa_id') <div class="text-danger small">{{ $message }}</div> @enderror
                         </div>
-
-                        {{-- Kelas (readonly) --}}
                         <div class="mb-3">
-                            <label for="kelas_nama" class="form-label fw-semibold">Kelas</label>
-                            <input type="text" id="kelas_nama" class="form-control" readonly>
-                            <input type="hidden" name="kelas_id" id="kelas_id">
-                        </div>
-
-                        {{-- Jumlah --}}
-                        <div class="mb-3">
-                            <label for="jumlah" class="form-label fw-semibold">Jumlah (Rp)</label>
-                            <input type="number" name="jumlah" id="jumlah" class="form-control" 
-                                   value="{{ old('jumlah', 100000) }}" readonly>
-                            @error('jumlah') <div class="text-danger small">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Tanggal --}}
-                        <div class="mb-3">
-                            <label for="tanggal" class="form-label fw-semibold">Tanggal</label>
-                            <input type="date" name="tanggal" id="tanggal" class="form-control"
-                                value="{{ old('tanggal', \Carbon\Carbon::today()->format('Y-m-d')) }}" required>
-                            @error('tanggal') <div class="text-danger small">{{ $message }}</div> @enderror
-                        </div>
-
-                        {{-- Status --}}
-                        <div class="mb-3">
-                            <label for="status" class="form-label fw-semibold">Status</label>
-                            <select name="status" id="status" class="form-control" required>
-                                <option value="">-- Pilih Status --</option>
-                                <option value="belum" {{ old('status') == 'belum' ? 'selected' : '' }}>Belum</option>
-                                <option value="lunas" {{ old('status', 'lunas') == 'lunas' ? 'selected' : '' }}>Lunas</option>
+                            <label for="bulan" class="form-label fw-semibold">Bulan</label>
+                            <select name="bulan" id="bulan" class="form-select" required>
+                                @for($i=1;$i<=12;$i++)
+                                    <option value="{{ $i }}">{{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}</option>
+                                @endfor
                             </select>
-                            @error('status') <div class="text-danger small">{{ $message }}</div> @enderror
                         </div>
-
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-success me-2">
-                                <i class="bi bi-check-circle"></i> Simpan
-                            </button>
-                            <a href="{{ route('pembayaran-tk.index', [
-                                        'bulan' => request('bulan'),
-                                        'tahun' => request('tahun'),
-                                        'id_tk' => request('id_tk'),
-                                        'kelas_id' => request('kelas_id')
-                                    ]) }}" class="btn btn-secondary">
-                                <i class="bi bi-x-circle"></i> Batal
-                            </a>
+                        <div class="mb-3">
+                            <label for="tahun" class="form-label fw-semibold">Tahun</label>
+                            <input type="number" name="tahun" id="tahun" class="form-control" value="{{ date('Y') }}" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="jumlah_default" class="form-label fw-semibold">Jumlah Default</label>
+                            <input type="number" name="jumlah_default" id="jumlah_default" class="form-control" placeholder="Contoh: 150000" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-check-circle"></i> Generate
+                        </button>
                     </form>
                 </div>
             </div>
@@ -93,46 +95,3 @@
     </div>
 </div>
 @endsection
-
-@push('scripts')
-{{-- jQuery --}}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-{{-- Select2 --}}
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        // init select2
-        $('#siswa_id').select2({
-            theme: "bootstrap4",
-            allowClear: true,
-            placeholder: "-- Pilih Siswa --"
-        });
-
-        // ketika siswa dipilih
-        $('#siswa_id').on('change', function() {
-            let siswaId = $(this).val();
-            $('#kelas_nama').val('');
-            $('#kelas_id').val('');
-
-            if(siswaId) {
-                $.ajax({
-                    url: '/get-siswa-detail-tk/' + siswaId,
-                    type: 'GET',
-                    success: function(data) {
-                        if (data) {
-                            $('#kelas_nama').val(data.kelas_nama);
-                            $('#kelas_id').val(data.kelas_id);
-                        }
-                    }
-                });
-            }
-        });
-    });
-</script>
-
-
-{{-- Styling tambahan Select2 biar pas dengan Bootstrap --}}
-<link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css" rel="stylesheet">
-@endpush

@@ -164,6 +164,20 @@
             color: #f8f9fa !important;
         }
 
+        html, body {
+                height: 100%;
+            }
+
+            #content-wrapper {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #content {
+                flex: 1;
+            }
+
         /* ========================= */
         /* === KUNCI TEKS SIDEBAR === */
         /* ========================= */
@@ -402,7 +416,8 @@
     </button>
 
     <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
+    <div id="content-wrapper" class="d-flex flex-column min-vh-100">
+    <div id="content" class="flex-grow-1">
     <!-- Topbar -->
     <nav class="navbar navbar-expand navbar-light bg-white topbar fixed-top shadow">
         <div class="container-fluid">
@@ -489,24 +504,34 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script>
-    const sidebar = document.getElementById('sidebar');
-    const toggleBtn = document.getElementById('toggleSidebar');
-    const toggleIcon = document.getElementById('toggleIcon');
-    const contentWrapper = document.getElementById('content-wrapper');
-
-    toggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        if (sidebar.classList.contains('collapsed')) {
-            toggleBtn.style.left = "10px";
-            contentWrapper.style.marginLeft = "0";
-            toggleIcon.classList.replace("fa-angle-left", "fa-angle-right");
-        } else {
-            toggleBtn.style.left = "230px";
-            contentWrapper.style.marginLeft = "220px";
-            toggleIcon.classList.replace("fa-angle-right", "fa-angle-left");
+    // fungsi set theme (sudah ada)
+    function setTheme(theme) {
+        localStorage.setItem("data-bs-theme", theme);
+        if (theme === "system") {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         }
+        document.documentElement.setAttribute("data-bs-theme", theme);
+
+        // ubah ikon utama dropdown sesuai tema
+        let icon = document.getElementById("themeIcon");
+        if (icon) {
+            if (theme === "light") {
+                icon.className = "bi bi-sun";
+            } else if (theme === "dark") {
+                icon.className = "bi bi-moon";
+            } else {
+                icon.className = "bi bi-laptop";
+            }
+        }
+    }
+
+    // cek localStorage saat pertama kali load
+    document.addEventListener("DOMContentLoaded", function() {
+        let savedTheme = localStorage.getItem("data-bs-theme") || "system";
+        setTheme(savedTheme);
     });
 </script>
+
 
 @stack('scripts')
 </body>

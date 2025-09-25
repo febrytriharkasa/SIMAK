@@ -3,6 +3,52 @@
 @section('title', 'Input Nilai Kelas')
 
 @section('content')
+    {{-- ===================== CSS Custom (Light & Dark Mode) ===================== --}}
+    <style>
+        /* Light mode */
+        [data-bs-theme="light"] #content-wrapper,
+        [data-bs-theme="light"] .container,
+        [data-bs-theme="light"] .card {
+            background-color: #fff !important;
+            color: #181515;
+        }
+        [data-bs-theme="light"] .card-header {
+            background-color: #f8f9fa !important;
+            color: #000;
+        }
+        [data-bs-theme="light"] .form-select,
+        [data-bs-theme="light"] .form-control {
+            background-color: #fff !important;
+            color: #181515 !important;
+            border: 1px solid #ccc !important;
+        }
+
+        /* Dark mode */
+        [data-bs-theme="dark"] #content-wrapper,
+        [data-bs-theme="dark"] .container,
+        [data-bs-theme="dark"] .card {
+            background-color: #1B1B1DFF !important;
+            color: #fff;
+        }
+        [data-bs-theme="dark"] .card-header {
+            background-color: #2c2c2e !important;
+            color: #fff;
+        }
+        [data-bs-theme="dark"] .form-select,
+        [data-bs-theme="dark"] .form-control {
+            background-color: #2c2c2e !important;
+            color: #fff !important;
+            border: 1px solid #444 !important;
+        }
+        [data-bs-theme="dark"] .form-select:focus,
+        [data-bs-theme="dark"] .form-control:focus {
+            background-color: #3a3a3c !important;
+            color: #fff !important;
+            border-color: #666 !important;
+            box-shadow: none;
+        }
+    </style>
+    
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -29,7 +75,7 @@
                         {{-- Pilih Kelas --}}
                         <div class="mb-3">
                             <label for="kelas_id" class="form-label">Kelas</label>
-                            <select name="kelas_id" id="kelas_id" class="form-control" required>
+                            <select name="kelas_id" id="kelas_id" class="form-select" required>
                                 <option value="">-- Pilih Kelas --</option>
                                 @foreach($kelasList as $k)
                                     <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
@@ -40,7 +86,7 @@
                        {{-- Pilih Mapel --}}
                         <div class="mb-3">
                             <label for="mapel_id" class="form-label">Mata Pelajaran</label>
-                            <select name="mapel_id" id="mapel_id" class="form-control" required>
+                            <select name="mapel_id" id="mapel_id" class="form-select" required>
                                 <option value="">-- Pilih Mapel --</option>
                                 @foreach($mapelList as $m)
                                     <option value="{{ $m->id }}">
@@ -53,7 +99,7 @@
                         {{-- Pilih Guru (otomatis terisi setelah pilih mapel) --}}
                         <div class="mb-3" id="guru-wrapper" style="display:none;">
                             <label for="guru_id" class="form-label">Guru</label>
-                            <select name="guru_id" id="guru_id" class="form-control" required>
+                            <select name="guru_id" id="guru_id" class="form-select" required>
                                 <option value="">-- Pilih Guru --</option>
                                 {{-- akan diisi pakai JS --}}
                             </select>
@@ -101,7 +147,6 @@
     const guruWrapper = document.getElementById('guru-wrapper');
     const guruSelect = document.getElementById('guru_id');
     console.log(mapelData);
-
 
     // Event pilih kelas → tampil siswa
     document.getElementById('kelas_id').addEventListener('change', function () {
@@ -162,6 +207,7 @@
         }
     });
 
+    // Tambah / Hapus field tugas
     document.addEventListener('click', function (e) {
         if (e.target && e.target.classList.contains('add-tugas')) {
             let siswaId = e.target.dataset.siswa;
@@ -177,7 +223,6 @@
             wrapper.appendChild(div);
         }
 
-        // Hapus field tugas
         if (e.target && e.target.classList.contains('remove-tugas')) {
             e.target.parentElement.remove();
         }
