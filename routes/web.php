@@ -15,63 +15,91 @@ use App\Http\Controllers\Admin\UserApprovalController;
 use App\Http\Controllers\GuruMiDbController;
 use App\Http\Controllers\GuruTkDbController;
 use App\Http\Controllers\EvaluasiKinerjaController;
+use App\Http\Controllers\PasswordResetController;
 
+// =======================================
+// DEFAULT REDIRECT
+// =======================================
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// ================== DASHBOARD ==================
-// Dashboard umum → redirect otomatis sesuai role
+// =======================================
+// DASHBOARD
+// =======================================
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Dashboard umum → redirect otomatis sesuai role
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-// Dashboard khusus Admin
+// Admin dashboard
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', [DashboardController::class, 'index'])
-        ->name('admin.dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 });
 
-// Dashboard khusus Guru TK
+// Guru TK dashboard
 Route::middleware(['auth', 'role:guru_tk'])->group(function () {
-    Route::get('/guru/tk/dashboard', [GuruTkDbController::class, 'index'])
-        ->name('guru-tk.dashboard');
+    Route::get('/guru/tk/dashboard', [GuruTkDbController::class, 'index'])->name('guru-tk.dashboard');
 });
 
-// Dashboard khusus Guru MI
+// Guru MI dashboard
 Route::middleware(['auth', 'role:guru_mi'])->group(function () {
-    Route::get('/guru/mi/dashboard', [GuruMiDbController::class, 'index'])
-        ->name('guru-mi.dashboard');
+    Route::get('/guru/mi/dashboard', [GuruMiDbController::class, 'index'])->name('guru-mi.dashboard');
 });
 
-// ================== REGISTER (PUBLIC) ==================
+// =======================================
+// PROFILE
+// =======================================
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/foto/{id}', [ProfileController::class, 'avatar'])->name('profile.avatar');
+});
+
+// =======================================
+// REGISTER (GUEST)
+/// =======================================
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('register', [RegisteredUserController::class, 'store']);
 });
 
-// ================== ADMIN ==================
+// =======================================
+// ADMIN ROUTES
+// =======================================
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::resource('users', UserController::class);
 
+    // Users
+    Route::resource('users', UserController::class);
+    Route::post('/users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.resetPassword');
+
+    // User approvals
     Route::get('/user-approvals', [UserApprovalController::class, 'index'])->name('user.approvals.index');
     Route::post('/user-approvals/{id}/approve', [UserApprovalController::class, 'approve'])->name('admin.approvals.approve');
     Route::post('/user-approvals/{id}/reject', [UserApprovalController::class, 'reject'])->name('admin.approvals.reject');
+
+    // Password reset requests (admin view)
+    Route::get('/admin/password-requests', [PasswordResetController::class, 'adminIndex'])->name('admin.password-requests');
+    Route::post('/admin/password-requests/{id}/approve', [PasswordResetController::class, 'approveRequest'])->name('admin.password-requests.approve');
+    Route::post('/admin/password-requests/{id}/reject', [PasswordResetController::class, 'rejectRequest'])->name('admin.password-requests.reject');
+
+    // Evaluasi
+    Route::resource('evaluasi', EvaluasiKinerjaController::class);
 });
 
-// ================== ADMIN DAN GURU MI ==================
+// =======================================
+// ADMIN + GURU MI
+// =======================================
 Route::middleware(['auth', 'role:admin|guru_mi'])->group(function () {
     Route::resource('siswa-mi', SiswaMiController::class);
     Route::resource('guru-mi', GuruMiController::class);
     Route::resource('pembayaran-mi', PembayaranMiController::class)->except(['show']);
 });
 
-// ================== ADMIN DAN GURU TK ==================
+// =======================================
+// ADMIN + GURU TK
+// =======================================
 Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
     Route::resource('siswa-tk', SiswaTkController::class);
     Route::resource('guru-tk', GuruTkController::class);
@@ -84,15 +112,17 @@ Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
     Route::get('/siswa-tk/{id}', [SiswaTkController::class, 'show'])->name('siswa-tk.show');
 });
 
-// ================== PROFILE ==================
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// =======================================
+// FORGOT PASSWORD (CUSTOM)
+// =======================================
+Route::middleware('guest')->group(function () {
+    Route::get('/password-reset-request', [PasswordResetController::class, 'showForm'])
+        ->name('forgot-password.form');
+    Route::post('/password-reset-request', [PasswordResetController::class, 'submitRequest'])
+        ->name('forgot-password.submit');
 });
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::resource('evaluasi', EvaluasiKinerjaController::class);
-});
-
+// =======================================
+// INCLUDE AUTH.LARAVEL DEFAULT
+// =======================================
 require __DIR__.'/auth.php';

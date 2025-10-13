@@ -11,35 +11,40 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function show(): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = Auth::user();
+        return view('profile.show', compact('user'));
     }
 
-    /**
-     * Update the user's profile information.
-     */
+    public function edit(): View
+    {
+        $user = Auth::user();
+        return view('profile.edit', compact('user'));
+    }
+
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $data = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // Simpan foto ke DB sebagai BLOB
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $data['foto'] = file_get_contents($file->getRealPath());
         }
 
-        $request->user()->save();
+        $user->fill($data);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.show')->with('status', 'profile-updated');
     }
 
-    /**
-     * Delete the user's account.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
@@ -47,14 +52,22 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
-
         Auth::logout();
-
         $user->delete();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return Redirect::route('profile.show')->with('status', 'account-deleted');
+    }
+
+    // Route untuk menampilkan foto
+    public function avatar($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        if ($user->foto) {
+            return response($user->foto)->header('Content-Type', 'image/jpeg');
+        }
+        return response()->file(public_path('default-avatar.png'));
     }
 }

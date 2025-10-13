@@ -10,8 +10,9 @@ class UserApprovalController extends Controller
     // Tampilkan semua user yang masih pending
     public function index()
     {
+        dd('VIEW INI!');
         $pendingUsers = User::where('status', 'pending')->get();
-        return view('admin.user-approvals.index', compact('pendingUsers'));
+        return view('admin.user-approvals.index')->with(['__debug' => 'INI VIEW YANG DILOAD']);
     }
 
     // Approve user

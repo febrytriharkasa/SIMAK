@@ -1,6 +1,28 @@
 <!-- resources/views/layouts/sbadmin.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Ambil tema dari localStorage
+        let theme = localStorage.getItem("data-bs-theme") || "light";
+
+        if (theme === "system") {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+
+        document.documentElement.setAttribute("data-bs-theme", theme);
+
+        // ubah ikon dropdown sesuai tema
+        const icon = document.getElementById("themeIcon");
+        if (theme === "light") {
+            icon.className = "bi bi-sun";
+        } else if (theme === "dark") {
+            icon.className = "bi bi-moon";
+        } else {
+            icon.className = "bi bi-laptop";
+        }
+    });
+    </script>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,191 +34,7 @@
     <link href="{{ asset('sb-admin-2/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-    <style>
-        /* === SIDEBAR === */
-        .sidebar { 
-            background: linear-gradient(180deg, #4e73df, #224abe); 
-            border-radius: 12px; 
-            box-shadow: 2px 4px 12px rgba(0,0,0,0.15); 
-            padding: 0.5rem 0; 
-            width: 220px; 
-            position: fixed; 
-            top: 70px; 
-            left: 0; 
-            height: calc(100vh - 70px); 
-            transition: transform 0.3s ease; 
-            overflow-x: hidden; 
-            z-index: 1040; 
-            display: flex;
-            flex-direction: column;
-        }
-        .sidebar.collapsed { transform: translateX(-100%); }
-        .sidebar.collapsed .sidebar-text { opacity: 0; transition: opacity 0.2s ease; }
-        .hover-bg-light:hover { background-color: rgba(255,255,255,0.15); transition: all 0.3s ease; }
-        .rotate-n-15:hover { transform: rotate(-10deg) scale(1.1); }
-        .nav-item .nav-link.active { background-color: rgba(255,255,255,0.25); font-weight: 600; }
-
-        /* === TOPBAR === */
-        .topbar { z-index: 1050; height: 70px; }
-
-        /* === CONTENT WRAPPER === */
-        #content-wrapper { margin-left: 220px; padding-top: 80px; transition: margin-left 0.3s ease; }
-        .sidebar.collapsed ~ #content-wrapper { margin-left: 0; }
-
-        /* Light mode (default) */
-        [data-bs-theme="light"] .sidebar {
-            background: linear-gradient(180deg, #4e73df, #224abe);
-            color: #fff;
-        }
-
-        /* Dark mode */
-        [data-bs-theme="dark"] .sidebar {
-            background: linear-gradient(180deg, #1f1f2e, #111827);
-            color: #f8f9fa;
-        }
-        [data-bs-theme="dark"] .sidebar .nav-link {
-            color: #f8f9fa;
-        }
-        [data-bs-theme="dark"] .sidebar .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-        [data-bs-theme="dark"] .sidebar .nav-link.active {
-            background-color: rgba(255,255,255,0.2);
-        }
-
-        /* BODY */
-        [data-bs-theme="light"] body {
-            background-color: #f8f9fc;
-            color: #000;
-        }
-        [data-bs-theme="dark"] body {
-            background-color: #1e1e2f;
-            color: #f8f9fa;
-        }
-
-        /* TOPBAR */
-        [data-bs-theme="light"] .topbar {
-            background-color: #ffffff !important;
-            color: #000 !important;
-        }
-        [data-bs-theme="dark"] .topbar {
-            background-color: #2c2c3c !important;
-            color: #f8f9fa !important;
-        }
-
-        /* FOOTER */
-        [data-bs-theme="light"] .sticky-footer {
-            background-color: #ffffff !important;
-            color: #000 !important;
-        }
-        [data-bs-theme="dark"] .sticky-footer {
-            background-color: #2c2c3c !important;
-            color: #f8f9fa !important;
-        }
-
-        /* CARD */
-        [data-bs-theme="light"] .card {
-            background-color: #ffffff;
-            color: #000;
-        }
-        [data-bs-theme="dark"] .card {
-            background-color: #2a2a3b;
-            color: #f8f9fa;
-            border-color: #444;
-        }
-
-        /* CONTENT WRAPPER */
-        [data-bs-theme="dark"] #content-wrapper {
-            background-color: #1e1e2f;
-        }
-
-        .logout-item {
-            margin-top: 400px;
-        }
-
-        /* ========================= */
-        /* === TEKS SESUAI TEMA === */
-        /* ========================= */
-
-        /* Default Light */
-        [data-bs-theme="light"] body,
-        [data-bs-theme="light"] #content-wrapper,
-        [data-bs-theme="light"] .sidebar,
-        [data-bs-theme="light"] .topbar,
-        [data-bs-theme="light"] .sticky-footer {
-            color: #212529 !important; /* teks gelap */
-        }
-
-        /* Dark */
-        [data-bs-theme="dark"] body,
-        [data-bs-theme="dark"] #content-wrapper,
-        [data-bs-theme="dark"] .sidebar,
-        [data-bs-theme="dark"] .topbar,
-        [data-bs-theme="dark"] .sticky-footer {
-            color: #f8f9fa !important; /* teks terang */
-        }
-
-        /* Pastikan heading dan span ikut */
-        [data-bs-theme="light"] h1, 
-        [data-bs-theme="light"] h2, 
-        [data-bs-theme="light"] h3, 
-        [data-bs-theme="light"] h4, 
-        [data-bs-theme="light"] h5, 
-        [data-bs-theme="light"] h6,
-        [data-bs-theme="light"] p,
-        [data-bs-theme="light"] span,
-        [data-bs-theme="light"] a,
-        [data-bs-theme="light"] li {
-            color: #212529 !important;
-        }
-
-        [data-bs-theme="dark"] h1, 
-        [data-bs-theme="dark"] h2, 
-        [data-bs-theme="dark"] h3, 
-        [data-bs-theme="dark"] h4, 
-        [data-bs-theme="dark"] h5, 
-        [data-bs-theme="dark"] h6,
-        [data-bs-theme="dark"] p,
-        [data-bs-theme="dark"] span,
-        [data-bs-theme="dark"] a,
-        [data-bs-theme="dark"] li {
-            color: #f8f9fa !important;
-        }
-
-        /* ========================= */
-        /* === KUNCI TEKS SIDEBAR === */
-        /* ========================= */
-
-        .sidebar-brand-text {
-            color: #fff !important;
-        }
-        /* Semua teks sidebar tetap putih */
-        .sidebar .nav-link,
-        .sidebar .nav-link i,
-        .sidebar .sidebar-heading,
-        .sidebar .nav-item,
-        .sidebar .nav-item a,
-        .sidebar .nav-item span {
-            color: #ffffff !important;
-        }
-
-        /* Aktif tetap kontras */
-        .sidebar .nav-link.active {
-            background-color: rgba(255,255,255,0.25) !important;
-            font-weight: 600;
-            color: #ffffff !important;
-        }
-
-        /* Hover tetap terang */
-        .sidebar .nav-link:hover {
-            color: #f8f9fa !important;
-            background-color: rgba(255,255,255,0.15) !important;
-        }
-
-
-    </style>
-
+    <link href="{{ asset('css/custom-dark.css') }}" rel="stylesheet">
     <script>
     function setTheme(theme) {
         localStorage.setItem("data-bs-theme", theme);
@@ -428,12 +266,29 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
                     role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img class="img-profile rounded-circle me-2"
-                            src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=435ebe&color=fff"
-                            width="32" height="32">
-                        <span id="usernameText" class="fw-bold small">{{ Auth::user()->name }}</span>
+
+                        <img src="{{ Auth::check() 
+                            ? (Auth::user()->foto 
+                                ? asset('storage/' . Auth::user()->foto) 
+                                : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=435ebe&color=fff') 
+                            : 'https://ui-avatars.com/api/?name=Guest&background=435ebe&color=fff' }}" 
+                            alt="User Avatar" class="rounded-full h-10 w-10">
+
+                        <span id="usernameText" class="fw-bold small">
+                            {{ Auth::check() ? Auth::user()->name : 'Guest' }}
+                        </span>
                     </a>
+
                     <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                        <!-- Profil -->
+                        <li>
+                            <a class="dropdown-item" href="{{ route('profile.show') }}">
+                                <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>
+                                Profil Saya
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <!-- Logout -->
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

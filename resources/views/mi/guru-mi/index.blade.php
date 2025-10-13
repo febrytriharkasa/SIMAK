@@ -3,9 +3,10 @@
 @section('title', 'Data Guru MI')
 
 @section('content')
+
 <div class="container-fluid">
     <div class="page-heading mb-40">
-        <h3 class="ms-5">Data Guru MI</h3>
+        <h3 class="mb-3 ms-4">Data Guru MI</h3>
     </div>
 
     @if(session('success'))
@@ -82,7 +83,24 @@
             </table>
 
             <!-- Pagination -->
-            {{ $guru->withQueryString()->links() }}
+            @if ($guru->hasPages())
+            <nav>
+                <ul class="pagination justify-content-center">
+                    @foreach ($guru->getUrlRange(1, $guru->lastPage()) as $page => $url)
+                        @if ($page == $guru->currentPage())
+                            <li class="page-item active">
+                                <span class="page-link">{{ $page }}</span>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+            </nav>
+            @endif
+
         </div>
     </div>
 </div>
