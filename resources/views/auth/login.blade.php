@@ -77,7 +77,7 @@
 
       <!-- Lupa Password + Register -->
       <div class="flex justify-between text-sm mt-2">
-        <a href="{{ route('forgot-password.form') }}" class="text-sky-600 hover:underline">
+        <a href="{{ route('password-request.form') }}" class="text-sky-600 hover:underline">
           Lupa Password?
         </a>
 

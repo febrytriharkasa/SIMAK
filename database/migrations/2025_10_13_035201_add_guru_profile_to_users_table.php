@@ -51,7 +51,7 @@ return new class extends Migration
                 $table->string('status_kepegawaian')->nullable()->after('pendidikan');
             }
             if (!Schema::hasColumn('users', 'foto')) {
-                $table->string('foto')->nullable()->after('status_kepegawaian');
+                $table->longBlob('foto')->nullable()->after('status_kepegawaian');
             }
         });
     }

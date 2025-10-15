@@ -192,12 +192,12 @@
                 </a>
             </li>
 
-            <li class="nav-item {{ request()->is('register') ? 'active' : '' }}">
-                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('register') }}">
-                    <i class="fas fa-user-plus me-2"></i>
-                    <span class="sidebar-text">Registrasi</span>
+            <li class="nav-item {{ request()->is('roles*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('admin.password-requests') }}">
+                    <i class="fas fa-user-shield me-2"></i>
+                    <span class="sidebar-text">Request Password</span>
                 </a>
-            </li>
+            </li>   
 
             <li class="nav-item {{ request()->is('user-approvals*') ? 'active' : '' }}">
                 <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('user.approvals.index') }}">
@@ -269,10 +269,12 @@
 
                         <img src="{{ Auth::check() 
                             ? (Auth::user()->foto 
-                                ? asset('storage/' . Auth::user()->foto) 
+                                ? url('/avatar/' . Auth::user()->id) 
                                 : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=435ebe&color=fff') 
                             : 'https://ui-avatars.com/api/?name=Guest&background=435ebe&color=fff' }}" 
-                            alt="User Avatar" class="rounded-full h-10 w-10">
+                            alt="User Avatar" 
+                            class="rounded-circle" 
+                            style="width: 40px; height: 40px; object-fit: cover;">
 
                         <span id="usernameText" class="fw-bold small">
                             {{ Auth::check() ? Auth::user()->name : 'Guest' }}
@@ -313,8 +315,8 @@
         </div>
 
         <!-- Footer -->
-        <footer class="sticky-footer bg-white mt-auto py-3 shadow-sm">
-            <div class="container my-auto text-center">
+        <footer class="sticky-footer  py-3">
+            <div class=>
                 <span class="text-muted small">© {{ date('Y') }} SIMAK MI - AMPEL</span>
             </div>
         </footer>

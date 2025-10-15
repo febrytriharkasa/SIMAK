@@ -6,6 +6,7 @@ html, body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    font-family: 'Nunito', sans-serif;
 }
 
 #wrapper {
@@ -15,23 +16,55 @@ html, body {
 }
 
 /* ======================= */
+/* CSS VARIABLES THEME */
+/* ======================= */
+:root {
+    --bg: #f8f9fc;
+    --text: #212529;
+    --sidebar-bg: linear-gradient(180deg, #4e73df, #224abe);
+    --sidebar-text: #fff;
+    --card-bg: #ffffff;
+    --card-border: #ddd;
+    --hover-bg: rgba(255,255,255,0.15);
+}
+
+[data-bs-theme="dark"] {
+    --bg: #1e1e2f;
+    --text: #f8f9fa;
+    --sidebar-bg: linear-gradient(180deg, #1f1f2e, #111827);
+    --sidebar-text: #fff;
+    --card-bg: #2a2a3b;
+    --card-border: #444;
+    --hover-bg: rgba(255,255,255,0.05);
+}
+
+/* ======================= */
+/* BODY & CONTENT */
+/* ======================= */
+body, #content-wrapper, #content, .topbar, .sticky-footer {
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
+}
+
+/* ======================= */
 /* SIDEBAR */
 /* ======================= */
 #sidebar {
     position: fixed;
-    top: 70px; /* sesuaikan tinggi topbar */
+    top: 70px;
     left: 0;
     width: 220px;
     height: calc(100vh - 70px);
-    background: linear-gradient(180deg, #4e73df, #224abe);
+    background: var(--sidebar-bg);
     border-radius: 12px;
     box-shadow: 2px 4px 12px rgba(0,0,0,0.15);
     padding: 0.5rem 0;
     display: flex;
     flex-direction: column;
-    overflow-y: auto; /* scroll di sidebar jika konten panjang */
+    overflow-y: auto;
     z-index: 1040;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background 0.3s;
 }
 
 #sidebar.collapsed {
@@ -45,110 +78,85 @@ html, body {
 .sidebar .nav-link,
 .sidebar .sidebar-text,
 .sidebar .sidebar-heading {
-    color: #fff !important;
+    color: var(--sidebar-text) !important;
+    transition: background 0.3s, color 0.3s;
 }
 
 .sidebar .nav-link.active {
     background-color: rgba(255,255,255,0.25) !important;
     font-weight: 600;
-    color: #fff !important;
+    color: var(--sidebar-text) !important;
 }
 
 .sidebar .nav-link:hover {
-    color: #f8f9fa !important;
-    background-color: rgba(255,255,255,0.15) !important;
+    background-color: var(--hover-bg) !important;
+    color: var(--sidebar-text) !important;
 }
 
 /* ======================= */
-/* CONTENT WRAPPER */
+/* CONTENT WRAPPER & TOPBAR */
 /* ======================= */
 #content-wrapper {
     margin-left: 220px;
-    padding-top: 80px; /* sesuaikan topbar */
-    height: calc(100vh - 70px);
-    overflow-y: auto;
-    flex: 1;
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: margin-left 0.3s, background 0.3s, color 0.3s;
 }
 
-/* ======================= */
-/* TOPBAR */
-/* ======================= */
 .topbar {
     z-index: 1050;
     height: 70px;
-    background-color: #ffffff;
-    color: #212529;
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background 0.3s, color 0.3s;
 }
 
-/* ======================= */
-/* FOOTER */
-/* ======================= */
 .sticky-footer {
     flex-shrink: 0;
-    background-color: #ffffff;
-    color: #212529;
+    background-color: var(--bg);
+    color: var(--text);
     padding: 0.5rem 0;
     text-align: center;
 }
 
 /* ======================= */
-/* DARK MODE */
-[data-bs-theme="dark"] body,
-[data-bs-theme="dark"] #content-wrapper,
-[data-bs-theme="dark"] .sidebar,
-[data-bs-theme="dark"] .topbar,
-[data-bs-theme="dark"] .sticky-footer {
-    background-color: #1e1e2f;
-    color: #f8f9fa;
+/* CARDS, TABLES, ALERTS, FORMS */
+/* ======================= */
+.card, .table, .alert, .form-control {
+    background-color: var(--card-bg) !important;
+    color: var(--text) !important;
+    border-color: var(--card-border) !important;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
-[data-bs-theme="dark"] .card,
-[data-bs-theme="dark"] .table {
-    background-color: #2a2a3b;
-    color: #f8f9fa;
-    border-color: #444;
-}
-
-[data-bs-theme="dark"] table tbody tr:hover {
-    background-color: rgba(255,255,255,0.05);
-}
-
-[data-bs-theme="dark"] .sidebar {
-    background: linear-gradient(180deg, #1f1f2e, #111827);
-}
-
-[data-bs-theme="dark"] .sidebar .nav-link,
-[data-bs-theme="dark"] .sidebar .sidebar-text {
-    color: #fff !important;
-}
-
-[data-bs-theme="dark"] .sidebar .nav-link.active {
-    background-color: rgba(255,255,255,0.25) !important;
+table tbody tr:hover {
+    background-color: var(--hover-bg);
 }
 
 /* ======================= */
-/* LIGHT MODE */
-[data-bs-theme="light"] body,
-[data-bs-theme="light"] #content-wrapper,
-[data-bs-theme="light"] .sidebar,
-[data-bs-theme="light"] .topbar,
-[data-bs-theme="light"] .sticky-footer {
-    background-color: #f8f9fc;
-    color: #212529;
+/* HOVER UTILITY */
+/* ======================= */
+.hover-bg-light:hover {
+    background-color: var(--hover-bg) !important;
 }
 
-[data-bs-theme="light"] .card,
-[data-bs-theme="light"] .table {
-    background-color: #ffffff;
-    color: #212529;
-    border-color: #ddd;
+.rounded-full {
+    border-radius: 50%;
 }
 
-[data-bs-theme="light"] .sidebar {
-    background: linear-gradient(180deg, #4e73df, #224abe);
-}
-
-[data-bs-theme="light"] .sidebar .nav-link,
-[data-bs-theme="light"] .sidebar .sidebar-text {
-    color: #fff !important;
+/* ======================= */
+/* DARK MODE FULL OVERRIDE SB ADMIN 2 */
+/* ======================= */
+[data-bs-theme="dark"] .topbar,
+[data-bs-theme="dark"] #content-wrapper,
+[data-bs-theme="dark"] #content,
+[data-bs-theme="dark"] .sticky-footer,
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .table,
+[data-bs-theme="dark"] .alert,
+[data-bs-theme="dark"] .form-control {
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
 }

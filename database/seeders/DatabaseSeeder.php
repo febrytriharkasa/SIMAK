@@ -10,12 +10,11 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // bikin role admin kalau belum ada
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
 
         // bikin user admin default
         $admin = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@simak.com'],
             [
                 'nip' => '12345',
                 'name' => 'Administrator',

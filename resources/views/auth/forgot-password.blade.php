@@ -53,7 +53,7 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
 
-                <form action="{{ route('forgot-password.submit') }}" method="POST">
+                <form action="{{ route('password-request.submit') }}" method="POST">
                     @csrf
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
