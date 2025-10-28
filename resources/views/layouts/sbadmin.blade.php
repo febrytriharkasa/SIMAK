@@ -115,98 +115,84 @@
             margin-top: 400px;
         }
 
-        /* ========================= */
-        /* === TEKS SESUAI TEMA === */
-        /* ========================= */
+       /* ===========================
+       THEME MODE STYLING
+       =========================== */
 
-        /* Default Light */
-        [data-bs-theme="light"] body,
-        [data-bs-theme="light"] #content-wrapper,
-        [data-bs-theme="light"] .sidebar,
-        [data-bs-theme="light"] .topbar,
-        [data-bs-theme="light"] .sticky-footer {
-            color: #212529 !important; /* teks gelap */
-        }
+    /* Light mode */
+    [data-bs-theme="light"] #content-wrapper,
+    [data-bs-theme="light"] .container {
+        background-color: #fff !important;
+        color: #181515;
+    }
+    [data-bs-theme="light"] .card,
+    [data-bs-theme="light"] .form-control {
+        background-color: #f8f9fa !important;
+        color: #000;
+    }
+    [data-bs-theme="light"] label {
+        color: #000;
+    }
 
-        /* Dark */
-        [data-bs-theme="dark"] body,
-        [data-bs-theme="dark"] #content-wrapper,
-        [data-bs-theme="dark"] .sidebar,
-        [data-bs-theme="dark"] .topbar,
-        [data-bs-theme="dark"] .sticky-footer {
-            color: #f8f9fa !important; /* teks terang */
-        }
+    /* Dark mode */
+    [data-bs-theme="dark"] #content-wrapper,
+    [data-bs-theme="dark"] .container {
+        background-color: #1B1B1DFF !important;
+        color: #fff;
+    }
+    [data-bs-theme="dark"] .card,
+    [data-bs-theme="dark"] .form-control {
+        background-color: #2c2c2e !important;
+        color: #fff;
+        border: 1px solid #444;
+    }
+    [data-bs-theme="dark"] label {
+        color: #fff;
+    }
 
-        /* Pastikan heading dan span ikut */
-        [data-bs-theme="light"] h1, 
-        [data-bs-theme="light"] h2, 
-        [data-bs-theme="light"] h3, 
-        [data-bs-theme="light"] h4, 
-        [data-bs-theme="light"] h5, 
-        [data-bs-theme="light"] h6,
-        [data-bs-theme="light"] p,
-        [data-bs-theme="light"] span,
-        [data-bs-theme="light"] a,
-        [data-bs-theme="light"] li {
-            color: #212529 !important;
-        }
+    /* ===========================
+       FIX WARNA TOMBOL & HEADER
+       =========================== */
 
-        [data-bs-theme="dark"] h1, 
-        [data-bs-theme="dark"] h2, 
-        [data-bs-theme="dark"] h3, 
-        [data-bs-theme="dark"] h4, 
-        [data-bs-theme="dark"] h5, 
-        [data-bs-theme="dark"] h6,
-        [data-bs-theme="dark"] p,
-        [data-bs-theme="dark"] span,
-        [data-bs-theme="dark"] a,
-        [data-bs-theme="dark"] li {
-            color: #f8f9fa !important;
-        }
+    /* Warna teks di tombol dan elemen berwarna primary */
+    .btn-primary,
+    .bg-primary,
+    .card-header.bg-primary,
+    a.btn-primary,
+    button.btn-primary {
+        color: #fff !important;
+    }
 
-        html, body {
-                height: 100%;
-            }
+    /* Hover agar tetap terlihat jelas */
+    .btn-primary:hover,
+    a.btn-primary:hover,
+    button.btn-primary:hover {
+        color: #fff !important;
+        background-color: #3758c0 !important;
+    }
 
-            #content-wrapper {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }
+    /* Teks heading di dalam elemen bg-primary */
+    .bg-primary h1,
+    .bg-primary h2,
+    .bg-primary h3,
+    .bg-primary h4,
+    .bg-primary h5,
+    .bg-primary h6 {
+        color: #fff !important;
+    }
 
-            #content {
-                flex: 1;
-            }
+    /* Pastikan badge berwarna kontras */
+    .badge.bg-primary,
+    .badge.bg-success,
+    .badge.bg-warning,
+    .badge.bg-danger {
+        color: #fff !important;
+    }
 
-        /* ========================= */
-        /* === KUNCI TEKS SIDEBAR === */
-        /* ========================= */
-
-        .sidebar-brand-text {
-            color: #fff !important;
-        }
-        /* Semua teks sidebar tetap putih */
-        .sidebar .nav-link,
-        .sidebar .nav-link i,
-        .sidebar .sidebar-heading,
-        .sidebar .nav-item,
-        .sidebar .nav-item a,
-        .sidebar .nav-item span {
-            color: #ffffff !important;
-        }
-
-        /* Aktif tetap kontras */
-        .sidebar .nav-link.active {
-            background-color: rgba(255,255,255,0.25) !important;
-            font-weight: 600;
-            color: #ffffff !important;
-        }
-
-        /* Hover tetap terang */
-        .sidebar .nav-link:hover {
-            color: #f8f9fa !important;
-            background-color: rgba(255,255,255,0.15) !important;
-        }
+    /* Jika warning, biar teksnya gelap (lebih terbaca) */
+    .badge.bg-warning {
+        color: #000 !important;
+    }
 
 
     </style>
@@ -404,7 +390,7 @@
 
         <li class="nav-item {{ request()->is('profile') ? 'active' : '' }}">
             <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" 
-            href="{{ route('profile.edit') }}">
+            href="{{ route('profile.show') }}">
                 <i class="bi bi-person-circle me-2"></i>
                 <span class="sidebar-text">Profile</span>
             </a>

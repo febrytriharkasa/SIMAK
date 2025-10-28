@@ -99,7 +99,7 @@
                                 <td>
                                     <a href="{{ route('nilai-tk.show', $siswa->id) }}" 
                                        class="btn btn-sm btn-info text-white" title="Lihat Nilai">
-                                        <i class="bi bi-eye"></i> Lihat
+                                        <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
                             </tr>

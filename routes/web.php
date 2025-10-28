@@ -112,12 +112,18 @@ Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
 
     Route::get('nilai-tk/siswa/{siswaId}', [NilaiTkController::class, 'show'])->name('nilai-tk.show');
 });
+
 // ================== PROFILE ==================
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    // ✅ Avatar (Blob Preview)
+    Route::get('/profile/foto/{id}', [ProfileController::class, 'avatar'])->name('profile.avatar');
+
+    // ✅ Tambah route ganti password
+    Route::post('/profile/update-password', [ProfileController::class, 'updatePassword'])->name('profile.update-password');
 });
 
 require __DIR__.'/auth.php';

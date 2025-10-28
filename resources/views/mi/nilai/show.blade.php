@@ -108,7 +108,7 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('nilai.edit', $nilai->id) }}" class="btn btn-warning btn-sm">
-                                        <i class="bi bi-pencil"></i> Edit
+                                        <i class="fas fa-edit"></i>
                                     </a>
                                 </td>
                             </tr>

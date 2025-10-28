@@ -35,6 +35,7 @@
     [data-bs-theme="dark"] label {
         color: #fff;
     }
+    
 </style>
 
 <div class="container-fluid">
@@ -46,13 +47,13 @@
     {{-- Form Pencarian --}}
     <div class="card mb-4 shadow-sm border-0">
         <div class="card-body d-flex justify-content-between align-items-center">
-            <a href="{{ route('evaluasi.create') }}" class="btn btn-primary">
+            <a href="{{ route('evaluasi.create') }}" class="btn btn-primary text-white">
                 <i class="bi bi-plus-lg"></i> Tambah Evaluasi
             </a>
             <form method="GET" action="{{ route('evaluasi.index') }}" class="d-flex align-items-center">
                 <label for="search" class="me-2 fw-bold mb-0">Cari Nama/NIP:</label>
                 <input type="text" name="search" id="search" value="{{ request('search') }}" 
-                       class="form-control me-2" style="max-width:200px;" placeholder="Masukkan kata kunci...">
+                    class="form-control me-2" style="max-width:200px;" placeholder="Masukkan kata kunci...">
                 <button type="submit" class="btn btn-secondary">
                     <i class="bi bi-search"></i> Cari
                 </button>
@@ -63,7 +64,7 @@
     {{-- Tabel Evaluasi --}}
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
-            <h6 class="mb-0">Daftar Evaluasi Kinerja</h6>
+            <h6 class="mb-0 text-white">Daftar Evaluasi Kinerja</h6>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

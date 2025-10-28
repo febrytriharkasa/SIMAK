@@ -93,8 +93,8 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('nilai.show', $siswa->id) }}" class="btn btn-sm btn-info text-black title="Detail">
-                                        <i class="fas fa-eye"></i> Lihat Nilai
+                                    <a href="{{ route('nilai.show', $siswa->id) }}" class="btn btn-sm btn-info text-white" title="Lihat Nilai">
+                                        <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
                             </tr>

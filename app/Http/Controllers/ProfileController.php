@@ -7,80 +7,70 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash; // ✅ tambahkan
+use Carbon\Carbon; // ✅ tambahkan
 use Illuminate\View\View;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function show(): View
     {
-        $roles = Role::all(); // ambil semua role
-
-        return view('profile.edit', [
-            'user' => $request->user(),
-            'roles' => $roles,
-        ]);
+        return view('profile.show', ['user' => Auth::user()]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
+    public function edit(): View
+    {
+        return view('profile.edit', ['user' => Auth::user()]);
+    }
+
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
 
-        $user->fill($request->validated());
+        // Update field teks
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->no_hp = $request->no_hp;
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+        // Update foto kalau ada
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $user->foto = file_get_contents($file->getRealPath());
         }
 
         $user->save();
 
-        // Update role kalau ada input role
-        if ($request->has('role')) {
-            $user->syncRoles([$request->role]);
-        }
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.show')->with('success', 'Profil berhasil diperbarui!');
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
-    }
-
-    public function updatePassword(Request $request)
+    // ✅ Update password via popup
+    public function updatePassword(Request $request): RedirectResponse
     {
         $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
         ]);
 
-        $user = $request->user();
-        $user->password = Hash::make($request->password);
-        $user->save();
+        $user = Auth::user();
 
-        return Redirect::route('profile.edit')->with('status', 'password-updated');
+        if (!Hash::check($request->current_password, $user->password)) {
+            return Redirect::back()->with('error', 'Password lama salah!');
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->last_password_changed_at = Carbon::now(); // ✅ Simpan waktu terakhir ganti password
+        $user = Auth::user();
+
+        return Redirect::back()->with('success', 'Password berhasil diganti!');
+    }
+
+    public function avatar($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        if ($user->foto) {
+            return response($user->foto)->header('Content-Type', 'image/jpeg');
+        }
+
+        return redirect('https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=435ebe&color=fff');
     }
 }

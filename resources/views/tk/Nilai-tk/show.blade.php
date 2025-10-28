@@ -82,7 +82,7 @@
                 <table class="table table-striped table-hover mb-0">
                     <thead class="table-light">
                         <tr class="text-center">
-                            <th>#</th>
+                            <th>No</th>
                             <th>Mapel</th>
                             <th>Guru</th>
                             <th>Tugas</th>
@@ -108,7 +108,7 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('nilai-tk.edit', $nilai->id) }}" class="btn btn-warning btn-sm">
-                                        <i class="bi bi-pencil"></i> Edit
+                                        <i class="fas fa-edit"></i> 
                                     </a>
                                 </td>
                             </tr>

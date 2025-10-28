@@ -106,13 +106,13 @@
                                         {{-- Tombol Edit --}}
                                         <a href="{{ route('guru-tk.edit', $g->id) }}" 
                                            class="btn btn-sm btn-warning" title="Edit">
-                                            <i class="bi bi-pencil"></i>
+                                            <i class="fas fa-edit"></i>
                                         </a>
 
                                         {{-- Tombol Show --}}
                                         <a href="{{ route('guru-tk.show', $g->id) }}" 
                                            class="btn btn-sm btn-info text-white" title="Detail">
-                                            <i class="bi bi-eye"></i>
+                                            <i class="fas fa-eye"></i>
                                         </a>
 
                                         {{-- Tombol Hapus --}}
@@ -123,7 +123,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
+                                                <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
                                     </div>
