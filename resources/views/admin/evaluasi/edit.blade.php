@@ -1,5 +1,7 @@
 @extends('dashboard')
 
+@section('title', 'Edit Evaluasi Kinerja Pegawai/Guru')
+
 @section('content')
 <div class="container">
     <h3 class="mb-3 ms-5">Edit Evaluasi Kinerja</h3>

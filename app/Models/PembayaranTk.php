@@ -9,7 +9,7 @@ class PembayaranTk extends Model
 {
     use HasFactory;
     protected $table = 'pembayaran_tk';
-    protected $fillable = ['siswa_id', 'jumlah', 'tanggal', 'status', 'tanggal_bayar'];
+    protected $fillable = ['siswa_id', 'jumlah', 'tanggal', 'status', 'tanggal_bayar', 'jenis_tagihan'];
 
     protected $dates = ['tanggal', 'tanggal_bayar'];
 

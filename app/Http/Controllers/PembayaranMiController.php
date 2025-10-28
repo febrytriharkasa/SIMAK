@@ -60,6 +60,7 @@ class PembayaranMiController extends Controller
     {
         $request->validate([
             'siswa_id' => 'required|exists:siswas_mi,id',
+            'jenis_tagihan'   => 'required|string',
             'jumlah'   => 'required|numeric',
             'tanggal'  => 'required|date',
         ]);
@@ -249,8 +250,9 @@ class PembayaranMiController extends Controller
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas_mi,id',
-            'tahun'    => 'required|digits:4',
-            'bulan'    => 'required|numeric|min:1|max:12',
+            'jenis_tagihan' => 'required|string',
+            'tahun' => 'required|digits:4',
+            'bulan' => 'required|numeric|min:1|max:12',
             'jumlah_default' => 'required|numeric'
         ]);
 
@@ -260,18 +262,25 @@ class PembayaranMiController extends Controller
         $generated = 0;
         $tanggal = \Carbon\Carbon::createFromDate($request->tahun, $request->bulan, 1);
 
+        // Tangani jenis tagihan (jika pilih "Lainnya")
+        $jenisTagihan = $request->jenis_tagihan === 'Lainnya'
+            ? $request->jenis_tagihan_lainnya
+            : $request->jenis_tagihan;
+
         foreach ($siswaList as $siswa) {
             $cek = Pembayaran_MI::where('siswa_id', $siswa->id)
                 ->whereMonth('tanggal', $tanggal->month)
                 ->whereYear('tanggal', $tanggal->year)
+                ->where('jenis_tagihan', $jenisTagihan)
                 ->first();
 
             if (!$cek) {
                 Pembayaran_MI::create([
                     'siswa_id' => $siswa->id,
-                    'jumlah'   => $request->jumlah_default,
-                    'tanggal'  => $tanggal,
-                    'status'   => 'belum', // atau 'Belum Lunas'
+                    'jenis_tagihan' => $jenisTagihan,
+                    'jumlah' => $request->jumlah_default,
+                    'tanggal' => $tanggal,
+                    'status' => 'belum',
                     'tanggal_bayar' => null
                 ]);
                 $generated++;
@@ -281,7 +290,7 @@ class PembayaranMiController extends Controller
         return redirect()->route('pembayaran-mi.index', [
             'bulan' => $tanggal->format('Y-m'),
             'kelas_id' => $request->kelas_id
-        ])->with('success', "SPP berhasil digenerate untuk $generated siswa di kelas {$kelas->nama_kelas}.");
+        ])->with('success', "Tagihan '$jenisTagihan' berhasil digenerate untuk $generated siswa di kelas {$kelas->nama_kelas}.");
     }
 
     public function approvePembayaran($id)

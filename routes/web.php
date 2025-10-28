@@ -17,6 +17,8 @@ use App\Http\Controllers\NilaiTkController;
 use App\Http\Controllers\Admin\EvaluasiKinerjaController;
 use App\Http\Controllers\GuruMiDbController;
 use App\Http\Controllers\GuruTkDbController;
+use App\Http\Controllers\LaporanPembayaranMIController;
+use App\Http\Controllers\LaporanPembayaranTKController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -81,6 +83,8 @@ Route::middleware(['auth', 'role:admin|guru_mi'])->group(function () {
     Route::post('/pembayaran-mi/{id}/approve', [PembayaranMIController::class, 'approvePembayaran'])
             ->name('pembayaran-mi.approve');
     Route::resource('nilai', NilaiMiController::class);
+    Route::get('/laporan-pembayaran-mi', [LaporanPembayaranMIController::class, 'index'])
+            ->name('laporan-pembayaran-mi.index');
     Route::get('nilai/siswa/{siswaId}', [NilaiMiController::class, 'show'])->name('nilai.show');
 });
 
@@ -96,10 +100,12 @@ Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
     Route::get('/naik-kelas-tk', [SiswaTkController::class, 'naikKelasTk'])->name('siswa.naikKelasTk');
     Route::get('/get-siswa-detail-tk/{id}', [PembayaranTkController::class, 'getSiswaDetail']);
     Route::get('/siswa-mi/{id}', [SiswaTkController::class, 'show'])->name('siswa-tk.show');
-    Route::get('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateFormTK'])->name('pembayaran-mi.generateForm-tk');
-    Route::post('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateSPPTK'])->name('pembayaran-mi.generate-tk');
+    Route::get('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateFormTK'])->name('pembayaran-tk.generateForm-tk');
+    Route::post('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateSPPTK'])->name('pembayaran-tk.generate-tk');
      Route::post('/pembayaran-tk/{id}/approve', [PembayaranTkController::class, 'approvePembayaran'])
             ->name('pembayaran-tk.approve');
+    Route::get('/laporan-pembayaran-tk', [LaporanPembayaranTKController::class, 'index'])
+            ->name('laporan-pembayaran-tk.index');
     Route::resource('nilai-tk', NilaiTkController::class)->parameters([
         'nilai-tk' => 'nilai'
     ]);
@@ -111,6 +117,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 });
 
 require __DIR__.'/auth.php';

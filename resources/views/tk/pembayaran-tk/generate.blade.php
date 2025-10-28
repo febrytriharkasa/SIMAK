@@ -3,6 +3,40 @@
 @section('title', 'Generate SPP')
 
 @section('content')
+
+<style>
+    /* Light mode */
+    [data-bs-theme="light"] #content-wrapper,
+    [data-bs-theme="light"] .container {
+        background-color: #fff !important;
+        color: #181515;
+    }
+    [data-bs-theme="light"] .card,
+    [data-bs-theme="light"] .form-control {
+        background-color: #f8f9fa !important;
+        color: #000;
+    }
+    [data-bs-theme="light"] label {
+        color: #000;
+    }
+
+    /* Dark mode */
+    [data-bs-theme="dark"] #content-wrapper,
+    [data-bs-theme="dark"] .container {
+        background-color: #1B1B1DFF !important;
+        color: #fff;
+    }
+    [data-bs-theme="dark"] .card,
+    [data-bs-theme="dark"] .form-control {
+        background-color: #2c2c2e !important;
+        color: #fff;
+        border: 1px solid #444;
+    }
+    [data-bs-theme="dark"] label {
+        color: #fff;
+    }
+</style>
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
@@ -11,7 +45,7 @@
                     <h5 class="mb-0">Generate SPP</h5>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('pembayaran-mi.generate-tk') }}" method="POST">
+                    <form action="{{ route('pembayaran-tk.generate-tk') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label for="kelas_id" class="form-label">Pilih Kelas</label>
@@ -22,6 +56,20 @@
                                 @endforeach
                             </select>
                         </div>
+                        
+                        {{-- Jenis Tagihan --}}
+                        <div class="mb-3">
+                            <label for="jenis_tagihan" class="form-label fw-semibold">Jenis Tagihan</label>
+                            <select name="jenis_tagihan" id="jenis_tagihan" class="form-select" required>
+                                <option value="">-- Pilih Jenis Tagihan --</option>
+                                <option value="SPP">SPP</option>
+                                <option value="Rekreasi">Rekreasi</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                            <input type="text" id="jenis_tagihan_lainnya" name="jenis_tagihan_lainnya" class="form-control mt-2" 
+                                placeholder="Masukkan jenis tagihan lainnya" style="display: none;">
+                        </div>
+
                         <div class="mb-3">
                             <label for="bulan" class="form-label">Bulan</label>
                             <select name="bulan" id="bulan" class="form-select" required>

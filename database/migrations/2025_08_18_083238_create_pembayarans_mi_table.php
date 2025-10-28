@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('pembayarans_mi', function (Blueprint $table) {
             $table->id();
             $table->foreignId('siswa_id')->constrained('siswas_mi')->onDelete('cascade');
+            $table->string('jenis_tagihan'); // kolom jenis tagihan
             $table->decimal('jumlah', 10, 2);
             $table->date('tanggal');
             $table->enum('status', ['lunas', 'belum'])->default('belum'); // kolom status

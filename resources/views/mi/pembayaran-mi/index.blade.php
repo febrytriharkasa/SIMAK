@@ -3,6 +3,40 @@
 @section('title', 'Pembayaran MI')
 
 @section('content')
+
+<style>
+    /* Light mode */
+    [data-bs-theme="light"] #content-wrapper,
+    [data-bs-theme="light"] .container {
+        background-color: #fff !important;
+        color: #181515;
+    }
+    [data-bs-theme="light"] .card,
+    [data-bs-theme="light"] .form-control {
+        background-color: #f8f9fa !important;
+        color: #000;
+    }
+    [data-bs-theme="light"] label {
+        color: #000;
+    }
+
+    /* Dark mode */
+    [data-bs-theme="dark"] #content-wrapper,
+    [data-bs-theme="dark"] .container {
+        background-color: #1B1B1DFF !important;
+        color: #fff;
+    }
+    [data-bs-theme="dark"] .card,
+    [data-bs-theme="dark"] .form-control {
+        background-color: #2c2c2e !important;
+        color: #fff;
+        border: 1px solid #444;
+    }
+    [data-bs-theme="dark"] label {
+        color: #fff;
+    }
+</style>
+
 <div class="container-fluid">
     <div class="page-heading mb-40">
         <h3 class="ms-5">Administrasi MI</h3>
@@ -105,6 +139,7 @@
                         <th>NISN</th>
                         <th>Nama Siswa</th>
                         <th>Kelas</th>
+                        <th>Tagihan</th>
                         <th>Jumlah</th>
                         <th>Bulan</th>
                         <th>Tanggal Bayar</th>
@@ -115,7 +150,7 @@
                 <tbody>
                     @if(!request('bulan'))
                         <tr>
-                            <td colspan="9" class="text-center">Pilih bulan & tahun terlebih dahulu.</td>
+                            <td colspan="10" class="text-center">Pilih bulan & tahun terlebih dahulu.</td>
                         </tr>
                     @else
                         @forelse ($pembayaran as $p)
@@ -124,6 +159,7 @@
                                 <td>{{ $p->siswa->nisn ?? '-' }}</td>
                                 <td>{{ $p->siswa->nama ?? '-' }}</td>
                                 <td>{{ $p->siswa->kelas->nama_kelas ?? '-' }}</td>
+                                <td>{{ $p->jenis_tagihan ?? '-' }}</td>
                                 <td>Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
                                 <td>{{ $p->tanggal ? \Carbon\Carbon::parse($p->tanggal)->translatedFormat('F Y') : '-' }}</td>
                                 <td>{{ $p->tanggal_bayar ? \Carbon\Carbon::parse($p->tanggal_bayar)->format('d-m-Y') : '-' }}</td>
@@ -179,7 +215,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="text-center">Tidak ada data pada filter yang dipilih.</td></tr>
+                            <tr><td colspan="10" class="text-center">Tidak ada data pada filter yang dipilih.</td></tr>
                         @endforelse
                     @endif
                 </tbody>

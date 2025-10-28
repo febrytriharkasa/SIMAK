@@ -42,10 +42,9 @@ class EvaluasiKinerjaController extends Controller
             'kehadiran'      => 'required|numeric|min:0|max:100',
             'deskripsi'      => 'nullable|string',
         ]);
-
         EvaluasiKinerja::create($request->all());
-
-        return redirect()->route('admin.evaluasi.index')->with('success', 'Evaluasi berhasil ditambahkan');
+         dd($request->all());
+        return redirect()->route('evaluasi.index')->with('success', 'Evaluasi berhasil ditambahkan');
     }
 
     /**
@@ -54,7 +53,7 @@ class EvaluasiKinerjaController extends Controller
     public function edit(EvaluasiKinerja $evaluasi)
     {
         $users = User::all();
-        return view('evaluasi.edit', compact('evaluasi', 'users'));
+        return view('admin.evaluasi.edit', compact('evaluasi', 'users'));
     }
 
     /**
@@ -75,7 +74,7 @@ class EvaluasiKinerjaController extends Controller
 
         $evaluasi->update($request->all());
 
-        return redirect()->route('admin.evaluasi.index')->with('success', 'Evaluasi berhasil diperbarui');
+        return redirect()->route('evaluasi.index')->with('success', 'Evaluasi berhasil diperbarui');
     }
 
     /**
@@ -84,6 +83,6 @@ class EvaluasiKinerjaController extends Controller
     public function destroy(EvaluasiKinerja $evaluasi)
     {
         $evaluasi->delete();
-        return redirect()->route('admin.evaluasi.index')->with('success', 'Evaluasi berhasil dihapus');
+        return redirect()->route('evaluasi.index')->with('success', 'Evaluasi berhasil dihapus');
     }
 }

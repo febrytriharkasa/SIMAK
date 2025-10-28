@@ -27,10 +27,12 @@ class NilaiTkController extends Controller
             $query->where('kelas_id', $kelasId);
         }
 
-        $siswas = $query->get();
+        // Gunakan paginate agar bisa pakai ->links()
+        $siswas = $query->paginate(10);
 
         return view('tk.nilai-tk.index', compact('siswas', 'kelasList', 'kelasId'));
     }
+
 
     // Menampilkan form tambah nilai
    public function create()

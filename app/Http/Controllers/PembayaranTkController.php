@@ -250,13 +250,14 @@ class PembayaranTkController extends Controller
     public function generateFormTK()
     {
         $kelasList = KelasTk::orderBy('tingkat', 'asc')->get();
-        return view('mi.pembayaran-mi.generate', compact('kelasList'));
+        return view('tk.pembayaran-tk.generate', compact('kelasList'));
     }
 
     public function generateSPPTK(Request $request)
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas_mi,id',
+            'jenis_tagihan' => 'required|string',
             'tahun'    => 'required|digits:4',
             'bulan'    => 'required|numeric|min:1|max:12',
             'jumlah_default' => 'required|numeric'
@@ -267,19 +268,27 @@ class PembayaranTkController extends Controller
 
         $generated = 0;
         $tanggal = \Carbon\Carbon::createFromDate($request->tahun, $request->bulan, 1);
+        
+        // Tangani jenis tagihan (jika pilih "Lainnya")
+        $jenisTagihan = $request->jenis_tagihan === 'Lainnya'
+            ? $request->jenis_tagihan_lainnya
+            : $request->jenis_tagihan;
 
         foreach ($siswa as $siswa) {
             $cek = PembayaranTk::where('siswa_id', $siswa->id)
                 ->whereMonth('tanggal', $tanggal->month)
                 ->whereYear('tanggal', $tanggal->year)
+                ->where('jenis_tagihan', $jenisTagihan)
                 ->first();
 
             if (!$cek) {
                 PembayaranTk::create([
                     'siswa_id' => $siswa->id,
-                    'jumlah'   => '100000',
-                    'tanggal'  => $tanggal,
-                    'status'   => 'belum' // atau 'Belum Lunas'
+                    'jenis_tagihan' => $jenisTagihan,
+                    'jumlah' => $request->jumlah_default,
+                    'tanggal' => $tanggal,
+                    'status' => 'belum',
+                    'tanggal_bayar' => null
                 ]);
                 $generated++;
             }
