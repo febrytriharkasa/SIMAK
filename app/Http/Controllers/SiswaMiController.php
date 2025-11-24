@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Siswa_MI;
 use App\Models\Kelas_Mi;
-use App\Models\MapelMi;
 use Illuminate\Http\Request;
 
 class SiswaMiController extends Controller
@@ -16,12 +15,11 @@ class SiswaMiController extends Controller
         if ($request->has('search') && $request->search != '') {
             $query->where(function ($q) use ($request) {
                 $q->where('nama', 'like', '%' . $request->search . '%')
-                ->orWhere('nisn', 'like', '%' . $request->search . '%');
+                  ->orWhere('nisn', 'like', '%' . $request->search . '%');
             });
         }
 
         $siswa = $query->paginate(10);
-
         return view('mi.siswa-mi.index', compact('siswa'));
     }
 
@@ -31,30 +29,28 @@ class SiswaMiController extends Controller
         return view('mi.siswa-mi.create', compact('kelas'));
     }
 
-   public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
-            'nama'          => 'required|string|max:255',
-            'nisn'          => 'required|string|unique:siswas_mi,nisn',
-            'tahun'         => 'required|digits:4|integer|min:1900|max:' . date('Y'),
-            'no_hp_wali'    => 'required|string|max:20',
-            'alamat_siswa'  => 'required|string|max:255',
-            'nama_wali'     => 'required|string|max:255',
-            'kelas_id'      => 'nullable|exists:kelas_mi,id',
+            'nama' => 'required|string|max:255',
+            'nisn' => 'required|string|unique:siswas_mi,nisn',
+            'tahun' => 'required|digits:4|integer|min:1900|max:' . date('Y'),
+            'no_hp_wali' => 'required|string|max:20',
+            'alamat_siswa' => 'required|string|max:255',
+            'nama_wali' => 'required|string|max:255',
+            'kelas_id' => 'nullable|exists:kelas_mi,id',
         ]);
 
         $data = $request->all();
 
-        // Jika kelas tidak dipilih, default ke kelas 1
         if (empty($data['kelas_id'])) {
-            $kelasAwal = \App\Models\Kelas_Mi::where('tingkat', 1)->first();
+            $kelasAwal = Kelas_Mi::where('tingkat', 1)->first();
             if ($kelasAwal) {
                 $data['kelas_id'] = $kelasAwal->id;
             }
         }
 
         Siswa_MI::create($data);
-
         return redirect()->route('siswa-mi.index')->with('success', 'Data berhasil ditambahkan');
     }
 
@@ -81,33 +77,22 @@ class SiswaMiController extends Controller
 
     public function naikKelas()
     {
-        $siswas = Siswa_MI::with('kelas','nilais')->get();
-        $totalMapel = MapelMi::count(); // total mapel wajib, misalnya 20
+        $siswas = Siswa_MI::with('kelas')->get();
 
         foreach ($siswas as $siswa) {
-            if (!$siswa->kelas) continue;
-
-            // Hitung jumlah mapel yang sudah diisi nilainya
-            $jumlahNilai = $siswa->nilais()
-                ->where('kelas_id', $siswa->kelas_id)
-                ->count();
-
-            // Kalau jumlah nilai kurang dari jumlah mapel → tidak bisa naik
-            if ($jumlahNilai < $totalMapel) {
+            if (!$siswa->kelas) {
+                $kelasAwal = Kelas_MI::where('tingkat', 1)->first();
+                if ($kelasAwal) {
+                    $siswa->update(['kelas_id' => $kelasAwal->id]);
+                }
                 continue;
             }
 
-            // Hitung rata-rata semua nilai akhir
-            $rataNilai = $siswa->nilais()
-                ->where('kelas_id', $siswa->kelas_id)
-                ->avg('nilai_akhir');
+            $kelasSekarang = $siswa->kelas;
+            $kelasBerikut = Kelas_MI::where('tingkat', $kelasSekarang->tingkat + 1)->first();
 
-            // Syarat minimal rata-rata 70
-            if ($rataNilai >= 70) {
-                $kelasBerikut = Kelas_MI::where('tingkat', $siswa->kelas->tingkat + 1)->first();
-                if ($kelasBerikut) {
-                    $siswa->update(['kelas_id' => $kelasBerikut->id]);
-                }
+            if ($kelasBerikut) {
+                $siswa->update(['kelas_id' => $kelasBerikut->id]);
             }
         }
 
@@ -119,7 +104,4 @@ class SiswaMiController extends Controller
         $siswa = Siswa_MI::with('kelas')->findOrFail($id);
         return view('mi.siswa-mi.show', compact('siswa'));
     }
-
 }
-
-

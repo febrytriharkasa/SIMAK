@@ -20,7 +20,7 @@
 </style> 
     
 <div class="page-heading mb-40">
-    <h3 class="ms-5">Dashboard Statistik</h3>
+    <h3 class="mb-3 ms-5">Dashboard Statistik</h3>
 </div>
 
 @hasanyrole('admin|guru_mi')

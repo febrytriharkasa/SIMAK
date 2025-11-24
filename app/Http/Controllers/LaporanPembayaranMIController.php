@@ -36,13 +36,14 @@ class LaporanPembayaranMIController extends Controller
 
             foreach ($siswaList as $siswa) {
                 // Ambil semua pembayaran siswa berdasarkan filter
-                $pembayaranList = Pembayaran_MI::where('siswa_id', $siswa->id)
+                $pembayaranList = Pembayaran_MI::with('siswa')
+                    ->where('siswa_id', $siswa->id)
                     ->when($status, fn($q) => $q->where('status', $status))
                     ->when($jenis, fn($q) => $q->where('jenis_tagihan', 'like', "%{$jenis}%"))
                     ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
                     ->orderBy('tanggal', 'asc')
                     ->get();
-
+                    
                 if ($pembayaranList->isNotEmpty()) {
                     $data[$kelas->nama_kelas][$siswa->nama] = $pembayaranList;
                 }

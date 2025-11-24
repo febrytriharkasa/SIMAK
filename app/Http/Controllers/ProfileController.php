@@ -27,10 +27,21 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Update field teks
+        // Update semua field
         $user->name = $request->name;
         $user->email = $request->email;
         $user->no_hp = $request->no_hp;
+        $user->tempat_lahir = $request->tempat_lahir;
+        $user->tanggal_lahir = $request->tanggal_lahir;
+        $user->jenis_kelamin = $request->jenis_kelamin;
+        $user->agama = $request->agama;
+        $user->alamat = $request->alamat;
+        $user->mata_pelajaran = $request->mata_pelajaran;
+        $user->kelas_diampu = $request->kelas_diampu;
+        $user->jabatan = $request->jabatan;
+        $user->tanggal_masuk = $request->tanggal_masuk;
+        $user->pendidikan = $request->pendidikan;
+        $user->status_kepegawaian = $request->status_kepegawaian;
 
         // Update foto kalau ada
         if ($request->hasFile('foto')) {
@@ -42,6 +53,7 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.show')->with('success', 'Profil berhasil diperbarui!');
     }
+
 
     // ✅ Update password via popup
     public function updatePassword(Request $request): RedirectResponse
@@ -67,10 +79,22 @@ class ProfileController extends Controller
     public function avatar($id)
     {
         $user = \App\Models\User::findOrFail($id);
+
+        // Jika ada foto di database → tampilkan
         if ($user->foto) {
-            return response($user->foto)->header('Content-Type', 'image/jpeg');
+            return response($user->foto)
+                ->header('Content-Type', 'image/jpeg');
         }
 
-        return redirect('https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=435ebe&color=fff');
+        // Jika tidak ada foto → tampilkan avatar default lokal (bukan redirect)
+        $avatarUrl = 'https://ui-avatars.com/api/?name=' . urlencode($user->name)
+                    . '&background=435ebe&color=fff';
+
+        // Ambil gambar dari internet lalu kirim ke browser
+        $image = file_get_contents($avatarUrl);
+
+        return response($image)
+            ->header('Content-Type', 'image/png');
     }
+
 }

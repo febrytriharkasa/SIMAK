@@ -1,142 +1,209 @@
 @extends('layouts.sbadmin')
 
-@section('title', 'Data User Yayasan')
+@section('title', 'User - SIMAK')
 
 @section('content')
 
 <style>
-    /* Light mode */
-    [data-bs-theme="light"] #content-wrapper,
-    [data-bs-theme="light"] .container {
-        background-color: #fff !important;
+    /* Light Mode */
+    [data-bs-theme="light"] .container-fluid {
+        background-color: #fff;
         color: #181515;
     }
     [data-bs-theme="light"] .card,
     [data-bs-theme="light"] .form-control {
-        background-color: #f8f9fa !important;
-        color: #000;
-    }
-    [data-bs-theme="light"] label {
+        background-color: #f8f9fa;
         color: #000;
     }
 
-    /* Dark mode */
-    [data-bs-theme="dark"] #content-wrapper,
-    [data-bs-theme="dark"] .container {
-        background-color: #1B1B1DFF !important;
+    /* Dark Mode */
+    [data-bs-theme="dark"] .container-fluid {
+        background-color: #1b1b1d;
         color: #fff;
     }
     [data-bs-theme="dark"] .card,
     [data-bs-theme="dark"] .form-control {
-        background-color: #2c2c2e !important;
+        background-color: #2c2c2e;
         color: #fff;
         border: 1px solid #444;
     }
-    [data-bs-theme="dark"] label {
+
+    /* Custom badge role */
+    .badge-role {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 8px;
+    }
+
+    .badge-admin {
+        background-color: #435ebe;
         color: #fff;
     }
 
-    .badge-role {
-        background-color: #0d6efd;
+    .badge-guru {
+        background-color: #28a745;
         color: #fff;
-        font-size: 0.85rem;
-        border-radius: 8px;
-        padding: 4px 8px;
+    }
+
+    .badge-staff {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .badge-default {
+        background-color: #6c757d;
+        color: #fff;
+    }
+
+    /* Table style sama seperti approval */
+    table.table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.05);
     }
 </style>
 
-
 <div class="container-fluid">
-    {{-- Header --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 ms-4 mt-4">
         <h4 class="fw-bold">Data User Yayasan</h4>
     </div>
 
-    {{-- Form Pencarian --}}
-    <div class="card mb-4 shadow-sm border-0">
-        <div class="card-body d-flex justify-content-between align-items-center">
-            <form method="GET" action="{{ route('users.index') }}" class="d-flex align-items-center">
-                <label for="search" class="me-2 fw-bold mb-0">Cari User:</label>
-                <input type="text" name="search" id="search" 
-                       value="{{ request('search') }}" 
-                       class="form-control me-2" placeholder="Masukkan nama atau email" style="max-width:200px;">
-                <button type="submit" class="btn btn-secondary">
-                    <i class="bi bi-search"></i> Cari
-                </button>
-            </form>
-        </div>
-    </div>
+    <!-- Alert Notifikasi -->
+    @foreach (['success', 'error', 'info'] as $msg)
+        @if(session($msg))
+            <div class="alert alert-{{ $msg == 'error' ? 'danger' : $msg }} shadow-sm">
+                {{ session($msg) }}
+            </div>
+        @endif
+    @endforeach
 
-    {{-- Tabel Data User --}}
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
-            <h6 class="mb-0">Daftar User Yayasan</h6>
+            <h6 class="mb-0">Daftar User</h6>
         </div>
+
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover mb-0">
+                <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light text-center">
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>Nama</th>
                             <th>Email</th>
                             <th>Role</th>
-                            <th style="width: 150px;">Aksi</th>
+                            <th style="width: 200px;">Aksi</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @forelse($users as $user)
-                            <tr class="align-middle text-center">
-                                <td>{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</td>
-                                <td class="text-start">{{ $user->name }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>
-                                    @if($user->roles->isNotEmpty())
-                                        @foreach($user->roles as $role)
-                                            <span class="badge-role">{{ $role->name }}</span>
-                                        @endforeach
-                                    @else
-                                        <em class="text-muted">Belum ada</em>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center gap-2">
-                                        {{-- Tombol Edit --}}
-                                        <a href="{{ route('users.edit', $user->id) }}" 
-                                           class="btn btn-sm btn-warning" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
+                        <tr class="text-center">
+                            <td>{{ $loop->iteration + ($users->currentPage() - 1) * $users->perPage() }}</td>
+                            <td class="text-start">{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
 
-                                        {{-- Tombol Hapus --}}
-                                        <form action="{{ route('users.destroy', $user->id) }}" 
-                                              method="POST" 
-                                              onsubmit="return confirm('Yakin hapus data ini?')" 
-                                              style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+                            {{-- Badge Role --}}
+                            <td>
+                                @if($user->roles->isNotEmpty())
+                                    @foreach($user->roles as $role)
+                                        <span class="badge-role 
+                                            @if($role->name == 'admin') badge-admin
+                                            @elseif($role->name == 'guru') badge-guru
+                                            @elseif($role->name == 'staff') badge-staff
+                                            @else badge-default @endif
+                                        ">
+                                            {{ ucfirst($role->name) }}
+                                        </span>
+                                    @endforeach
+                                @else
+                                    <span class="badge badge-default">Belum ada</span>
+                                @endif
+                            </td>
+
+                            <td>
+                                <div class="d-flex justify-content-center gap-2">
+
+                                    <!-- Tombol Edit -->
+                                    <a href="{{ route('users.edit', $user->id) }}" 
+                                       class="btn btn-warning btn-sm" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <!-- Tombol Reset Password -->
+                                    <button type="button" 
+                                        onclick="openResetModal({{ $user->id }})"
+                                        class="btn btn-danger btn-sm" title="Reset Password">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+
+                                    <!-- Tombol Hapus -->
+                                    <form action="{{ route('users.destroy', $user->id) }}" 
+                                        method="POST" onsubmit="return confirm('Yakin hapus user ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger btn-sm" title="Hapus">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+
+                                </div>
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="text-center p-3">
-                                    <span class="text-muted">Belum ada data user.</span>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                Belum ada data user.
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
-                </table>
-            </div>
 
-            {{-- Pagination --}}
-            <div class="p-3">
-                {{ $users->withQueryString()->links() }}
+                </table>
             </div>
         </div>
     </div>
+
+    <!-- Pagination -->
+    <div class="mt-3">
+        {{ $users->withQueryString()->links() }}
+    </div>
+
 </div>
+
+<!-- Modal Reset Password -->
+<div class="modal fade" id="resetModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg" 
+         style="border-radius: 20px; overflow:hidden;">
+
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Reset Password</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body text-center">
+          <p>Reset password user ini menjadi <b>'password'</b>?</p>
+      </div>
+
+      <div class="modal-footer justify-content-center">
+        <form id="resetForm" method="POST">
+            @csrf
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-danger">Reset</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 @endsection
+
+@push('scripts')
+<script>
+function openResetModal(userId) {
+    document.getElementById('resetForm').action = `/users/${userId}/reset-password`;
+    new bootstrap.Modal(document.getElementById('resetModal')).show();
+}
+</script>
+@endpush

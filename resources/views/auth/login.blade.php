@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="h-screen bg-cover bg-center flex items-center justify-center"
-      style="background-image: url('{{ asset('bg/bg0.jpg') }}');">
+      style="background-image: url('{{ asset('bg/bglogin.png') }}');">
 
   <!-- Kotak Login -->
   <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl w-[400px] p-8">
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Judul -->
-    <h2 class="text-center text-2xl font-bold text-gray-800">Sign in with email</h2>
+    <h2 class="text-center text-2xl font-bold text-gray-900">Sign in with email</h2>
     <p class="text-center text-gray-500 text-sm mb-6">
       Masukkan email dan password untuk masuk ke dashboard.
     </p>
@@ -77,10 +77,10 @@
 
       <!-- Lupa Password + Register -->
       <div class="flex justify-between text-sm mt-2">
-        <a href="{{ route('password.request') }}" 
-           class="text-sky-600 hover:underline">
+        <a href="{{ route('password-request.form') }}" class="text-sky-600 hover:underline">
           Lupa Password?
         </a>
+
         <a href="{{ route('register') }}" 
            class="text-sky-600 hover:underline">
             Belum punya akun? Daftar

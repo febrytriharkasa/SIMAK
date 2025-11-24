@@ -7,6 +7,7 @@ use App\Models\SiswaTk;
 use App\Models\KelasTk;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PembayaranTkController extends Controller
 {
@@ -40,7 +41,7 @@ class PembayaranTkController extends Controller
 
             $pembayaran = $query->paginate(10);
         } else {
-            $pembayaran = collect([]); // kosongkan jika belum pilih bulan
+            $pembayaran = new LengthAwarePaginator([], 0, 10); // kosongkan jika belum pilih bulan
         }
 
         return view('tk.pembayaran-tk.index', compact('pembayaran', 'kelasList'));

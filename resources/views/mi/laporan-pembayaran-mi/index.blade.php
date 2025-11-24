@@ -5,38 +5,16 @@
 @section('content')
 
 <style>
-    /* Light mode */
     [data-bs-theme="light"] #content-wrapper,
     [data-bs-theme="light"] .container {
         background-color: #fff !important;
         color: #181515;
     }
-    [data-bs-theme="light"] .card,
-    [data-bs-theme="light"] .form-control {
-        background-color: #f8f9fa !important;
-        color: #000;
-    }
-    [data-bs-theme="light"] label {
-        color: #000;
-    }
-
-    /* Dark mode */
     [data-bs-theme="dark"] #content-wrapper,
     [data-bs-theme="dark"] .container {
         background-color: #1B1B1DFF !important;
         color: #fff;
     }
-    [data-bs-theme="dark"] .card,
-    [data-bs-theme="dark"] .form-control {
-        background-color: #2c2c2e !important;
-        color: #fff;
-        border: 1px solid #444;
-    }
-    [data-bs-theme="dark"] label {
-        color: #fff;
-    }
-
-    /* Custom badge */
     .badge-lunas {
         background-color: #28a745;
         color: #fff;
@@ -112,47 +90,65 @@
             </form>
         </div>
     </div>
-
-    {{-- Data Pembayaran --}}
     @forelse($data as $kelasNama => $siswaList)
         <div class="card mb-4 shadow-sm border-0">
             <div class="card-header bg-primary text-white fw-semibold">
                 {{ strtoupper($kelasNama) }}
             </div>
             <div class="card-body">
-                @foreach($siswaList as $siswaNama => $pembayaranList)
-                    <h6 class="fw-bold text-primary mb-2">{{ $siswaNama }}</h6>
-                    <div class="table-responsive mb-4">
-                        <table class="table table-striped table-hover align-middle">
-                            <thead class="table-light text-center">
-                                <tr>
-                                    <th style="width: 5%">No</th>
-                                    <th>Tanggal</th>
-                                    <th>Jenis Tagihan</th>
-                                    <th>Jumlah</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($pembayaranList as $i => $p)
-                                    <tr class="text-center">
-                                        <td>{{ $i + 1 }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($p->tanggal)->format('d-m-Y') }}</td>
-                                        <td class="text-start">{{ $p->jenis_tagihan }}</td>
-                                        <td>Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
-                                        <td>
-                                            @if($p->status === 'lunas')
-                                                <span class="badge-lunas">Lunas</span>
-                                            @else
-                                                <span class="badge-belum">Belum</span>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-primary text-center">
+                            <tr>
+                                <th>No</th>
+                                <th>NISN</th>
+                                <th>Nama</th>
+                                <th>Jenis Tagihan</th>
+                                <th>Jumlah</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php $no = 1; @endphp
+                            @foreach($siswaList as $siswaNama => $pembayaranList)
+                                @php
+                                    // Kelompokkan berdasarkan jenis tagihan (SPP, Sumbangan, dll)
+                                    $grouped = $pembayaranList->groupBy('jenis_tagihan');
+                                    $totalRows = $grouped->sum(fn($g) => count($g));
+                                    $siswaData = $pembayaranList->first();
+                                @endphp
+
+                                @php $firstRow = true; @endphp
+                                @foreach($grouped as $jenis => $group)
+                                    @php $rowspanJenis = count($group); @endphp
+                                    @foreach($group as $i => $p)
+                                        <tr>
+                                            @if($firstRow)
+                                                <td rowspan="{{ $totalRows }}">{{ $no++ }}</td>
+                                                <td rowspan="{{ $totalRows }}">{{ $siswaData->siswa->nisn ?? '-' }}</td>
+                                                <td rowspan="{{ $totalRows }}">{{ $siswaNama }}</td>
+                                                @php $firstRow = false; @endphp
                                             @endif
-                                        </td>
-                                    </tr>
+
+                                            @if($i == 0)
+                                                <td rowspan="{{ $rowspanJenis }}">{{ $jenis }}</td>
+                                            @endif
+
+                                            <td>Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
+                                            <td class="text-center">
+                                                @if($p->status === 'lunas')
+                                                    <span class="badge-lunas">Lunas</span>
+                                                @else
+                                                    <span class="badge-belum">Belum</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @endforeach
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     @empty
@@ -161,4 +157,5 @@
         </div>
     @endforelse
 </div>
+
 @endsection

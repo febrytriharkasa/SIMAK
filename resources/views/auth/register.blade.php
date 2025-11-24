@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="h-screen bg-cover bg-center flex items-center justify-center"
-      style="background-image: url('{{ asset('bg/bg0.jpg') }}');">
+      style="background-image: url('{{ asset('bg/bglogin.png') }}');">
 
   <!-- Card Register -->
   <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl w-[400px] p-8">

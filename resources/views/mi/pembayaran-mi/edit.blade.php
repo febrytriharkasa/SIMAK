@@ -55,14 +55,14 @@
                         <input type="hidden" name="id_tk" value="{{ request('id_tk') }}">
                         <input type="hidden" name="tahun_angkatan" value="{{ request('tahun_angkatan') }}">
 
-                       {{-- Pilih Siswa --}}
+                        {{-- Pilih Siswa --}}
                         <div class="mb-3">
                             <label for="siswa_id" class="form-label fw-semibold">Pilih Siswa</label>
                             <select name="siswa_id" id="siswa_id" class="form-control" required>
                                 <option value="">-- Pilih Siswa --</option>
                                 @foreach($siswa as $s)
                                     <option value="{{ $s->id }}"
-                                            {{ old('siswa_id', $pembayaran->siswa_id) == $s->id ? 'selected' : '' }}>
+                                        {{ old('siswa_id', $pembayaran->siswa_id) == $s->id ? 'selected' : '' }}>
                                         {{ $s->nisn }} - {{ $s->nama }}
                                     </option>
                                 @endforeach
@@ -73,9 +73,9 @@
                         {{-- Kelas (readonly) --}}
                         <div class="mb-3">
                             <label for="kelas_nama" class="form-label fw-semibold">Kelas</label>
-                            <input type="text" id="kelas_nama" class="form-control" 
+                            <input type="text" id="kelas_nama" class="form-control"
                                 value="{{ $pembayaran->siswa->kelas->nama_kelas ?? '-' }}" readonly>
-                            <input type="hidden" name="kelas_id" id="kelas_id" 
+                            <input type="hidden" name="kelas_id" id="kelas_id"
                                 value="{{ $pembayaran->siswa->kelas_id ?? '' }}">
                         </div>
 
@@ -85,6 +85,14 @@
                             <input type="number" name="jumlah" id="jumlah" class="form-control"
                                    value="{{ old('jumlah', $pembayaran->jumlah ?? 100000) }}" readonly>
                             @error('jumlah') <div class="text-danger small">{{ $message }}</div> @enderror
+                        </div>
+
+                        {{-- Jenis Tagihan (readonly/view only) --}}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Jenis Tagihan</label>
+                            <input type="text" class="form-control" 
+                                   value="{{ $pembayaran->jenis_tagihan }}" readonly>
+                            <input type="hidden" name="jenis_tagihan" value="{{ $pembayaran->jenis_tagihan }}">
                         </div>
 
                         {{-- Tanggal --}}
@@ -108,16 +116,17 @@
                             <button type="submit" class="btn btn-success me-2">
                                 <i class="bi bi-check-circle"></i> Update / Konfirmasi
                             </button>
-                             <a href="{{ route('pembayaran-mi.index', [
+                            <a href="{{ route('pembayaran-mi.index', [
                                     'bulan' => request('bulan'),
                                     'tahun' => request('tahun'),
                                     'nisn' => request('nisn'),
                                     'kelas_id' => request('kelas_id')
-                                    ]) }}" class="btn btn-secondary">
+                                ]) }}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Batal
                             </a>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -126,22 +135,18 @@
 @endsection
 
 @push('scripts')
-{{-- jQuery --}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-{{-- Select2 --}}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
 $(document).ready(function() {
-    // init select2
     $('#siswa_id').select2({
         theme: "bootstrap4",
         placeholder: "-- Pilih Siswa --",
         allowClear: true
     });
 
-    // ketika siswa dipilih
     $('#siswa_id').on('change', function() {
         let siswaId = $(this).val();
         $('#kelas_nama').val('');
@@ -164,10 +169,7 @@ $(document).ready(function() {
         }
     });
 });
-
 </script>
 
-
-{{-- Styling tambahan Select2 biar pas dengan Bootstrap --}}
 <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@1.5.2/dist/select2-bootstrap4.min.css" rel="stylesheet">
 @endpush

@@ -1,6 +1,28 @@
 <!-- resources/views/layouts/sbadmin.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Ambil tema dari localStorage
+        let theme = localStorage.getItem("data-bs-theme") || "light";
+
+        if (theme === "system") {
+            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+
+        document.documentElement.setAttribute("data-bs-theme", theme);
+
+        // ubah ikon dropdown sesuai tema
+        const icon = document.getElementById("themeIcon");
+        if (theme === "light") {
+            icon.className = "bi bi-sun";
+        } else if (theme === "dark") {
+            icon.className = "bi bi-moon";
+        } else {
+            icon.className = "bi bi-laptop";
+        }
+    });
+    </script>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -12,191 +34,7 @@
     <link href="{{ asset('sb-admin-2/css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-    <style>
-        /* === SIDEBAR === */
-        .sidebar { 
-            background: linear-gradient(180deg, #4e73df, #224abe); 
-            border-radius: 12px; 
-            box-shadow: 2px 4px 12px rgba(0,0,0,0.15); 
-            padding: 0.5rem 0; 
-            width: 220px; 
-            position: fixed; 
-            top: 70px; 
-            left: 0; 
-            height: calc(100vh - 70px); 
-            transition: transform 0.3s ease; 
-            overflow-x: hidden; 
-            z-index: 1040; 
-            display: flex;
-            flex-direction: column;
-        }
-        .sidebar.collapsed { transform: translateX(-100%); }
-        .sidebar.collapsed .sidebar-text { opacity: 0; transition: opacity 0.2s ease; }
-        .hover-bg-light:hover { background-color: rgba(255,255,255,0.15); transition: all 0.3s ease; }
-        .rotate-n-15:hover { transform: rotate(-10deg) scale(1.1); }
-        .nav-item .nav-link.active { background-color: rgba(255,255,255,0.25); font-weight: 600; }
-
-        /* === TOPBAR === */
-        .topbar { z-index: 1050; height: 70px; }
-
-        /* === CONTENT WRAPPER === */
-        #content-wrapper { margin-left: 220px; padding-top: 80px; transition: margin-left 0.3s ease; }
-        .sidebar.collapsed ~ #content-wrapper { margin-left: 0; }
-
-        /* Light mode (default) */
-        [data-bs-theme="light"] .sidebar {
-            background: linear-gradient(180deg, #4e73df, #224abe);
-            color: #fff;
-        }
-
-        /* Dark mode */
-        [data-bs-theme="dark"] .sidebar {
-            background: linear-gradient(180deg, #1f1f2e, #111827);
-            color: #f8f9fa;
-        }
-        [data-bs-theme="dark"] .sidebar .nav-link {
-            color: #f8f9fa;
-        }
-        [data-bs-theme="dark"] .sidebar .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-        [data-bs-theme="dark"] .sidebar .nav-link.active {
-            background-color: rgba(255,255,255,0.2);
-        }
-
-        /* BODY */
-        [data-bs-theme="light"] body {
-            background-color: #f8f9fc;
-            color: #000;
-        }
-        [data-bs-theme="dark"] body {
-            background-color: #1e1e2f;
-            color: #f8f9fa;
-        }
-
-        /* TOPBAR */
-        [data-bs-theme="light"] .topbar {
-            background-color: #ffffff !important;
-            color: #000 !important;
-        }
-        [data-bs-theme="dark"] .topbar {
-            background-color: #2c2c3c !important;
-            color: #f8f9fa !important;
-        }
-
-        /* FOOTER */
-        [data-bs-theme="light"] .sticky-footer {
-            background-color: #ffffff !important;
-            color: #000 !important;
-        }
-        [data-bs-theme="dark"] .sticky-footer {
-            background-color: #2c2c3c !important;
-            color: #f8f9fa !important;
-        }
-
-        /* CARD */
-        [data-bs-theme="light"] .card {
-            background-color: #ffffff;
-            color: #000;
-        }
-        [data-bs-theme="dark"] .card {
-            background-color: #2a2a3b;
-            color: #f8f9fa;
-            border-color: #444;
-        }
-
-        /* CONTENT WRAPPER */
-        [data-bs-theme="dark"] #content-wrapper {
-            background-color: #1e1e2f;
-        }
-
-        .logout-item {
-            margin-top: 400px;
-        }
-
-       /* ===========================
-       THEME MODE STYLING
-       =========================== */
-
-    /* Light mode */
-    [data-bs-theme="light"] #content-wrapper,
-    [data-bs-theme="light"] .container {
-        background-color: #fff !important;
-        color: #181515;
-    }
-    [data-bs-theme="light"] .card,
-    [data-bs-theme="light"] .form-control {
-        background-color: #f8f9fa !important;
-        color: #000;
-    }
-    [data-bs-theme="light"] label {
-        color: #000;
-    }
-
-    /* Dark mode */
-    [data-bs-theme="dark"] #content-wrapper,
-    [data-bs-theme="dark"] .container {
-        background-color: #1B1B1DFF !important;
-        color: #fff;
-    }
-    [data-bs-theme="dark"] .card,
-    [data-bs-theme="dark"] .form-control {
-        background-color: #2c2c2e !important;
-        color: #fff;
-        border: 1px solid #444;
-    }
-    [data-bs-theme="dark"] label {
-        color: #fff;
-    }
-
-    /* ===========================
-       FIX WARNA TOMBOL & HEADER
-       =========================== */
-
-    /* Warna teks di tombol dan elemen berwarna primary */
-    .btn-primary,
-    .bg-primary,
-    .card-header.bg-primary,
-    a.btn-primary,
-    button.btn-primary {
-        color: #fff !important;
-    }
-
-    /* Hover agar tetap terlihat jelas */
-    .btn-primary:hover,
-    a.btn-primary:hover,
-    button.btn-primary:hover {
-        color: #fff !important;
-        background-color: #3758c0 !important;
-    }
-
-    /* Teks heading di dalam elemen bg-primary */
-    .bg-primary h1,
-    .bg-primary h2,
-    .bg-primary h3,
-    .bg-primary h4,
-    .bg-primary h5,
-    .bg-primary h6 {
-        color: #fff !important;
-    }
-
-    /* Pastikan badge berwarna kontras */
-    .badge.bg-primary,
-    .badge.bg-success,
-    .badge.bg-warning,
-    .badge.bg-danger {
-        color: #fff !important;
-    }
-
-    /* Jika warning, biar teksnya gelap (lebih terbaca) */
-    .badge.bg-warning {
-        color: #000 !important;
-    }
-
-
-    </style>
-
+    <link href="{{ asset('css/custom-dark.css') }}" rel="stylesheet">
     <script>
     function setTheme(theme) {
         localStorage.setItem("data-bs-theme", theme);
@@ -250,10 +88,10 @@
             </a>
         </li>
 
-        <li class="nav-item">
-            <a class="nav-link" href="{{ route('evaluasi.index') }}">
-                <i class="bi bi-clipboard-check"></i>
-                <span>Evaluasi Kinerja</span>
+        <li class="nav-item {{ request()->is('evaluasi*') ? 'active' : '' }}">
+            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('evaluasi.index') }}">
+                <i class="bi bi-clipboard-check me-2"></i>
+                <span class="sidebar-text">Evaluasi Kinerja</span>
             </a>
         </li>
         @endrole
@@ -278,6 +116,8 @@
             </a>
         </li>
         @endrole
+
+        
 
         <!-- Manajemen MI -->
         @hasanyrole('admin|guru_mi')
@@ -307,7 +147,7 @@
                 </a>
             </li>
 
-            <li class="nav-item {{ request()->is('laporan-pembayaran-mi*') ? 'active' : '' }}">
+             <li class="nav-item {{ request()->is('laporan-pembayaran-mi*') ? 'active' : '' }}">
                 <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('laporan-pembayaran-mi.index') }}">
                     <i class="fas fa-credit-card me-2"></i>
                     <span class="sidebar-text">Laporan Administrasi</span>
@@ -350,7 +190,7 @@
                 </a>
             </li>
 
-            <li class="nav-item {{ request()->is('laporan-pembayaran-tk*') ? 'active' : '' }}">
+              <li class="nav-item {{ request()->is('laporan-pembayaran-tk*') ? 'active' : '' }}">
                 <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('laporan-pembayaran-tk.index') }}">
                     <i class="fas fa-credit-card me-2"></i>
                     <span class="sidebar-text">Laporan Administrasi</span>
@@ -380,6 +220,16 @@
                 </a>
             </li>
 
+            <li class="nav-item {{ request()->is('roles*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('admin.password-requests') }}">
+                    <i class="fas fa-user-shield me-2"></i>
+                    <span class="sidebar-text">Request Password</span>
+                    @if(isset($pendingRequests) && $pendingRequests > 0)
+                        <span class="badge bg-danger ms-auto">{{ $pendingRequests }}</span>
+                    @endif
+                </a>
+            </li>   
+
             <li class="nav-item {{ request()->is('user-approvals*') ? 'active' : '' }}">
                 <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('user.approvals.index') }}">
                     <i class="fas fa-user-check me-2"></i>
@@ -388,25 +238,17 @@
             </li>
         @endrole
 
-        <li class="nav-item {{ request()->is('profile') ? 'active' : '' }}">
-            <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" 
-            href="{{ route('profile.show') }}">
-                <i class="bi bi-person-circle me-2"></i>
-                <span class="sidebar-text">Profile</span>
-            </a>
-        </li>
-
         <!-- Logout -->
-        <li class="nav-item logout-item d-flex justify-content-center">
-            <a class="nav-link d-flex align-items-center justify-content-center py-3 px-3 rounded hover-bg-light"
-            href="#"
-            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fas fa-sign-out-alt fa-5x"></i> 
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                @csrf
-            </form>
-        </li>
+            <li class="nav-item logout-item d-flex justify-content-center">
+                <a class="nav-link d-flex align-items-center justify-content-center py-3 px-3 rounded hover-bg-light"
+                href="#"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt fa-5x"></i> 
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                    @csrf
+                </form>
+            </li>
     </ul>
 
     <!-- Toggle Sidebar Button -->
@@ -419,8 +261,8 @@
     <!-- Topbar -->
     <nav class="navbar navbar-expand navbar-light bg-white topbar fixed-top shadow">
         <div class="container-fluid">
-            <h3 class="fw-bold mb-0 text-primary" style="margin-left: 30px;">
-                Sistem Menejemen Al Khusnaniyah
+            <h3 class="fw-bold mb-0 topbar-title" style="margin-left: 30px;">
+                Sistem Menejemen Al Kushnaniyah
             </h3>
 
             <!-- Right side navbar -->
@@ -455,12 +297,29 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown"
                     role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img class="img-profile rounded-circle me-2"
-                            src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=435ebe&color=fff"
-                            width="32" height="32">
-                        <span id="usernameText" class="fw-bold small">{{ Auth::user()->name }}</span>
+
+                        <img src="{{ Auth::user()->foto 
+                            ? route('profile.avatar', ['id' => Auth::user()->id, 'v' => time()]) 
+                            : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=435ebe&color=fff' }}" 
+                            alt="User Avatar" 
+                            class="rounded-circle" 
+                            style="width: 40px; height: 40px; object-fit: cover;">
+
+                        <span id="usernameText" class="fw-bold small" style="margin-left: 10px;">
+                            {{ Auth::check() ? Auth::user()->name : 'Guest' }}
+                        </span>
                     </a>
+
                     <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                        <!-- Profil -->
+                        <li>
+                            <a class="dropdown-item" href="{{ route('profile.show') }}">
+                                <i class="fas fa-user fa-sm fa-fw me-2 text-gray-400"></i>
+                                Profil Saya
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <!-- Logout -->
                         <li>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -472,6 +331,7 @@
                         </li>
                     </ul>
                 </li>
+
 
             </ul>
         </div>
@@ -485,8 +345,8 @@
         </div>
 
         <!-- Footer -->
-        <footer class="sticky-footer bg-white mt-auto py-3 shadow-sm">
-            <div class="container my-auto text-center">
+        <footer class="sticky-footer  py-3">
+            <div class=>
                 <span class="text-muted small">© {{ date('Y') }} SIMAK MI - AMPEL</span>
             </div>
         </footer>
@@ -501,32 +361,23 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-<<script>
-    // fungsi set theme (sudah ada)
-    function setTheme(theme) {
-        localStorage.setItem("data-bs-theme", theme);
-        if (theme === "system") {
-            theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        }
-        document.documentElement.setAttribute("data-bs-theme", theme);
+<script>
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const toggleIcon = document.getElementById('toggleIcon');
+    const contentWrapper = document.getElementById('content-wrapper');
 
-        // ubah ikon utama dropdown sesuai tema
-        let icon = document.getElementById("themeIcon");
-        if (icon) {
-            if (theme === "light") {
-                icon.className = "bi bi-sun";
-            } else if (theme === "dark") {
-                icon.className = "bi bi-moon";
-            } else {
-                icon.className = "bi bi-laptop";
-            }
+    toggleBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        if (sidebar.classList.contains('collapsed')) {
+            toggleBtn.style.left = "10px";
+            contentWrapper.style.marginLeft = "0";
+            toggleIcon.classList.replace("fa-angle-left", "fa-angle-right");
+        } else {
+            toggleBtn.style.left = "230px";
+            contentWrapper.style.marginLeft = "220px";
+            toggleIcon.classList.replace("fa-angle-right", "fa-angle-left");
         }
-    }
-
-    // cek localStorage saat pertama kali load
-    document.addEventListener("DOMContentLoaded", function() {
-        let savedTheme = localStorage.getItem("data-bs-theme") || "system";
-        setTheme(savedTheme);
     });
 </script>
 

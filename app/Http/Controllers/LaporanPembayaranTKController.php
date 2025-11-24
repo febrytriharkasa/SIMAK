@@ -36,7 +36,8 @@ class LaporanPembayaranTKController extends Controller
 
             foreach ($siswaList as $siswa) {
                 // Ambil semua pembayaran siswa berdasarkan filter
-                $pembayaranList = PembayaranTk::where('siswa_id', $siswa->id)
+                $pembayaranList = PembayaranTk::with('siswa')
+                    ->where('siswa_id', $siswa->id)
                     ->when($status, fn($q) => $q->where('status', $status))
                     ->when($jenis, fn($q) => $q->where('jenis_tagihan', 'like', "%{$jenis}%"))
                     ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
