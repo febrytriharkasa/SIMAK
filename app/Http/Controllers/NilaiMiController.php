@@ -27,7 +27,7 @@ class NilaiMiController extends Controller
             $query->where('kelas_id', $kelasId);
         }
 
-        $siswas = $query->get();
+        $siswas = $query->paginate(10);
 
         return view('mi.nilai.index', compact('siswas', 'kelasList', 'kelasId'));
     }

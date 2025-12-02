@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class MapelTkSeeder extends Seeder
 {
@@ -13,9 +13,25 @@ class MapelTkSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('mapel_tk')->insert([
-            ['nama_mapel' => 'Matematika'],
-            ['nama_mapel' => 'Bahasa Indonesia'],
-        ]);
+        $now = Carbon::now();
+
+        $mapel = [
+            'Nilai Agama dan Moral',
+            'Mewarnai',
+            'Membaca',
+            'Berhitung',
+        ];
+
+        $data = [];
+
+        foreach ($mapel as $m) {
+            $data[] = [
+                'nama_mapel' => $m,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        DB::table('mapel_tk')->insert($data);
     }
 }

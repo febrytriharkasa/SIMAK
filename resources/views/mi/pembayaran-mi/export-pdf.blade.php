@@ -47,12 +47,11 @@
     <!-- Kop Surat -->
     <div class="kop-surat">
         <div class="kop-logo">
-            <img src="{{ public_path('download.png') }}" alt="Logo">
+            <img src="{{ public_path('logo/logo.png') }}" alt="Logo">
         </div>
         <div class="kop-text">
-            <h2>YAYASAN FAISAL</h2>
-            <p><strong>Madrasah Ibtidaiyah</strong></p>
-            <p>Jl. Contoh No. 123, Surabaya | Telp: (031) 123456</p>
+            <h2>Yayasan Al Kushnaniyah</h2>
+            <p><strong>MI Al Kushnaniyah</strong></p>
         </div>
     </div>
 

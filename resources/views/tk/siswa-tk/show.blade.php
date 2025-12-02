@@ -55,7 +55,7 @@
                             <td>{{ $siswa->nama }}</td>
                         </tr>
                         <tr>
-                            <th>Tahun</th>
+                            <th>Tahun Masuk</th>
                             <td>{{ $siswa->tahun }}</td>
                         </tr>
                         <tr>

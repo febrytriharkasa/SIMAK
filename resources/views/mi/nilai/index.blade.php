@@ -4,39 +4,6 @@
 
 @section('content')
 
-<style>
-    /* Light mode */
-    [data-bs-theme="light"] #content-wrapper,
-    [data-bs-theme="light"] .container {
-        background-color: #fff !important;
-        color: #181515;
-    }
-    [data-bs-theme="light"] .card,
-    [data-bs-theme="light"] .form-control {
-        background-color: #f8f9fa !important;
-        color: #000;
-    }
-    [data-bs-theme="light"] label {
-        color: #000;
-    }
-
-    /* Dark mode */
-    [data-bs-theme="dark"] #content-wrapper,
-    [data-bs-theme="dark"] .container {
-        background-color: #1B1B1DFF !important;
-        color: #fff;
-    }
-    [data-bs-theme="dark"] .card,
-    [data-bs-theme="dark"] .form-control {
-        background-color: #2c2c2e !important;
-        color: #fff;
-        border: 1px solid #444;
-    }
-    [data-bs-theme="dark"] label {
-        color: #fff;
-    }
-</style>
-
 <div class="container-fluid">
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
@@ -69,7 +36,7 @@
     {{-- Tabel Data Siswa --}}
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
-            <h6 class="mb-0">Daftar Siswa</h6>
+            <h6 class="mb-0">Daftar Nilai MI</h6>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -77,36 +44,50 @@
                     <thead class="table-light text-center">
                         <tr>
                             <th>No</th>
+                            <th>NISN</th>
                             <th>Nama Siswa</th>
                             <th>Kelas</th>
-                            <th>Aksi</th>
+                            <th style="width: 150px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($siswas as $index => $siswa)
                             <tr class="text-center align-middle">
                                 <td>{{ $index + 1 }}</td>
+
+                                {{-- Tambahan NISN --}}
+                                <td>{{ $siswa->nisn }}</td>
+
                                 <td class="text-start">{{ $siswa->nama }}</td>
+
                                 <td>
                                     <span class="badge bg-primary">
                                         {{ $siswa->kelas->nama_kelas ?? '-' }}
                                     </span>
                                 </td>
+
                                 <td>
-                                    <a href="{{ route('nilai.show', $siswa->id) }}" class="btn btn-sm btn-info text-white" title="Lihat Nilai">
+                                    <a href="{{ route('nilai.show', $siswa->id) }}"
+                                    class="btn btn-sm btn-info text-white"
+                                    title="Lihat Nilai">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center p-3">
+                                <td colspan="5" class="text-center p-3">
                                     <span class="text-muted">Belum ada data siswa untuk kelas ini.</span>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            {{-- Pagination --}}
+            <div class="p-3">
+                {{ $siswas->withQueryString()->links() }}
             </div>
         </div>
     </div>

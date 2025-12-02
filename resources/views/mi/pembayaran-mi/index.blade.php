@@ -38,8 +38,8 @@
 </style>
 
 <div class="container-fluid">
-    <div class="page-heading mb-40">
-        <h3 class="ms-5">Administrasi MI</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
+        <h4 class="fw-bold">Administrasi MI</h4>
     </div>
 
     @if(session('success'))

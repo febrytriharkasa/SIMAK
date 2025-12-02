@@ -84,15 +84,6 @@
                             </select>
                         </div>
 
-                        {{-- Pilih Guru (otomatis terisi setelah pilih mapel) --}}
-                        <div class="mb-3" id="guru-wrapper" style="display:none;">
-                            <label for="guru_id" class="form-label">Guru</label>
-                            <select name="guru_id" id="guru_id" class="form-control" required>
-                                <option value="">-- Pilih Guru --</option>
-                                {{-- akan diisi pakai JS --}}
-                            </select>
-                        </div>
-
                         {{-- Daftar Siswa (muncul via AJAX setelah pilih kelas) --}}
                         <div id="siswa-container" class="mt-4" style="display:none;">
                             <h6>Daftar Siswa</h6>
@@ -170,29 +161,6 @@
             }
         } else {
             container.style.display = 'none';
-        }
-    });
-
-    // Event pilih mapel → tampil dropdown guru
-    document.getElementById('mapel_id').addEventListener('change', function () {
-        let mapelId = this.value;
-        guruSelect.innerHTML = '<option value="">-- Pilih Guru --</option>';
-
-        if (mapelId) {
-            let mapel = mapelData.find(m => m.id == mapelId);
-            if (mapel && mapel.guru.length > 0) {
-                mapel.guru.forEach(g => {
-                    let opt = document.createElement('option');
-                    opt.value = g.id;
-                    opt.text = g.nama;
-                    guruSelect.appendChild(opt);
-                });
-                guruWrapper.style.display = 'block';
-            } else {
-                guruWrapper.style.display = 'none';
-            }
-        } else {
-            guruWrapper.style.display = 'none';
         }
     });
 

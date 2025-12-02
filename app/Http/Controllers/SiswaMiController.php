@@ -8,14 +8,14 @@ use Illuminate\Http\Request;
 
 class SiswaMiController extends Controller
 {
-    public function index(Request $request)
+   public function index(Request $request)
     {
-        $query = Siswa_MI::orderBy('nama');
+        $query = Siswa_MI::orderBy('nisn', 'asc'); // urutkan berdasarkan NISN
 
         if ($request->has('search') && $request->search != '') {
             $query->where(function ($q) use ($request) {
                 $q->where('nama', 'like', '%' . $request->search . '%')
-                  ->orWhere('nisn', 'like', '%' . $request->search . '%');
+                ->orWhere('nisn', 'like', '%' . $request->search . '%');
             });
         }
 

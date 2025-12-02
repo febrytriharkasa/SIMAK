@@ -27,7 +27,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@yield('title') - {{ config('app.name') }}</title>
-    <link rel="icon" href="{{ asset('download.png') }}" type="image/png">
+    <link rel="icon" href="{{ asset('logo/logo.png') }}" type="image/png">
 
     <!-- SB Admin 2 CSS -->
     <link href="{{ asset('sb-admin-2/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
@@ -65,7 +65,7 @@
         <!-- Sidebar Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-start py-3 px-3" href="{{ url('/dashboard') }}">
             <div class="sidebar-brand-icon rotate-n-15" style="transition: transform 0.5s;">
-                <img src="{{ asset('logo/intel amfibi.png') }}" alt="Logo" style="width:40px; height:40px; object-fit:contain;">
+                <img src="{{ asset('logo/logo.png') }}" alt="Logo" style="width:40px; height:40px; object-fit:contain;">
             </div>
             <div class="sidebar-brand-text ms-2 fw-bold sidebar-text" style="font-size: 1.2rem;">
                 SIMAK

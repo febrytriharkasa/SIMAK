@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
 
         // Buat user admin
          $admin = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@simak.com'],
             [
                 'nip' => '12345',
                 'name' => 'Administrator',
@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
 
         // Buat user guru TK
         $guruTk = User::firstOrCreate(
-            ['email' => 'guru_tk@example.com'],
+            ['email' => 'guru_tk@simak.com'],
             [
                 'nip' => '54321',
                 'name' => 'Guru TK',
@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
 
         // Buat user guru MI
         $guruMi = User::firstOrCreate(
-            ['email' => 'guru_mi@example.com'],
+            ['email' => 'guru_mi@simak.com'],
             [
                 'nip' => '67890',
                 'name' => 'Guru MI',

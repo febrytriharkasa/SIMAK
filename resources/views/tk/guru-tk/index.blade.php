@@ -75,7 +75,7 @@
                 <table class="table table-striped table-hover mb-0">
                     <thead class="table-light text-center">
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>NIP</th>
                             <th>Nama</th>
                             <th>Mata Pelajaran</th>

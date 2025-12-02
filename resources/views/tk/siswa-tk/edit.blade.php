@@ -70,7 +70,7 @@
 
                         {{-- Tahun --}}
                         <div class="mb-3">
-                            <label for="tahun" class="form-label fw-semibold">Tahun</label>
+                            <label for="tahun" class="form-label fw-semibold">Tahun Masuk</label>
                             <input type="number" name="tahun" id="tahun" 
                                    class="form-control @error('tahun') is-invalid @enderror" 
                                    value="{{ old('tahun', $siswa->tahun) }}" placeholder="contoh: 2025">

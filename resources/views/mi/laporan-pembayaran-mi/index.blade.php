@@ -36,7 +36,7 @@
 <div class="container-fluid">
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
-        <h4 class="fw-bold text-primary mb-0">📘 Laporan Pembayaran MI</h4>
+        <h4 class="fw-bold">Laporan Administrasi MI</h4>
     </div>
 
     {{-- Filter Form --}}

@@ -17,6 +17,9 @@ class GuruTkController extends Controller
             $query->where('nip', 'like', '%' . $request->nip . '%');
         }
 
+        // Urutkan berdasarkan NIP
+        $query->orderBy('nip', 'asc');
+
         // Pagination
         $guru = $query->paginate(10);
 

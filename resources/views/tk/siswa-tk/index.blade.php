@@ -72,11 +72,11 @@
                 <table class="table table-striped table-hover mb-0">
                     <thead class="table-light text-center">
                         <tr>
-                            <th>#</th>
+                            <th>No</th>
                             <th>No Induk</th>
                             <th>Nama</th>
                             <th>Kelas</th>
-                            <th>Tahun</th>
+                            <th>Tahun Masuk</th>
                             <th>Nama Wali</th>
                             <th>No HP Wali</th>
                             <th>Alamat</th>

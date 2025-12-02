@@ -35,8 +35,9 @@
 
 <div class="container-fluid">
     {{-- Header --}}
+    
     <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
-        <h4 class="fw-bold text-primary mb-0">📘 Laporan Pembayaran TK</h4>
+        <h4 class="fw-bold">Laporan Administrasi TK</h4>
     </div>
 
     {{-- Filter Form --}}

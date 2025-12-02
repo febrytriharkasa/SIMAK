@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pembayarans_tk', function (Blueprint $table) {
+        Schema::create('pembayaran_tk', function (Blueprint $table) {
             $table->id();
             $table->foreignId('siswa_id')->constrained('siswa_tk')->onDelete('cascade');
             $table->string('jenis_tagihan'); // kolom jenis tagihan

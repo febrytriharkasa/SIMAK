@@ -74,7 +74,7 @@
                             <th>NISN</th>
                             <th>Nama</th>
                             <th>Kelas</th>
-                            <th>Tahun</th>
+                            <th>Tahun Masuk</th>
                             <th>Nama Wali</th>
                             <th>No HP Wali</th>
                             <th>Alamat</th>

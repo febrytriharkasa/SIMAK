@@ -45,8 +45,5 @@
     <a href="{{ url()->previous() }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left me-1"></i> Kembali
     </a>
-    <a href="{{ route('dashboard') }}" class="btn btn-primary">
-        <i class="fas fa-home me-1"></i> Ke Dashboard
-    </a>
 </div>
 @endsection

@@ -13,7 +13,7 @@
   <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl w-[400px] p-8">
     <!-- Logo -->
     <div class="flex justify-center mb-6">
-      <img src="{{ asset('logo/intel amfibi.png') }}" alt="Logo" 
+      <img src="{{ asset('logo/logo.png') }}" alt="Logo" 
            class="h-16 w-16 object-contain rounded-full shadow-md">
     </div>
 
