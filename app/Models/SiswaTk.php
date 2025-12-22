@@ -19,6 +19,8 @@ class SiswaTk extends Model
         'no_hp_wali',
         'alamat_siswa',
         'kelas_id',
+        'bukti_pembayaran',
+        'status'
     ];
 
     public function pembayarans()
@@ -34,5 +36,10 @@ class SiswaTk extends Model
     public function nilais()
     {
         return $this->hasMany(NilaiTk::class, 'siswa_id');
+    }
+
+    public function absensis()
+    {
+        return $this->hasMany(AbsensiTK::class, 'siswa_id');
     }
 }

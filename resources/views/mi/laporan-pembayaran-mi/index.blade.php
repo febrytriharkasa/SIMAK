@@ -4,49 +4,21 @@
 
 @section('content')
 
-<style>
-    [data-bs-theme="light"] #content-wrapper,
-    [data-bs-theme="light"] .container {
-        background-color: #fff !important;
-        color: #181515;
-    }
-    [data-bs-theme="dark"] #content-wrapper,
-    [data-bs-theme="dark"] .container {
-        background-color: #1B1B1DFF !important;
-        color: #fff;
-    }
-    .badge-lunas {
-        background-color: #28a745;
-        color: #fff;
-        padding: 5px 10px;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-    .badge-belum {
-        background-color: #dc3545;
-        color: #fff;
-        padding: 5px 10px;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-</style>
-
 <div class="container-fluid">
-    {{-- Header --}}
+
     <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
         <h4 class="fw-bold">Laporan Administrasi MI</h4>
     </div>
 
-    {{-- Filter Form --}}
+    {{-- Filter --}}
     <div class="card mb-4 shadow-sm border-0">
         <div class="card-body">
             <form method="GET" action="{{ route('laporan-pembayaran-mi.index') }}" class="row g-3 align-items-end">
+
                 <div class="col-md-3">
-                    <label for="kelas_id" class="form-label fw-semibold">Kelas</label>
-                    <select name="kelas_id" id="kelas_id" class="form-select">
-                        <option value="">Semua</option>
+                    <label class="form-label fw-semibold">Kelas</label>
+                    <select name="kelas_id" class="form-select">
+                        <option value="">Pilih Kelas</option>
                         @foreach($kelasList as $kelas)
                             <option value="{{ $kelas->id }}" {{ $kelas_id == $kelas->id ? 'selected' : '' }}>
                                 {{ $kelas->nama_kelas }}
@@ -56,8 +28,8 @@
                 </div>
 
                 <div class="col-md-3">
-                    <label for="bulan" class="form-label fw-semibold">Bulan</label>
-                    <select name="bulan" id="bulan" class="form-select">
+                    <label class="form-label fw-semibold">Bulan</label>
+                    <select name="bulan" class="form-select">
                         <option value="">Semua</option>
                         @for($i=1; $i<=12; $i++)
                             <option value="{{ $i }}" {{ $bulan == $i ? 'selected' : '' }}>
@@ -68,8 +40,8 @@
                 </div>
 
                 <div class="col-md-3">
-                    <label for="status" class="form-label fw-semibold">Status</label>
-                    <select name="status" id="status" class="form-select">
+                    <label class="form-label fw-semibold">Status</label>
+                    <select name="status" class="form-select">
                         <option value="">Semua</option>
                         <option value="lunas" {{ $status == 'lunas' ? 'selected' : '' }}>Lunas</option>
                         <option value="belum" {{ $status == 'belum' ? 'selected' : '' }}>Belum</option>
@@ -77,9 +49,9 @@
                 </div>
 
                 <div class="col-md-3">
-                    <label for="jenis_tagihan" class="form-label fw-semibold">Jenis Tagihan</label>
-                    <input type="text" name="jenis_tagihan" id="jenis_tagihan"
-                           value="{{ $jenis_tagihan ?? '' }}" class="form-control" placeholder="Contoh: SPP">
+                    <label class="form-label fw-semibold">Jenis Tagihan</label>
+                    <input type="text" name="jenis_tagihan" class="form-control"
+                           value="{{ $jenis_tagihan ?? '' }}" placeholder="Contoh: SPP">
                 </div>
 
                 <div class="col-12 text-end">
@@ -90,72 +62,93 @@
             </form>
         </div>
     </div>
-    @forelse($data as $kelasNama => $siswaList)
-        <div class="card mb-4 shadow-sm border-0">
-            <div class="card-header bg-primary text-white fw-semibold">
-                {{ strtoupper($kelasNama) }}
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered align-middle">
-                        <thead class="table-primary text-center">
-                            <tr>
-                                <th>No</th>
-                                <th>NISN</th>
-                                <th>Nama</th>
-                                <th>Jenis Tagihan</th>
-                                <th>Jumlah</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php $no = 1; @endphp
-                            @foreach($siswaList as $siswaNama => $pembayaranList)
-                                @php
-                                    // Kelompokkan berdasarkan jenis tagihan (SPP, Sumbangan, dll)
-                                    $grouped = $pembayaranList->groupBy('jenis_tagihan');
-                                    $totalRows = $grouped->sum(fn($g) => count($g));
-                                    $siswaData = $pembayaranList->first();
-                                @endphp
 
-                                @php $firstRow = true; @endphp
-                                @foreach($grouped as $jenis => $group)
-                                    @php $rowspanJenis = count($group); @endphp
-                                    @foreach($group as $i => $p)
-                                        <tr>
-                                            @if($firstRow)
-                                                <td rowspan="{{ $totalRows }}">{{ $no++ }}</td>
-                                                <td rowspan="{{ $totalRows }}">{{ $siswaData->siswa->nisn ?? '-' }}</td>
-                                                <td rowspan="{{ $totalRows }}">{{ $siswaNama }}</td>
-                                                @php $firstRow = false; @endphp
-                                            @endif
+    {{-- Jika belum difilter --}}
+    @if(!$isFiltered)
+        <div class="alert alert-warning text-center shadow-sm">
+            Silakan pilih filter terlebih dahulu untuk menampilkan data.
+        </div>
+    @else
 
-                                            @if($i == 0)
-                                                <td rowspan="{{ $rowspanJenis }}">{{ $jenis }}</td>
-                                            @endif
+        {{-- Tampilkan data --}}
+        @forelse($data as $kelasNama => $siswaList)
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-primary text-white fw-semibold">
+                    {{ strtoupper($kelasNama) }}
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
 
-                                            <td>Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
-                                            <td class="text-center">
-                                                @if($p->status === 'lunas')
-                                                    <span class="badge-lunas">Lunas</span>
-                                                @else
-                                                    <span class="badge-belum">Belum</span>
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-primary text-center">
+                                <tr>
+                                    <th>No</th>
+                                    <th>NISN</th>
+                                    <th>Nama</th>
+                                    <th>Jenis Tagihan</th>
+                                    <th>Jumlah</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @php $no=1; @endphp
+
+                                @foreach($siswaList as $siswaNama => $pembayaranList)
+                                    @php
+                                        $grouped = $pembayaranList->groupBy('jenis_tagihan');
+                                        $totalRows = $grouped->sum(fn($g) => count($g));
+                                        $siswaData = $pembayaranList->first();
+                                        $firstRow = true;
+                                    @endphp
+
+                                    @foreach($grouped as $jenis => $group)
+                                        @php $rowspanJenis = count($group); @endphp
+                                        @foreach($group as $i => $p)
+                                            <tr>
+                                                @if($firstRow)
+                                                    <td rowspan="{{ $totalRows }}">{{ $no++ }}</td>
+                                                    <td rowspan="{{ $totalRows }}">{{ $siswaData->siswa->nisn ?? '-' }}</td>
+                                                    <td rowspan="{{ $totalRows }}">{{ $siswaNama }}</td>
+                                                    @php $firstRow = false; @endphp
                                                 @endif
-                                            </td>
-                                        </tr>
+
+                                                @if($i == 0)
+                                                    <td rowspan="{{ $rowspanJenis }}">{{ $jenis }}</td>
+                                                @endif
+
+                                                <td>Rp {{ number_format($p->jumlah, 0, ',', '.') }}</td>
+                                                <td class="text-center">
+                                                    @if($p->status == 'lunas')
+                                                        <span class="badge bg-success">Lunas</span>
+                                                    @else
+                                                        <span class="badge bg-danger">Belum</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     @endforeach
                                 @endforeach
-                            @endforeach
-                        </tbody>
-                    </table>
+
+                            </tbody>
+                        </table>
+
+                    </div>
                 </div>
             </div>
-        </div>
-    @empty
-        <div class="alert alert-info text-center shadow-sm">
-            Tidak ada data pembayaran ditemukan.
-        </div>
-    @endforelse
+        @empty
+            <div class="alert alert-info text-center shadow-sm">Tidak ada data pembayaran ditemukan.</div>
+        @endforelse
+
+        {{-- Pagination --}}
+        @if($pagination)
+            <div class="d-flex justify-content-center mt-3">
+                {{ $pagination->appends(request()->query())->links() }}
+            </div>
+        @endif
+
+    @endif
+
 </div>
 
 @endsection

@@ -23,20 +23,42 @@
                 </p>
             </div>
             {{-- Dropdown filter kelas --}}
-            <form action="{{ route('nilai-tk.show', $siswa->id) }}" method="GET" class="d-flex align-items-center">
-                <label for="kelas_id" class="me-2 mb-0 fw-bold">Filter Kelas:</label>
-                <select name="kelas_id" id="kelas_id" class="form-select me-2" style="width:180px;">
+            <form action="{{ route('nilai-tk.show', $siswa->id) }}" method="GET"
+                class="d-flex align-items-center gap-2">
+
+                {{-- Filter Kelas --}}
+                <select name="kelas_id" class="form-select" style="width:180px;">
                     @foreach($kelasList as $k)
                         <option value="{{ $k->id }}" {{ $kelasId == $k->id ? 'selected' : '' }}>
                             {{ $k->nama_kelas }}
                         </option>
                     @endforeach
                 </select>
+
+                {{-- Filter Semester --}}
+                <select name="semester" class="form-select" style="width:150px;">
+                    <option value="">Semua Semester</option>
+                    <option value="ganjil" {{ ($semester ?? '') == 'ganjil' ? 'selected' : '' }}>
+                        Ganjil
+                    </option>
+                    <option value="genap" {{ ($semester ?? '') == 'genap' ? 'selected' : '' }}>
+                        Genap
+                    </option>
+                </select>
+
                 <button type="submit" class="btn btn-primary btn-sm">
                     <i class="bi bi-filter"></i> Tampilkan
                 </button>
             </form>
         </div>
+    </div>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a href="#" class="btn btn-danger btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#raporModal">
+            <i class="bi bi-file-earmark-pdf"></i> Cetak Rapor
+        </a>
     </div>
 
     {{-- Tabel Nilai --}}
@@ -50,8 +72,8 @@
                     <thead class="table-light">
                         <tr class="text-center">
                             <th>No</th>
+                            <th>Semester</th>
                             <th>Mapel</th>
-                            <th>Guru</th>
                             <th>Tugas</th>
                             <th>UTS</th>
                             <th>EAS</th>
@@ -62,9 +84,9 @@
                     <tbody>
                         @forelse($nilais as $index => $nilai)
                             <tr class="text-center align-middle">
-                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ ucfirst($nilai->semester) }}</td>
                                 <td>{{ $nilai->mapel->nama_mapel }}</td>
-                                <td>{{ $nilai->guru->nama }}</td>
                                 <td>{{ is_array($nilai->tugas) ? implode(', ', $nilai->tugas) : $nilai->tugas }}</td>
                                 <td>{{ $nilai->uts }}</td>
                                 <td>{{ $nilai->eas }}</td>
@@ -89,6 +111,36 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="raporModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Cetak Rapor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <p>Pilih Semester</p>
+
+                <a href="{{ route('nilai-tk.rapor.pdf', [$siswa->id, $kelasId, 'ganjil']) }}"
+                    target="_blank"
+                    class="btn btn-outline-primary w-100 mb-2">
+                        Semester Ganjil
+                </a>
+
+                <a href="{{ route('nilai-tk.rapor.pdf', [$siswa->id, $kelasId, 'genap']) }}"
+                    target="_blank"
+                    class="btn btn-outline-success w-100">
+                        Semester Genap
+                </a>
+
+            </div>
+
         </div>
     </div>
 </div>

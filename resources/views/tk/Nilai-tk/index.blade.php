@@ -67,7 +67,7 @@
                             <td>{{ $siswa->id_tk ?? '-' }}</td>
 
                             {{-- Nama --}}
-                            <td class="text-start">{{ $siswa->nama }}</td>
+                            <td class="text-center align-middle">{{ $siswa->nama }}</td>
 
                             {{-- Kelas --}}
                             <td>

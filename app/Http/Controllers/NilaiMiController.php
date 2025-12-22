@@ -7,6 +7,7 @@ use App\Models\Siswa_MI;
 use App\Models\MapelMi;
 use App\Models\Guru_MI;
 use App\Models\Kelas_MI;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class NilaiMiController extends Controller
@@ -36,7 +37,9 @@ class NilaiMiController extends Controller
    public function create()
     {
         // Ambil semua kelas beserta siswa
-        $kelasList = Kelas_MI::with('siswas')->get();
+        $kelasList = Kelas_MI::where('tingkat', '<', 7)
+            ->orderBy('tingkat')
+            ->get();
 
         // Ambil semua mapel beserta guru
         $mapelList = MapelMi::with('guru')->get();
@@ -51,7 +54,7 @@ class NilaiMiController extends Controller
         $request->validate([
             'kelas_id' => 'required|exists:kelas_mi,id',
             'mapel_id' => 'required|exists:mapel_mi,id',
-            'guru_id'  => 'required|exists:gurus_mi,id',
+            'semester' => 'required|in:ganjil,genap',
             'nilai'    => 'required|array', // array siswa
         ]);
 
@@ -65,6 +68,17 @@ class NilaiMiController extends Controller
                 continue; // lewati siswa jika data tidak lengkap
             }
 
+            $exists = NilaiMi::where([
+                'siswa_id' => $siswaId,
+                'mapel_id' => $request->mapel_id,
+                'kelas_id' => $request->kelas_id,
+                'semester' => $request->semester,
+            ])->exists();
+
+            if ($exists) {
+                continue; // atau return error
+            }
+
             // Hitung nilai_akhir otomatis
             $rataTugas = array_sum($tugas) / count($tugas);
             $nilaiAkhir = ($rataTugas * 0.3) + ($uts * 0.35) + ($eas * 0.35);
@@ -73,12 +87,12 @@ class NilaiMiController extends Controller
             NilaiMi::create([
                 'siswa_id'    => $siswaId,
                 'mapel_id'    => $request->mapel_id,
-                'guru_id'     => $request->guru_id,
                 'kelas_id'    => $request->kelas_id,
+                'semester'    => $request->semester,
                 'tugas'       => $tugas,
                 'uts'         => $uts,
                 'eas'         => $eas,
-                'nilai_akhir' => round($nilaiAkhir, 2),
+                'nilai_akhir' => round($nilaiAkhir),
             ]);
         }
 
@@ -108,7 +122,6 @@ class NilaiMiController extends Controller
         $request->validate([
             'siswa_id' => 'required|exists:siswas_mi,id',
             'mapel_id' => 'required|exists:mapel_mi,id',
-            'guru_id'  => 'required|exists:gurus_mi,id',
             'kelas_id' => 'required|exists:kelas_mi,id',
             'tugas'    => 'required|array',
             'uts'      => 'required|numeric|min:0|max:100',
@@ -120,7 +133,7 @@ class NilaiMiController extends Controller
         $nilaiAkhir = ($rataTugas * 0.3) + ($request->uts * 0.35) + ($request->eas * 0.35);
 
         $nilai->update(array_merge($request->all(), [
-            'nilai_akhir' => round($nilaiAkhir, 2)
+            'nilai_akhir' => round($nilaiAkhir)
         ]));
 
         return redirect()->route('nilai.index')->with('success', 'Data nilai berhasil diperbarui!');
@@ -138,19 +151,76 @@ class NilaiMiController extends Controller
     {
         $siswa = Siswa_MI::with('kelas')->findOrFail($id);
 
-        // Jika ada request kelas_id, pakai itu; jika tidak, pakai kelas siswa saat ini
+        // kelas aktif (default = kelas siswa sekarang)
         $kelasId = $request->kelas_id ?? $siswa->kelas_id;
 
-        // Ambil nilai siswa hanya untuk kelas yang dipilih
-        $nilais = NilaiMi::with('mapel', 'guru')
+        // semester (opsional)
+        $semester = $request->semester; // ganjil | genap | null
+
+        // ambil nilai berdasarkan siswa + kelas + semester (jika ada)
+        $nilais = NilaiMi::with('mapel')
             ->where('siswa_id', $siswa->id)
             ->where('kelas_id', $kelasId)
+            ->when($semester, function ($q) use ($semester) {
+                $q->where('semester', $semester);
+            })
+            ->orderBy('semester')
+            ->orderBy('mapel_id')
             ->get();
 
-        // Ambil daftar kelas siswa untuk dropdown (optional)
-        $kelasList = Kelas_MI::all();
+        $kelasList = Kelas_MI::orderBy('tingkat')->get();
 
-        return view('mi.nilai.show', compact('siswa', 'nilais', 'kelasList', 'kelasId'));
+        return view('mi.nilai.show', compact(
+            'siswa',
+            'nilais',
+            'kelasList',
+            'kelasId',
+            'semester'
+        ));
+    }
+
+   public function cetakRaporPdf($siswaId, $kelasId, $semester)
+    {
+        if (!in_array($semester, ['ganjil', 'genap'])) {
+            abort(400, 'Semester tidak valid');
+        }
+
+        $siswa = Siswa_MI::with('kelas')->findOrFail($siswaId);
+
+        // ambil semua mapel
+        $mapels = MapelMi::orderBy('nama_mapel')->get();
+
+        // ambil nilai SESUAI kelas yg dipilih
+        $nilais = NilaiMi::with('mapel')
+            ->where('siswa_id', $siswaId)
+            ->where('kelas_id', $kelasId)
+            ->where('semester', $semester)
+            ->get();
+
+        $rataRata = $nilais->count() > 0
+            ? round($nilais->avg('nilai_akhir'), 2)
+            : 0;
+
+        $status = '-';
+        if ($semester === 'genap' && $nilais->count() > 0) {
+            $status = $rataRata >= 70 ? 'NAIK KELAS' : 'TINGGAL KELAS';
+        }
+
+        $kelas = Kelas_MI::findOrFail($kelasId);
+
+        $pdf = Pdf::loadView('mi.nilai.rapor-pdf', [
+            'siswa'    => $siswa,
+            'kelas'    => $kelas,
+            'mapels'   => $mapels,
+            'nilais'   => $nilais,
+            'semester' => $semester,
+            'rataRata' => $rataRata,
+            'status'   => $status,
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->stream(
+            'Rapor_' . $siswa->nama . '_' . $kelas->nama_kelas . '_' . strtoupper($semester) . '.pdf'
+        );
     }
 
 

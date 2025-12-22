@@ -8,7 +8,9 @@
 
 @section('content')
 <div class="container-fluid">
-    <h3 class="mb-4">Profil Saya</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
+        <h4 class="fw-bold">Profil Saya</h4>
+    </div>
 
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
@@ -20,30 +22,37 @@
     <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PATCH')
+        <div class="row g-4">
+            @php
+                $user = Auth::user();
 
-        <div class="row">
-            <!-- Foto -->
+                $fotoUrl = $user->foto
+                    ? route('profile.avatar', $user->id)
+                    : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=435ebe&color=fff';
+            @endphp
+
             <div class="col-md-3 text-center">
-                @php
-                    $user = Auth::user();
-                    if ($user->foto) {
-                        if (!Str::contains($user->foto, '/')) {
-                            $fotoUrl = route('profile.avatar', $user->id);
-                        } else {
-                            $fotoUrl = asset('storage/' . $user->foto);
-                        }
-                    } else {
-                        $fotoUrl = 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=435ebe&color=fff';
-                    }
-                @endphp
+                <img
+                    id="previewFoto"
+                    src="{{ $fotoUrl }}"
+                    alt="Foto Profil"
+                    style="
+                        width:180px;
+                        height:180px;
+                        border-radius:50%;
+                        object-fit:cover;
+                        border:2px solid #ccc;
+                        background:#f1f3f5;
+                    "
+                >
 
-                <img 
-                    src="{{ Auth::user()->foto ? route('profile.avatar', Auth::user()->id) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=435ebe&color=fff' }}" 
-                    alt="Foto Profil" 
-                    class="img-fluid rounded mb-3" 
-                    style="max-height:200px; object-fit:cover;">
-                    
-                <input type="file" name="foto" class="form-control form-control-sm mt-2">
+                <input
+                    type="file"
+                    name="foto"
+                    class="form-control form-control-sm mt-2"
+                    accept="image/*"
+                    onchange="previewImage(this)"
+                >
             </div>
 
             <!-- Data Profil -->
@@ -139,4 +148,24 @@
         </div>
     </form>
 </div>
+
+<script>
+function previewImage(input) {
+    if (!input.files || !input.files[0]) return;
+
+    const file = input.files[0];
+
+    if (!file.type.startsWith('image/')) {
+        alert('File harus berupa gambar');
+        input.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('previewFoto').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+</script>
 @endsection

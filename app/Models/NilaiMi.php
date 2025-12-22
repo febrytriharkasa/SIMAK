@@ -14,7 +14,7 @@ class NilaiMi extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'siswa_id', 'guru_id', 'mapel_id', 'kelas_id',
-        'tugas', 'uts', 'eas', 'nilai_akhir'
+        'tugas', 'uts', 'eas', 'nilai_akhir', 'semester',
     ];
 
     protected $casts = [
@@ -39,5 +39,10 @@ class NilaiMi extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas_MI::class);
+    }
+
+    public function absensis()
+    {
+        return $this->hasMany(AbsensiMI::class, 'kelas_id');
     }
 }

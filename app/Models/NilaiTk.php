@@ -14,7 +14,7 @@ class NilaiTk extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'siswa_id', 'guru_id', 'mapel_id', 'kelas_id',
-        'tugas', 'uts', 'eas', 'nilai_akhir'
+        'tugas', 'uts', 'eas', 'nilai_akhir', 'semester',
     ];
 
     protected $casts = [

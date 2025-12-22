@@ -52,7 +52,7 @@
 <div class="container-fluid">
 
     {{-- Header --}}
-    <div class="d-flex justify-content-between align-items-center mb-4 ms-5 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
         <h4 class="fw-bold">Permintaan Reset Password</h4>
     </div>
 

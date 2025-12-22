@@ -42,8 +42,8 @@ class EvaluasiKinerjaController extends Controller
             'kehadiran'      => 'required|numeric|min:0|max:100',
             'deskripsi'      => 'nullable|string',
         ]);
+        
         EvaluasiKinerja::create($request->all());
-         dd($request->all());
         return redirect()->route('evaluasi.index')->with('success', 'Evaluasi berhasil ditambahkan');
     }
 

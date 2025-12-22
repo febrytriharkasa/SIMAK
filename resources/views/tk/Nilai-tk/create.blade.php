@@ -4,39 +4,6 @@
 
 @section('content')
 
-<style>
-    /* Light mode */
-    [data-bs-theme="light"] #content-wrapper,
-    [data-bs-theme="light"] .container {
-        background-color: #fff !important;
-        color: #181515;
-    }
-    [data-bs-theme="light"] .card,
-    [data-bs-theme="light"] .form-control {
-        background-color: #f8f9fa !important;
-        color: #000;
-    }
-    [data-bs-theme="light"] label {
-        color: #000;
-    }
-
-    /* Dark mode */
-    [data-bs-theme="dark"] #content-wrapper,
-    [data-bs-theme="dark"] .container {
-        background-color: #1B1B1DFF !important;
-        color: #fff;
-    }
-    [data-bs-theme="dark"] .card,
-    [data-bs-theme="dark"] .form-control {
-        background-color: #2c2c2e !important;
-        color: #fff;
-        border: 1px solid #444;
-    }
-    [data-bs-theme="dark"] label {
-        color: #fff;
-    }
-</style>
-
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
@@ -60,6 +27,16 @@
                     <form action="{{ route('nilai-tk.store') }}" method="POST">
                         @csrf
 
+                        {{-- Pilih Semester --}}
+                        <div class="mb-3">
+                            <label for="semester" class="form-label">Semester</label>
+                            <select name="semester" id="semester" class="form-control" required>
+                                <option value="">-- Pilih Semester --</option>
+                                <option value="ganjil">Semester Ganjil</option>
+                                <option value="genap">Semester Genap</option>
+                            </select>
+                        </div>
+
                         {{-- Pilih Kelas --}}
                         <div class="mb-3">
                             <label for="kelas_id" class="form-label">Kelas</label>
@@ -81,15 +58,6 @@
                                         {{ $m->nama_mapel }}
                                     </option>
                                 @endforeach
-                            </select>
-                        </div>
-
-                        {{-- Pilih Guru (otomatis terisi setelah pilih mapel) --}}
-                        <div class="mb-3" id="guru-wrapper" style="display:none;">
-                            <label for="guru_id" class="form-label">Guru</label>
-                            <select name="guru_id" id="guru_id" class="form-control" required>
-                                <option value="">-- Pilih Guru --</option>
-                                {{-- akan diisi pakai JS --}}
                             </select>
                         </div>
 
@@ -170,29 +138,6 @@
             }
         } else {
             container.style.display = 'none';
-        }
-    });
-
-    // Event pilih mapel → tampil dropdown guru
-    document.getElementById('mapel_id').addEventListener('change', function () {
-        let mapelId = this.value;
-        guruSelect.innerHTML = '<option value="">-- Pilih Guru --</option>';
-
-        if (mapelId) {
-            let mapel = mapelData.find(m => m.id == mapelId);
-            if (mapel && mapel.guru.length > 0) {
-                mapel.guru.forEach(g => {
-                    let opt = document.createElement('option');
-                    opt.value = g.id;
-                    opt.text = g.nama;
-                    guruSelect.appendChild(opt);
-                });
-                guruWrapper.style.display = 'block';
-            } else {
-                guruWrapper.style.display = 'none';
-            }
-        } else {
-            guruWrapper.style.display = 'none';
         }
     });
 

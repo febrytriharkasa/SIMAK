@@ -23,7 +23,11 @@ class LaporanPembayaranTKController extends Controller
         // Ambil daftar kelas (untuk dropdown dan urutan tampil)
         $kelasList = KelasTk::orderBy('nama_kelas', 'asc')->get();
 
+        // Jika semua filter kosong → jangan tampilkan data sama sekali
+        $isFiltered = $kelas_id || $status || $jenis || $bulan;
+
         $data = [];
+        $paginator = null;
 
         // Kalau pilih kelas tertentu → hanya tampilkan kelas itu
         $kelasQuery = $kelas_id
@@ -32,7 +36,8 @@ class LaporanPembayaranTKController extends Controller
 
         foreach ($kelasQuery as $kelas) {
             // Ambil semua siswa dalam kelas ini
-            $siswaList = SiswaTk::where('kelas_id', $kelas->id)->get();
+            $siswaList = SiswaTk::where('kelas_id', $kelas->id)->paginate(10);
+            $paginator = $siswaList; // simpan paginator untuk view
 
             foreach ($siswaList as $siswa) {
                 // Ambil semua pembayaran siswa berdasarkan filter
@@ -52,6 +57,8 @@ class LaporanPembayaranTKController extends Controller
 
         return view('tk.laporan-pembayaran-tk.index', [
             'data' => $data,
+            'isFiltered' => $isFiltered,
+            'pagination' => $paginator,
             'bulan' => $bulan,
             'status' => $status,
             'jenis_tagihan' => $jenis,

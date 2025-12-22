@@ -10,7 +10,18 @@ class Siswa_MI extends Model
     use HasFactory;
 
     protected $table = 'siswas_mi'; // pastikan ini benar
-    protected $fillable = ['nama', 'nisn', 'tahun', 'no_hp_wali', 'alamat_siswa', 'nama_wali', 'kelas_id'];
+    protected $fillable = [
+        'nama',
+        'nisn',
+        'tahun',
+        'tahun_daftar',
+        'no_hp_wali',
+        'alamat_siswa',
+        'nama_wali',
+        'kelas_id',
+        'bukti_pembayaran',
+        'status'
+    ];
 
     public function pembayarans()
     {
@@ -26,4 +37,10 @@ class Siswa_MI extends Model
     {
         return $this->hasMany(NilaiMi::class, 'siswa_id');
     }
+
+    public function absensis()
+    {
+        return $this->hasMany(AbsensiMI::class, 'siswa_id');
+    }
+
 }

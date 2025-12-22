@@ -160,6 +160,13 @@
                     <span class="sidebar-text">Input Nilai</span>
                 </a>
             </li>
+
+            <li class="nav-item {{ request()->is('absensi-mi') || request()->is('absensi-mi/*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('absensi-mi.index') }}">
+                    <i class="fas fa-calendar-check"></i>
+                    <span class="sidebar-text">Absensi</span>
+                </a>
+            </li>
         @endhasanyrole
 
         <!-- Manajemen TK -->
@@ -203,6 +210,13 @@
                     <span class="sidebar-text">Input Nilai</span>
                 </a>
             </li>
+
+            <li class="nav-item {{ request()->is('absensi-tk') || request()->is('absensi-tk/*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('absensi-tk.index') }}">
+                    <i class="fas fa-calendar-check"></i>
+                    <span class="sidebar-text">Absensi</span>
+                </a>
+            </li>
         @endhasanyrole
 
 
@@ -210,7 +224,7 @@
         @role('admin')
             <hr class="sidebar-divider my-2">
             <div class="sidebar-heading px-3 text-uppercase text-white fw-bold sidebar-text" style="font-size:0.85rem; opacity:0.8;">
-                Pengguna
+                Admin
             </div>
 
             <li class="nav-item {{ request()->is('users*') ? 'active' : '' }}">
@@ -233,12 +247,19 @@
             <li class="nav-item {{ request()->is('user-approvals*') ? 'active' : '' }}">
                 <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('user.approvals.index') }}">
                     <i class="fas fa-user-check me-2"></i>
-                    <span class="sidebar-text">Approval</span>
+                    <span class="sidebar-text">Approval User</span>
+                </a>
+            </li>
+
+            <li class="nav-item {{ request()->is('pendaftaran-mi-approvel') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('admin.pendaftaran-mi-approvel.mi.index') }}">
+                    <i class="fas fa-user-check me-2"></i>
+                    <span class="sidebar-text">Approval Pendaftaran MI</span>
                 </a>
             </li>
         @endrole
 
-        <!-- Logout -->
+        <!-- Logout
             <li class="nav-item logout-item d-flex justify-content-center">
                 <a class="nav-link d-flex align-items-center justify-content-center py-3 px-3 rounded hover-bg-light"
                 href="#"
@@ -248,7 +269,7 @@
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                     @csrf
                 </form>
-            </li>
+            </li> -->
     </ul>
 
     <!-- Toggle Sidebar Button -->
@@ -262,7 +283,7 @@
     <nav class="navbar navbar-expand navbar-light bg-white topbar fixed-top shadow">
         <div class="container-fluid">
             <h3 class="fw-bold mb-0 topbar-title" style="margin-left: 30px;">
-                Sistem Menejemen Al Kushnaniyah
+                Sistem Manejemen Al Khusnaniyah
             </h3>
 
             <!-- Right side navbar -->
@@ -347,7 +368,7 @@
         <!-- Footer -->
         <footer class="sticky-footer  py-3">
             <div class=>
-                <span class="text-muted small">© {{ date('Y') }} SIMAK MI - AMPEL</span>
+                <span class="text-muted small">© {{ date('Y') }} SIMAK  - AMPEL</span>
             </div>
         </footer>
     </div>

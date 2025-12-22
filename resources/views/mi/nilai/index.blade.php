@@ -58,7 +58,7 @@
                                 {{-- Tambahan NISN --}}
                                 <td>{{ $siswa->nisn }}</td>
 
-                                <td class="text-start">{{ $siswa->nama }}</td>
+                                <td class="text-center align-middle">{{ $siswa->nama }}</td>
 
                                 <td>
                                     <span class="badge bg-primary">

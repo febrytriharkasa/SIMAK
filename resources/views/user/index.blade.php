@@ -64,10 +64,10 @@
 <div class="container-fluid">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 ms-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 ms-4">
         <h4 class="fw-bold">Data User Yayasan</h4>
     </div>
-
+    
     <!-- Alert Notifikasi -->
     @foreach (['success', 'error', 'info'] as $msg)
         @if(session($msg))
@@ -123,11 +123,11 @@
                             <td>
                                 <div class="d-flex justify-content-center gap-2">
 
-                                    <!-- Tombol Edit -->
+                                    <!-- Tombol Edit 
                                     <a href="{{ route('users.edit', $user->id) }}" 
                                        class="btn btn-warning btn-sm" title="Edit">
                                         <i class="fas fa-edit"></i>
-                                    </a>
+                                    </a> -->
 
                                     <!-- Tombol Reset Password -->
                                     <button type="button" 

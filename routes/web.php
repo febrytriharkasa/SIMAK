@@ -20,8 +20,27 @@ use App\Http\Controllers\GuruTkDbController;
 use App\Http\Controllers\LaporanPembayaranMIController;
 use App\Http\Controllers\LaporanPembayaranTKController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\AbsensiMIController;
+use App\Http\Controllers\AbsensiTKController;
+use App\Http\Controllers\PendaftaranMIController;
+use App\Http\Controllers\PendaftaranTKController;
 
 Route::get('/', fn () => redirect()->route('login'));
+
+Route::get('/pendaftaran-mi', 
+    [PendaftaranMIController::class, 'create']
+)->name('pendaftaran.mi.create');
+
+Route::post('/pendaftaran-mi', 
+    [PendaftaranMIController::class, 'store']
+)->name('pendaftaran.mi.store');
+
+Route::get('/pendaftaran-tk', 
+    [PendaftaranTKController::class, 'create']
+)->name('pendaftaran.tk.create');
+Route::post('/pendaftaran-tk', 
+    [PendaftaranTKController::class, 'store']
+)->name('pendaftaran.tk.store');
 
 // ================== DASHBOARD ==================
 // Dashboard umum → redirect otomatis sesuai role
@@ -51,6 +70,28 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // ✅ Evaluasi
     Route::resource('evaluasi', EvaluasiKinerjaController::class);
+
+Route::get('/pendaftaran-mi-approvel', 
+        [PendaftaranMIController::class, 'index']
+    )->name('admin.pendaftaran-mi-approvel.mi.index');
+
+    Route::post('/pendaftaran-mi-approvel/{id}/approve', 
+        [PendaftaranMIController::class, 'approve']
+    )->name('admin.pendaftaran.mi.approve');
+
+    Route::post('/pendaftaran-mi-approvel/{id}/reject', 
+        [PendaftaranMIController::class, 'reject']
+    )->name('admin.pendaftaran.mi.reject');
+
+        Route::get('/pendaftaran-tk-approvel', 
+                [PendaftaranTKController::class, 'index']
+        )->name('admin.pendaftaran-tk-approvel.tk.index');
+        Route::post('/pendaftaran-tk-approvel/{id}/approve', 
+                [PendaftaranTKController::class, 'approve']
+        )->name('admin.pendaftaran.tk.approve');
+        Route::post('/pendaftaran-tk-approvel/{id}/reject', 
+                [PendaftaranTKController::class, 'reject']
+        )->name('admin.pendaftaran.tk.reject');
 });
 
 // ================== ADMIN DAN GURU MI==================
@@ -73,7 +114,16 @@ Route::middleware(['auth', 'role:admin|guru_mi'])->group(function () {
     Route::get('/laporan-pembayaran-mi', [LaporanPembayaranMIController::class, 'index'])
             ->name('laporan-pembayaran-mi.index');
     Route::get('nilai/siswa/{siswaId}', [NilaiMiController::class, 'show'])->name('nilai.show');
+    Route::resource('absensi-mi', AbsensiMIController::class);
+    Route::get('/absensi-mi/siswa/{kelas}', [AbsensiMIController::class, 'getSiswaByKelas']);
+    Route::get('/mi/nilai/rapor/{siswa}/{kelas}/{semester}',[NilaiMiController::class, 'cetakRaporPdf'])->name('nilai.rapor.pdf');
+
+
 });
+
+
+
+
 
 // ================== ADMIN DAN GURU TK==================
 Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
@@ -98,6 +148,11 @@ Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
     ]);
 
     Route::get('nilai-tk/siswa/{siswaId}', [NilaiTkController::class, 'show'])->name('nilai-tk.show');
+
+    Route::resource('absensi-tk', AbsensiTKController::class);
+    Route::get('/absensi-tk/siswa/{kelas}', [AbsensiTkController::class, 'getSiswaByKelas']);
+    Route::get('/tk/nilai-tk/rapor/{siswa}/{kelas}/{semester}',[NilaiTkController::class, 'cetakRaporPdf'])->name('nilai-tk.rapor.pdf');
+
 });
 
 // ================== PROFILE ==================

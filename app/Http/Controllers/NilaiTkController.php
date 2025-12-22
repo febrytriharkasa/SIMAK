@@ -7,6 +7,7 @@ use App\Models\SiswaTk;
 use App\Models\MapelTk;
 use App\Models\GuruTk;
 use App\Models\KelasTk;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class NilaiTkController extends Controller
@@ -38,7 +39,9 @@ class NilaiTkController extends Controller
    public function create()
     {
         // Ambil semua kelas beserta siswa
-        $kelasList = KelasTk::with('siswas')->get();
+        $kelasList = KelasTk::where('tingkat', '<', 4)
+            ->orderBy('tingkat')
+            ->get();
 
         // Ambil semua mapel beserta guru
         $mapelList = MapelTk::with('guru')->get();
@@ -53,7 +56,7 @@ class NilaiTkController extends Controller
         $request->validate([
             'kelas_id' => 'required|exists:kelas_tk,id',
             'mapel_id' => 'required|exists:mapel_tk,id',
-            'guru_id'  => 'required|exists:guru_tk,id',
+            'semester' => 'required|in:ganjil,genap',
             'nilai'    => 'required|array', // array siswa
         ]);
 
@@ -67,6 +70,17 @@ class NilaiTkController extends Controller
                 continue; // lewati siswa jika data tidak lengkap
             }
 
+            $exists = NilaiTk::where([
+                'siswa_id' => $siswaId,
+                'mapel_id' => $request->mapel_id,
+                'kelas_id' => $request->kelas_id,
+                'semester' => $request->semester,
+            ])->exists();
+
+            if ($exists) {
+                continue; // atau return error
+            }
+
             // Hitung nilai_akhir otomatis
             $rataTugas = array_sum($tugas) / count($tugas);
             $nilaiAkhir = ($rataTugas * 0.3) + ($uts * 0.35) + ($eas * 0.35);
@@ -75,8 +89,8 @@ class NilaiTkController extends Controller
             NilaiTk::create([
                 'siswa_id'    => $siswaId,
                 'mapel_id'    => $request->mapel_id,
-                'guru_id'     => $request->guru_id,
                 'kelas_id'    => $request->kelas_id,
+                'semester'    => $request->semester,
                 'tugas'       => $tugas,
                 'uts'         => $uts,
                 'eas'         => $eas,
@@ -110,7 +124,6 @@ class NilaiTkController extends Controller
         $request->validate([
             'siswa_id' => 'required|exists:siswa_tk,id',
             'mapel_id' => 'required|exists:mapel_tk,id',
-            'guru_id'  => 'required|exists:guru_tk,id',
             'kelas_id' => 'required|exists:kelas_tk,id',
             'tugas'    => 'required|array',
             'uts'      => 'required|numeric|min:0|max:100',
@@ -125,7 +138,6 @@ class NilaiTkController extends Controller
             'nilai_akhir' => round($nilaiAkhir, 2)
         ]));
 
-        app()->make(\App\Http\Controllers\SiswaTkController::class)->naikKelasTk();
 
         return redirect()->route('nilai-tk.index')->with('success', 'Data nilai berhasil diperbarui!');
     }
@@ -142,20 +154,76 @@ class NilaiTkController extends Controller
     {
         $siswa = SiswaTk::with('kelas')->findOrFail($id);
 
-        // Jika ada request kelas_id, pakai itu; jika tidak, pakai kelas siswa saat ini
+        // kelas aktif (default = kelas siswa sekarang)
         $kelasId = $request->kelas_id ?? $siswa->kelas_id;
 
-        // Ambil nilai siswa hanya untuk kelas yang dipilih
-        $nilais = NilaiTk::with('mapel', 'guru')
+        // semester (opsional)
+        $semester = $request->semester; // ganjil | genap | null
+
+        // ambil nilai berdasarkan siswa + kelas + semester (jika ada)
+        $nilais = NilaiTk::with('mapel')
             ->where('siswa_id', $siswa->id)
             ->where('kelas_id', $kelasId)
+            ->when($semester, function ($q) use ($semester) {
+                $q->where('semester', $semester);
+            })
+            ->orderBy('semester')
+            ->orderBy('mapel_id')
             ->get();
 
-        // Ambil daftar kelas siswa untuk dropdown (optional)
-        $kelasList = KelasTk::all();
+        $kelasList = KelasTk::orderBy('tingkat')->get();
 
-        return view('tk.nilai-tk.show', compact('siswa', 'nilais', 'kelasList', 'kelasId'));
+        return view('tk.nilai-tk.show', compact(
+            'siswa',
+            'nilais',
+            'kelasList',
+            'kelasId',
+            'semester'
+        ));
     }
 
+    public function cetakRaporPdf($siswaId, $kelasId, $semester)
+    {
+        if (!in_array($semester, ['ganjil', 'genap'])) {
+            abort(400, 'Semester tidak valid');
+        }
+
+        $siswa = SiswaTk::with('kelas')->findOrFail($siswaId);
+
+        // ambil semua mapel
+        $mapels = MapelTk::orderBy('nama_mapel')->get();
+
+        // ambil nilai SESUAI kelas yg dipilih
+        $nilais = NilaiTk::with('mapel')
+            ->where('siswa_id', $siswaId)
+            ->where('kelas_id', $kelasId)
+            ->where('semester', $semester)
+            ->get();
+
+        $rataRata = $nilais->count() > 0
+            ? round($nilais->avg('nilai_akhir'), 2)
+            : 0;
+
+        $status = '-';
+        if ($semester === 'genap' && $nilais->count() > 0) {
+            $status = $rataRata >= 70 ? 'NAIK KELAS' : 'TINGGAL KELAS';
+        }
+
+        $kelas = KelasTk::findOrFail($kelasId);
+
+        $pdf = Pdf::loadView('tk.nilai-tk.rapor-pdf', [
+            'siswa'    => $siswa,
+            'kelas'    => $kelas,
+            'mapels'   => $mapels,
+            'nilais'   => $nilais,
+            'semester' => $semester,
+            'rataRata' => $rataRata,
+            'status'   => $status,
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->stream(
+            'Rapor_' . $siswa->nama . '_' . $kelas->nama_kelas . '_' . strtoupper($semester) . '.pdf'
+        );
+    }
 
 }

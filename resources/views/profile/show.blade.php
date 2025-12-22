@@ -8,7 +8,9 @@
 
 @section('content')
 <div class="container-fluid">
-    <h3 class="ms-4 mb-4">Profil Saya</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
+        <h4 class="fw-bold">Profil Saya</h4>
+    </div>
 
     <div class="card shadow-sm mb-4">
         <div class="card-body row">

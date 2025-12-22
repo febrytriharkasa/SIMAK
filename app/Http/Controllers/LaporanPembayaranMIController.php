@@ -20,38 +20,49 @@ class LaporanPembayaranMIController extends Controller
         $jenis = $request->jenis_tagihan;
         $bulan = $request->bulan;
 
-        // Ambil daftar kelas (untuk dropdown dan urutan tampil)
+        // Ambil daftar kelas
         $kelasList = Kelas_Mi::orderBy('nama_kelas', 'asc')->get();
 
+        // Jika semua filter kosong → jangan tampilkan data sama sekali
+        $isFiltered = $kelas_id || $status || $jenis || $bulan;
+
         $data = [];
+        $paginator = null;
 
-        // Kalau pilih kelas tertentu → hanya tampilkan kelas itu
-        $kelasQuery = $kelas_id
-            ? $kelasList->where('id', $kelas_id)
-            : $kelasList;
+        if ($isFiltered) {
 
-        foreach ($kelasQuery as $kelas) {
-            // Ambil semua siswa dalam kelas ini
-            $siswaList = Siswa_MI::where('kelas_id', $kelas->id)->get();
+            // Tentukan kelas yang dipilih
+            $kelasQuery = $kelas_id
+                ? $kelasList->where('id', $kelas_id)
+                : $kelasList;
 
-            foreach ($siswaList as $siswa) {
-                // Ambil semua pembayaran siswa berdasarkan filter
-                $pembayaranList = Pembayaran_MI::with('siswa')
-                    ->where('siswa_id', $siswa->id)
-                    ->when($status, fn($q) => $q->where('status', $status))
-                    ->when($jenis, fn($q) => $q->where('jenis_tagihan', 'like', "%{$jenis}%"))
-                    ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
-                    ->orderBy('tanggal', 'asc')
-                    ->get();
-                    
-                if ($pembayaranList->isNotEmpty()) {
-                    $data[$kelas->nama_kelas][$siswa->nama] = $pembayaranList;
+            foreach ($kelasQuery as $kelas) {
+
+                // Ambil siswa berdasarkan kelas
+                $siswaList = Siswa_MI::where('kelas_id', $kelas->id)->paginate(10);
+                $paginator = $siswaList; // simpan paginator untuk view
+
+                foreach ($siswaList as $siswa) {
+                    // Ambil pembayaran siswa
+                    $pembayaranList = Pembayaran_MI::with('siswa')
+                        ->where('siswa_id', $siswa->id)
+                        ->when($status, fn($q) => $q->where('status', $status))
+                        ->when($jenis, fn($q) => $q->where('jenis_tagihan', 'like', "%{$jenis}%"))
+                        ->when($bulan, fn($q) => $q->whereMonth('tanggal', $bulan))
+                        ->orderBy('tanggal', 'asc')
+                        ->get();
+
+                    if ($pembayaranList->isNotEmpty()) {
+                        $data[$kelas->nama_kelas][$siswa->nama] = $pembayaranList;
+                    }
                 }
             }
         }
 
         return view('mi.laporan-pembayaran-mi.index', [
             'data' => $data,
+            'isFiltered' => $isFiltered,
+            'pagination' => $paginator,
             'bulan' => $bulan,
             'status' => $status,
             'jenis_tagihan' => $jenis,
@@ -59,4 +70,5 @@ class LaporanPembayaranMIController extends Controller
             'kelasList' => $kelasList,
         ]);
     }
+
 }

@@ -9,8 +9,16 @@
 <body class="h-screen bg-cover bg-center flex items-center justify-center"
       style="background-image: url('{{ asset('bg/bglogin.png') }}');">
 
+  <!-- Tombol Daftar di pojok kanan atas -->
+  <div class="absolute top-5 right-5">
+    <button onclick="openRegisterPopup()"
+            class="bg-sky-600 text-white px-4 py-2 rounded-lg hover:bg-sky-700 transition">
+      Daftar Sekolah
+    </button>
+  </div>
+
   <!-- Kotak Login -->
-  <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl w-[400px] p-8">
+  <div class="bg-white/80 backdrop-blur-md shadow-xl rounded-2xl w-[400px] p-8 z-10">
     <!-- Logo -->
     <div class="flex justify-center mb-6">
       <img src="{{ asset('logo/logo.png') }}" alt="Logo" 
@@ -26,23 +34,18 @@
     <!-- Form -->
     <form action="{{ route('login') }}" method="POST" class="space-y-4">
       @csrf
-      <!-- Email -->
       <div>
         <input type="email" name="email" placeholder="Email" required
           class="w-full px-4 py-2 border border-gray-300 rounded-lg 
                  focus:ring-2 focus:ring-sky-400 focus:outline-none">
       </div>
 
-      <!-- Password + Eye -->
       <div class="relative">
         <input id="password" type="password" name="password" placeholder="Password" required
           class="w-full px-4 py-2 border border-gray-300 rounded-lg 
                  focus:ring-2 focus:ring-sky-400 focus:outline-none pr-10">
-        
-        <!-- Tombol Eye -->
         <button type="button" onclick="togglePassword()" 
           class="absolute right-3 top-2.5 text-gray-500 hover:text-sky-600">
-          <!-- Eye Open -->
           <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" 
                class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -52,7 +55,6 @@
                  8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 
                  7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>
-          <!-- Eye Closed -->
           <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" 
                class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -68,19 +70,16 @@
         </button>
       </div>
 
-      <!-- Tombol Login -->
       <button type="submit"
         class="w-full bg-black text-white py-2 rounded-lg font-semibold 
                hover:bg-gray-800 transition">
         Login
       </button>
 
-      <!-- Lupa Password + Register -->
       <div class="flex justify-between text-sm mt-2">
         <a href="{{ route('password-request.form') }}" class="text-sky-600 hover:underline">
           Lupa Password?
         </a>
-
         <a href="{{ route('register') }}" 
            class="text-sky-600 hover:underline">
             Belum punya akun? Daftar
@@ -89,7 +88,26 @@
     </form>
   </div>
 
-  <!-- Script Toggle Password -->
+<!-- Popup Daftar MI/TK -->
+<div id="registerPopup" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+  <div class="bg-white rounded-2xl p-8 w-[400px] max-w-[90%] text-center relative shadow-xl">
+    <button onclick="closeRegisterPopup()" 
+            class="absolute top-4 right-4 text-gray-500 hover:text-red-600 font-bold text-2xl">&times;</button>
+    <h3 class="text-2xl font-bold mb-6">Pilih Jenis Pendaftaran</h3>
+    <div class="flex flex-col gap-4">
+      <a href="{{ route('pendaftaran.mi.create') }}" 
+         class="bg-sky-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-sky-700 transition">
+        Daftar MI
+      </a>
+      <a href="{{ route('pendaftaran.tk.create') }}" 
+         class="bg-green-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-green-700 transition">
+        Daftar TK
+      </a>
+    </div>
+  </div>
+</div>
+
+  <!-- Script Toggle Password + Popup -->
   <script>
     function togglePassword() {
       const input = document.getElementById('password');
@@ -106,7 +124,16 @@
         eyeClosed.classList.add("hidden");
       }
     }
-  </script>
 
+    function openRegisterPopup() {
+      document.getElementById('registerPopup').classList.remove('hidden');
+      document.getElementById('registerPopup').classList.add('flex');
+    }
+
+    function closeRegisterPopup() {
+      document.getElementById('registerPopup').classList.add('hidden');
+      document.getElementById('registerPopup').classList.remove('flex');
+    }
+  </script>
 </body>
 </html>
