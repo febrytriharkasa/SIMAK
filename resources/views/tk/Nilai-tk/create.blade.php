@@ -113,7 +113,9 @@
         if (kelasId) {
             let kelas = siswaData.find(k => k.id == kelasId);
             if (kelas && kelas.siswas.length > 0) {
-                kelas.siswas.forEach(s => {
+                kelas.siswas
+                .filter(s => s.status === 'aktif') // hanya siswa aktif
+                .forEach(s => {
                     tbody.innerHTML += `
                         <tr>
                             <td>${s.nama}</td>

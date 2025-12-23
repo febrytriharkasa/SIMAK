@@ -24,7 +24,22 @@ class SiswaTk extends Model
         'email',
         'kk',
         'akte',
-        'foto_siswa'
+        'foto_siswa',
+        'tahun_ajaran_id',
+
+        // kolom tambahan orang tua
+        'nama_ayah',
+        'nama_ibu',
+        'alamat_orangtua',
+        'no_hp_orangtua',
+        'pekerjaan_ayah',
+        'pekerjaan_ibu',
+        'pendidikan_ayah',
+        'pendidikan_ibu',
+        'penghasilan_ayah',
+        'penghasilan_ibu',
+
+
     ];
 
     public function pembayarans()
@@ -45,5 +60,10 @@ class SiswaTk extends Model
     public function absensis()
     {
         return $this->hasMany(AbsensiTK::class, 'siswa_id');
+    }
+
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaranTK::class, 'tahun_ajaran_id');
     }
 }

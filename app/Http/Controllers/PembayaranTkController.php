@@ -14,45 +14,63 @@ class PembayaranTkController extends Controller
     // 📌 Tampilkan semua data pembayaran
     public function index(Request $request)
     {
-        $query = PembayaranTk::with('siswa');
-
-        // Ambil semua daftar kelas
         $kelasList = KelasTk::orderBy('tingkat', 'asc')->get();
+
+        // Ambil semua jenis tagihan unik dari data (untuk select filter)
+        $jenisTagihanList = PembayaranTk::select('jenis_tagihan')
+            ->distinct()
+            ->pluck('jenis_tagihan');
+
+        // Jika bulan belum dipilih, jangan tampilkan data
+        if (!$request->filled('bulan')) {
+            $pembayaran = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+            return view('tk.pembayaran-tk.index', compact('pembayaran', 'kelasList', 'jenisTagihanList'))
+                ->with('warning', 'Silakan pilih bulan & tahun terlebih dahulu.');
+        }
+
+        // Jika jenis tagihan belum dipilih, jangan tampilkan data
+        if (!$request->filled('jenis_tagihan')) {
+            $pembayaran = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+            return view('tk.pembayaran-tk.index', compact('pembayaran', 'kelasList', 'jenisTagihanList'))
+                ->with('warning', 'Silakan pilih jenis tagihan untuk menampilkan data.');
+        }
+
+        $query = PembayaranTk::with('siswa');
 
         // Filter No Induk
         if ($request->filled('id_tk')) {
-            $query->whereHas('siswa', function($q) use ($request) {
+            $query->whereHas('siswa', function ($q) use ($request) {
                 $q->where('id_tk', 'like', '%' . $request->id_tk . '%');
             });
         }
 
-        // 🔥 Filter Kelas
+        // Filter Kelas
         if ($request->filled('kelas_id')) {
             $query->whereHas('siswa', function ($q) use ($request) {
                 $q->where('kelas_id', $request->kelas_id);
             });
         }
 
+        // Filter Jenis Tagihan
+        $query->where('jenis_tagihan', $request->jenis_tagihan);
+
         // Filter Bulan
-        if ($request->filled('bulan')) {
-            $bulan = \Carbon\Carbon::parse($request->bulan);
-            $query->whereMonth('tanggal', $bulan->month)
-                  ->whereYear('tanggal', $bulan->year);
+        $bulan = \Carbon\Carbon::parse($request->bulan);
+        $query->whereMonth('tanggal', $bulan->month)
+            ->whereYear('tanggal', $bulan->year);
 
-            $pembayaran = $query->paginate(10);
-        } else {
-            $pembayaran = new LengthAwarePaginator([], 0, 10); // kosongkan jika belum pilih bulan
-        }
+        $pembayaran = $query->paginate(10);
 
-        return view('tk.pembayaran-tk.index', compact('pembayaran', 'kelasList'));
+        return view('tk.pembayaran-tk.index', compact('pembayaran', 'kelasList', 'jenisTagihanList'));
     }
+
 
     // 📌 Form tambah pembayaran
     public function create()
     {
         $siswa = SiswaTk::all();
         $kelasList = KelasTk::orderBy('tingkat', 'asc')->get();
-        
+
         return view('tk.pembayaran-tk.create', compact('siswa', 'kelasList'));
     }
 
@@ -156,7 +174,7 @@ class PembayaranTkController extends Controller
         $nama = $pembayaran->siswa->nama;
         $id_tk = $pembayaran->siswa->id_tk;
 
-        $pembayaran->delete(); 
+        $pembayaran->delete();
 
         return redirect()->route('pembayaran-tk.index', [
             'bulan' => $request->input('bulan'),
@@ -164,7 +182,7 @@ class PembayaranTkController extends Controller
             'id_tk' => $request->input('id_tk'),
             'kelas_id' => $request->input('kelas_id'),
         ])->with('success', 'Pembayaran untuk siswa '
-            . $id_tk . ' - ' . $nama. ' berhasil dihapus.');
+            . $id_tk . ' - ' . $nama . ' berhasil dihapus.');
     }
 
     // 📌 Export laporan PDF (filter per bulan & tahun)
@@ -175,10 +193,10 @@ class PembayaranTkController extends Controller
         $kelasLabel = null;
 
         if ($request->filled('id_tk')) {
-            $query->whereHas('siswa', function($q) use ($request) {
-                $q->where('id_tk', 'like', '%'.$request->id_tk.'%');
+            $query->whereHas('siswa', function ($q) use ($request) {
+                $q->where('id_tk', 'like', '%' . $request->id_tk . '%');
             });
-        }   
+        }
 
         // 🔥 Filter Kelas
         if ($request->filled('kelas_id')) {
@@ -193,7 +211,7 @@ class PembayaranTkController extends Controller
         if ($request->filled('bulan')) {
             $bulan = \Carbon\Carbon::parse($request->bulan);
             $query->whereMonth('tanggal', $bulan->month)
-                  ->whereYear('tanggal', $bulan->year);
+                ->whereYear('tanggal', $bulan->year);
         } else {
             return redirect()->route('pembayaran-tk.index')
                 ->with('error', 'Silakan pilih bulan terlebih dahulu.');
@@ -205,7 +223,10 @@ class PembayaranTkController extends Controller
             ->sum('jumlah');
 
         $pdf = Pdf::loadView('tk.pembayaran-tk.export-pdf', compact(
-            'pembayaran', 'total', 'bulan', 'kelasLabel'
+            'pembayaran',
+            'total',
+            'bulan',
+            'kelasLabel'
         ))->setPaper('A4', 'portrait');
 
         $namaFile = 'laporan-pembayaran-tk' . $bulan->translatedFormat('F-Y');
@@ -217,13 +238,13 @@ class PembayaranTkController extends Controller
         return $pdf->stream($namaFile);
     }
 
-     // 📌 Cetak kwitansi per pembayaran
+    // 📌 Cetak kwitansi per pembayaran
     public function kwitansiPdf($id)
     {
         $pembayaran = PembayaranTk::with('siswa')->findOrFail($id);
 
         $pdf = Pdf::loadView('tk.pembayaran-tk.kwitansi', compact('pembayaran'))
-                  ->setPaper([0, 0, 595.28, 320], 'portrait'); // 1/3 A4
+            ->setPaper([0, 0, 595.28, 320], 'portrait'); // 1/3 A4
 
         return $pdf->stream('kwitansi-' . $pembayaran->id . '.pdf');
     }
@@ -231,8 +252,8 @@ class PembayaranTkController extends Controller
     public function getSiswaDetail($siswaId)
     {
         $siswa = SiswaTk::with('kelas')
-                ->where('id', $siswaId)
-                ->first(['id', 'nama', 'id_tk', 'kelas_id']);
+            ->where('id', $siswaId)
+            ->first(['id', 'nama', 'id_tk', 'kelas_id']);
 
         if ($siswa) {
             return response()->json([
@@ -265,11 +286,13 @@ class PembayaranTkController extends Controller
         ]);
 
         $kelas = KelasTk::findOrFail($request->kelas_id);
-        $siswa = SiswaTk::where('kelas_id', $kelas->id)->get();
+        $siswa = SiswaTk::where('kelas_id', $kelas->id)
+            ->where('status', 'aktif')
+            ->get();
 
         $generated = 0;
         $tanggal = \Carbon\Carbon::createFromDate($request->tahun, $request->bulan, 1);
-        
+
         // Tangani jenis tagihan (jika pilih "Lainnya")
         $jenisTagihan = $request->jenis_tagihan === 'Lainnya'
             ? $request->jenis_tagihan_lainnya

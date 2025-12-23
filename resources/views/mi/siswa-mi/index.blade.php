@@ -41,6 +41,7 @@
                             <th>NISN</th>
                             <th>Nama</th>
                             <th>Kelas</th>
+                            <th>Tahun Ajaran</th>
                             <th>Tahun Masuk</th>
                             <th>Nama Wali</th>
                             <th>Email Wali</th>
@@ -62,9 +63,10 @@
                                     <em class="text-muted">-</em>
                                 @endif
                             </td>
+                            <td>{{ $row->tahunAjaran->nama_tahun ?? '-' }}</td>
                             <td>{{ $row->tahun }}</td>
                             <td>{{ $row->nama_wali }}</td>
-                            <td>{{ $row->email_wali }}</td>
+                            <td>{{ $row->email }}</td>
                             <td>{{ $row->no_hp_wali }}</td>
                             <td class="text-start">{{ $row->alamat_siswa }}</td>
                             <td>

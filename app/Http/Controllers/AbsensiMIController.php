@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AbsensiMI;
 use App\Models\Siswa_MI;
 use App\Models\Kelas_Mi;
+use App\Models\TahunAjaranMI;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Mail;
@@ -19,14 +20,19 @@ class AbsensiMIController extends Controller
     public function index(Request $request)
     {
         $kelas = Kelas_Mi::orderBy('nama_kelas')->get();
-        $absensi = collect(); // default kosong
+        $absensi = collect();
 
-        if ($request->filled('kelas_id') && $request->filled('tanggal')) {
-            $absensi = AbsensiMI::with(['siswa.kelas'])
-                ->whereDate('tanggal', $request->tanggal)
-                ->whereHas('siswa', function ($q) use ($request) {
-                    $q->where('kelas_id', $request->kelas_id);
-                })
+        if ($request->filled('kelas_id')) {
+
+            $query = AbsensiMI::with(['siswa.kelas', 'tahunAjaran'])
+                ->where('kelas_id', $request->kelas_id);
+
+            // TANGGAL OPSIONAL
+            if ($request->filled('tanggal')) {
+                $query->whereDate('tanggal', $request->tanggal);
+            }
+
+            $absensi = $query
                 ->orderBy('tanggal')
                 ->get();
         }
@@ -60,14 +66,23 @@ class AbsensiMIController extends Controller
             'status.*'   => 'in:hadir,izin,sakit,alfa',
             'keterangan' => 'nullable|array'
         ]);
-         
+
 
         // Ambil siswa yang benar-benar milik kelas tersebut
         $siswaKelas = Siswa_MI::where('kelas_id', $request->kelas_id)
             ->pluck('id')
             ->toArray();
 
+        $tahunAjaranAktif = TahunAjaranMI::where('aktif', true)->firstOrFail();
+
         foreach ($request->status as $siswa_id => $status) {
+
+            $siswa = Siswa_MI::find($siswa_id);
+
+            // skip siswa non-aktif
+            if (!$siswa || $siswa->status !== 'aktif') {
+                continue;
+            }
 
             // Skip jika siswa bukan anggota kelas
             if (!in_array($siswa_id, $siswaKelas)) {
@@ -75,15 +90,17 @@ class AbsensiMIController extends Controller
             }
 
             try {
-                 $absensi = AbsensiMI::create([
-                    'siswa_id'   => $siswa_id,
-                    'kelas_id'   => $request->kelas_id,
-                    'tanggal'    => $request->tanggal,
-                    'status'     => $status,
-                    'keterangan' => $request->keterangan[$siswa_id] ?? null
+                $absensi = AbsensiMI::create([
+                    'siswa_id'        => $siswa_id,
+                    'kelas_id'        => $request->kelas_id,
+                    'tahun_ajaran_id' => $tahunAjaranAktif->id,
+                    'tanggal'         => $request->tanggal,
+                    'status'          => $status,
+                    'keterangan'      => $request->keterangan[$siswa_id] ?? null
                 ]);
 
-                 // Kirim email ke wali/siswa
+
+                // Kirim email ke wali/siswa
                 if ($absensi->siswa->email) {
                     Mail::to($absensi->siswa->email)
                         ->send(new AbsensiMIMail($absensi));
@@ -99,7 +116,7 @@ class AbsensiMIController extends Controller
             ->with('success', 'Absensi kelas berhasil disimpan');
     }
 
-    
+
     public function edit($id)
     {
         $absensi = AbsensiMI::with('siswa.kelas')->findOrFail($id);
@@ -141,6 +158,7 @@ class AbsensiMIController extends Controller
     public function getSiswaByKelas($kelas_id)
     {
         return Siswa_MI::where('kelas_id', $kelas_id)
+            ->where('status', 'aktif') // hanya siswa aktif
             ->orderBy('nama')
             ->get();
     }

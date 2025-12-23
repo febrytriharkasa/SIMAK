@@ -51,12 +51,11 @@
                 </div>
 
                 <div class="col-md-4">
-                    <label class="fw-bold">Tanggal</label>
+                    <label class="fw-bold">Tanggal (Opsional)</label>
                     <input type="date"
-                           name="tanggal"
-                           class="form-control"
-                           value="{{ request('tanggal') }}"
-                           required>
+                        name="tanggal"
+                        class="form-control"
+                        value="{{ request('tanggal') }}">
                 </div>
 
                 <div class="col-md-4 d-flex align-items-end">
@@ -84,16 +83,21 @@
                             <th>No</th>
                             <th>Nama Siswa</th>
                             <th>Kelas</th>
+                            <th>Tahun Ajaran</th>
+                            <th>Tanggal</th>
                             <th>Status</th>
                             <th>Keterangan</th>
+                            <th style="width:120px">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($absensi as $a)
                         <tr class="align-middle">
                                 <td>{{ $loop->iteration }}</td>
-                                <td class="text-start">{{ $a->siswa->nama }}</td>
-                                <td>{{ $a->siswa->kelas->nama_kelas }}</td>
+                                <td class="text-start">{{ $a->siswa?->nama ?? '-' }}</td>
+                                <td>{{ $a->siswa?->kelas?->nama_kelas ?? '-' }}</td>
+                                <td>{{ $a->tahunAjaran?->nama_tahun ?? '-' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($a->tanggal)->format('d-m-Y') }}</td>
                                 <td>
                                     <span class="badge 
                                         @if($a->status=='hadir') bg-success
@@ -113,7 +117,7 @@
                                             <i class="fas fa-edit"></i>
                                         </a>
 
-                                        <form action="{{ route('absensi-mi.destroy', $a->id) }}"
+                                        <form action="{{ route('absensi-tk.destroy', $a->id) }}"
                                               method="POST"
                                               onsubmit="return confirm('Yakin hapus data ini?')">
                                             @csrf

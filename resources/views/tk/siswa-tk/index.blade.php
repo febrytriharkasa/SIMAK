@@ -44,6 +44,7 @@
                             <th>Nama</th>
                             <th>Kelas</th>
                             <th>Tahun Masuk</th>
+                            <th>Tahun Ajaran</th>
                             <th>Nama Wali</th>
                             <th>Email Wali</th>
                             <th>No HP Wali</th>
@@ -65,6 +66,7 @@
                                     @endif
                                 </td>
                                 <td>{{ $row->tahun }}</td>
+                                <td>{{ $row->tahunAjaran->nama_tahun ?? '-' }}</td>
                                 <td>{{ $row->nama_wali }}</td>
                                 <td>{{ $row->email }}</td>
                                 <td>{{ $row->no_hp_wali }}</td>

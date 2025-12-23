@@ -113,6 +113,8 @@ Route::middleware(['auth', 'role:admin|guru_mi|guru_tk'])->group(function () {
     Route::resource('guru-mi', GuruMiController::class);
     Route::resource('siswa-tk', SiswaTkController::class);
     Route::resource('guru-tk', GuruTkController::class);
+    Route::get('/siswa-mi/{id}', [SiswaMiController::class, 'show'])->name('siswa-mi.show');
+    Route::get('/siswa-tk/{id}', [SiswaTkController::class, 'show'])->name('siswa-tk.show');
 });
 
 // ================== GURU MI==================
@@ -124,7 +126,6 @@ Route::middleware(['auth', 'role:guru_mi'])->group(function () {
         ->name('pembayaran-mi.export-pdf');
     Route::get('/naik-kelas-mi', [SiswaMiController::class, 'naikKelas'])->name('siswa.naikKelas');
     Route::get('/get-siswa-detail-mi/{id}', [PembayaranMiController::class, 'getSiswaDetail']);
-    Route::get('/siswa-mi/{id}', [SiswaMiController::class, 'show'])->name('siswa-mi.show');
     Route::get('/pembayaran-mi/generate-mi', [PembayaranMiController::class, 'generateFormMI'])->name('pembayaran-mi.generateForm-mi');
     Route::post('/pembayaran-mi/generate-mi', [PembayaranMiController::class, 'generateSPPMI'])->name('pembayaran-mi.generate-mi');
     Route::post('/pembayaran-mi/{id}/approve', [PembayaranMIController::class, 'approvePembayaran'])
@@ -152,7 +153,7 @@ Route::middleware(['auth', 'role:guru_tk'])->group(function () {
         ->name('pembayaran-tk.export-pdf');
     Route::get('/naik-kelas-tk', [SiswaTkController::class, 'naikKelasTk'])->name('siswa.naikKelasTk');
     Route::get('/get-siswa-detail-tk/{id}', [PembayaranTkController::class, 'getSiswaDetail']);
-    Route::get('/siswa-mi/{id}', [SiswaTkController::class, 'show'])->name('siswa-tk.show');
+    
     Route::get('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateFormTK'])->name('pembayaran-tk.generateForm-tk');
     Route::post('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateSPPTK'])->name('pembayaran-tk.generate-tk');
     Route::post('/pembayaran-tk/{id}/approve', [PembayaranTkController::class, 'approvePembayaran'])

@@ -51,7 +51,9 @@
     @foreach($dataRapor as $rapor)
     <div class="title">
         RAPOR SEMENTARA<br>
-        KELAS {{ $rapor['kelas']->nama_kelas }} - SEMESTER {{ strtoupper($rapor['semester']) }}
+        KELAS {{ $rapor['kelas']->nama_kelas }} -
+        SEMESTER {{ strtoupper($rapor['semester']) }}<br>
+        TAHUN AJARAN {{ $rapor['tahunAjaran']->nama_tahun }}
     </div>
 
     <table class="no-border">
@@ -90,9 +92,9 @@
                 <td class="center">{{ $item['nilai_akhir'] ?? '-' }}</td>
                 <td class="center">
                     @if(!is_null($item['nilai_akhir']))
-                        {{ $item['nilai_akhir'] >= ($item['mapel']->kkm ?? 75) ? 'Tuntas' : 'Belum Tuntas' }}
+                    {{ $item['nilai_akhir'] >= ($item['mapel']->kkm ?? 75) ? 'Tuntas' : 'Belum Tuntas' }}
                     @else
-                        -
+                    -
                     @endif
                 </td>
             </tr>

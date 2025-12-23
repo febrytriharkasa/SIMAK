@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('jenis_tagihan'); // kolom jenis tagihan
             $table->decimal('jumlah', 10, 2);
             $table->date('tanggal');
-            $table->dropColumn('tanggal_bayar');
+            $table->date('tanggal_bayar');
             $table->enum('status', ['lunas', 'belum'])->default('belum'); // kolom status
             $table->timestamps();
         });

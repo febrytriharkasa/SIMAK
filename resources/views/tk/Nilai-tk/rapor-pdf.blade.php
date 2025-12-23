@@ -51,7 +51,9 @@
     @foreach($dataRapor as $rapor)
     <div class="title">
         RAPOR SEMENTARA<br>
-        KELAS {{ $rapor['kelas']->nama_kelas }} - SEMESTER {{ strtoupper($rapor['semester']) }}
+        KELAS {{ $rapor['kelas']->nama_kelas }} -
+        SEMESTER {{ strtoupper($rapor['semester']) }}<br>
+        TAHUN AJARAN {{ $rapor['tahunAjaran']->nama_tahun }}
     </div>
 
     <table class="no-border">
@@ -116,7 +118,6 @@
             <td>{{ $rapor['absensi']['alfa'] }}</td>
         </tr>
     </table>
-
     <br>
     <table style="width:100%; border-collapse:collapse; margin-top:10px;">
         <tr>
@@ -133,7 +134,6 @@
 
     <div style="page-break-after:always;"></div>
     @endforeach
-
 
 
 </body>

@@ -13,6 +13,8 @@ class AbsensiTK extends Model
 
     protected $fillable = [
         'siswa_id',
+        'kelas_id',
+        'tahun_ajaran_id',
         'tanggal',
         'status',
         'keterangan'
@@ -26,6 +28,11 @@ class AbsensiTK extends Model
      public function kelas()
     {
         return $this->belongsTo(KelasTk::class, 'kelas_id');
+    }
+
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaranTK::class, 'tahun_ajaran_id');
     }
 }
 

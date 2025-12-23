@@ -175,6 +175,14 @@
 
             <!-- Manajemen MI -->
             @hasanyrole('guru_mi')
+
+            <li class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('dashboard') }}">
+                    <i class="fas fa-fw fa-tachometer-alt me-2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+            </li>
+            
             <hr class="sidebar-divider my-2">
             <div class="sidebar-heading px-3 text-uppercase text-white fw-bold sidebar-text" style="font-size:0.85rem; opacity:0.8;">
                 Manajemen MI

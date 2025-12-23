@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AbsensiTK;
 use App\Models\SiswaTk;
 use App\Models\KelasTk;
+use App\Models\TahunAjaranTk;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Mail;
@@ -17,18 +18,24 @@ class AbsensiTKController extends Controller
         $kelas = KelasTk::orderBy('nama_kelas')->get();
         $absensi = collect();
 
-        if ($request->filled('kelas_id') && $request->filled('tanggal')) {
-            $absensi = AbsensiTK::with('siswa.kelas')
-                ->whereDate('tanggal', $request->tanggal)
-                ->whereHas('siswa', function ($q) use ($request) {
-                    $q->where('kelas_id', $request->kelas_id);
-                })
+        if ($request->filled('kelas_id')) {
+
+            $query = AbsensiTK::with(['siswa.kelas', 'tahunAjaran'])
+                ->where('kelas_id', $request->kelas_id);
+
+            // TANGGAL OPSIONAL
+            if ($request->filled('tanggal')) {
+                $query->whereDate('tanggal', $request->tanggal);
+            }
+
+            $absensi = $query
                 ->orderBy('tanggal')
                 ->get();
         }
 
         return view('tk.absensi-tk.index', compact('kelas', 'absensi'));
     }
+
 
     public function create()
     {
@@ -55,7 +62,16 @@ class AbsensiTKController extends Controller
             ->pluck('id')
             ->toArray();
 
+        $tahunAjaranAktif = TahunAjaranTk::where('aktif', true)->firstOrFail();
+
         foreach ($request->status as $siswa_id => $status) {
+
+            $siswa = SiswaTk::find($siswa_id);
+
+            // skip siswa non-aktif
+            if (!$siswa || $siswa->status !== 'aktif') {
+                continue;
+            }
 
             // skip jika siswa tidak termasuk kelas
             if (!in_array($siswa_id, $siswaKelas)) {
@@ -64,11 +80,12 @@ class AbsensiTKController extends Controller
 
             try {
                 $absensi = AbsensiTK::create([
-                    'siswa_id'   => $siswa_id,
-                    'kelas_id'   => $request->kelas_id,
-                    'tanggal'    => $request->tanggal,
-                    'status'     => $status,
-                    'keterangan' => $request->keterangan[$siswa_id] ?? null
+                    'siswa_id'        => $siswa_id,
+                    'kelas_id'        => $request->kelas_id,
+                    'tahun_ajaran_id' => $tahunAjaranAktif->id,
+                    'tanggal'         => $request->tanggal,
+                    'status'          => $status,
+                    'keterangan'      => $request->keterangan[$siswa_id] ?? null
                 ]);
 
                 // Kirim email ke wali/siswa
@@ -125,8 +142,8 @@ class AbsensiTKController extends Controller
     public function getSiswaByKelas($kelas_id)
     {
         return SiswaTk::where('kelas_id', $kelas_id)
+            ->where('status', 'aktif') // hanya siswa aktif
             ->orderBy('nama')
             ->get();
     }
 }
-

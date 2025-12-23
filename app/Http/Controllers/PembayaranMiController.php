@@ -14,10 +14,28 @@ class PembayaranMiController extends Controller
     // Tampilkan semua data pembayaran
     public function index(Request $request)
     {
-        $query = Pembayaran_MI::with('siswa');
-
-        // Ambil semua daftar kelas
         $kelasList = Kelas_Mi::orderBy('tingkat', 'asc')->get();
+
+        // Ambil semua jenis tagihan unik dari data (untuk select filter)
+        $jenisTagihanList = Pembayaran_MI::select('jenis_tagihan')
+            ->distinct()
+            ->pluck('jenis_tagihan');
+
+        // Jika bulan belum dipilih, jangan tampilkan data
+        if (!$request->filled('bulan')) {
+            $pembayaran = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+            return view('mi.pembayaran-mi.index', compact('pembayaran', 'kelasList', 'jenisTagihanList'))
+                ->with('warning', 'Silakan pilih bulan & tahun terlebih dahulu.');
+        }
+
+        // Jika jenis tagihan belum dipilih, jangan tampilkan data
+        if (!$request->filled('jenis_tagihan')) {
+            $pembayaran = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+            return view('mi.pembayaran-mi.index', compact('pembayaran', 'kelasList', 'jenisTagihanList'))
+                ->with('warning', 'Silakan pilih jenis tagihan untuk menampilkan data.');
+        }
+
+        $query = Pembayaran_MI::with('siswa');
 
         // Filter NISN
         if ($request->filled('nisn')) {
@@ -26,26 +44,27 @@ class PembayaranMiController extends Controller
             });
         }
 
-        // 🔥 Filter Kelas
+        // Filter Kelas
         if ($request->filled('kelas_id')) {
             $query->whereHas('siswa', function ($q) use ($request) {
                 $q->where('kelas_id', $request->kelas_id);
             });
         }
 
+        // Filter Jenis Tagihan
+        $query->where('jenis_tagihan', $request->jenis_tagihan);
+
         // Filter Bulan
-        if ($request->filled('bulan')) {
-            $bulan = \Carbon\Carbon::parse($request->bulan);
-            $query->whereMonth('tanggal', $bulan->month)
-                ->whereYear('tanggal', $bulan->year);
+        $bulan = \Carbon\Carbon::parse($request->bulan);
+        $query->whereMonth('tanggal', $bulan->month)
+            ->whereYear('tanggal', $bulan->year);
 
-            $pembayaran = $query->paginate(10);
-        } else {
-            $pembayaran = new LengthAwarePaginator([], 0, 10);
-        }
+        $pembayaran = $query->paginate(10);
 
-        return view('mi.pembayaran-mi.index', compact('pembayaran', 'kelasList'));
+        return view('mi.pembayaran-mi.index', compact('pembayaran', 'kelasList', 'jenisTagihanList'));
     }
+
+
 
     // Form tambah pembayaran
     public function create()
@@ -111,7 +130,7 @@ class PembayaranMiController extends Controller
 
         $bulan = \Carbon\Carbon::parse($request->tanggal)->month;
         $tahun = \Carbon\Carbon::parse($request->tanggal)->year;
-        
+
         $siswa = Siswa_Mi::with('kelas')->find($request->siswa_id);
 
         // Cek jika siswa sudah lulus (kelas_id = 7)
@@ -197,7 +216,10 @@ class PembayaranMiController extends Controller
             ->sum('jumlah');
 
         $pdf = Pdf::loadView('mi.pembayaran-mi.export-pdf', compact(
-            'pembayaran', 'total', 'bulan', 'kelasLabel'
+            'pembayaran',
+            'total',
+            'bulan',
+            'kelasLabel'
         ))->setPaper('A4', 'portrait');
 
         $namaFile = 'laporan-pembayaran-' . $bulan->translatedFormat('F-Y');
@@ -222,8 +244,8 @@ class PembayaranMiController extends Controller
     public function getSiswaDetail($siswaId)
     {
         $siswa = Siswa_MI::with('kelas')
-                ->where('id', $siswaId)
-                ->first(['id', 'nama', 'nisn', 'kelas_id']);
+            ->where('id', $siswaId)
+            ->first(['id', 'nama', 'nisn', 'kelas_id']);
 
         if ($siswa) {
             return response()->json([
@@ -246,7 +268,7 @@ class PembayaranMiController extends Controller
     }
 
     // Proses Generate SPP
-   public function generateSPPMI(Request $request)
+    public function generateSPPMI(Request $request)
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas_mi,id',
@@ -257,7 +279,10 @@ class PembayaranMiController extends Controller
         ]);
 
         $kelas = Kelas_Mi::findOrFail($request->kelas_id);
-        $siswaList = Siswa_MI::where('kelas_id', $kelas->id)->get();
+        // Ambil siswa hanya yang status aktif
+        $siswaList = Siswa_MI::where('kelas_id', $kelas->id)
+            ->where('status', 'aktif')
+            ->get();
 
         $generated = 0;
         $tanggal = \Carbon\Carbon::createFromDate($request->tahun, $request->bulan, 1);

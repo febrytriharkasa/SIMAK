@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\SiswaTk;
 use App\Models\KelasTk;
 use App\Models\MapelTk;
+use App\Models\TahunAjaranTk;
 use Illuminate\Http\Request;
 
 class SiswaTkController extends Controller
@@ -13,13 +14,17 @@ class SiswaTkController extends Controller
     {
         $search = $request->input('search');
 
-        $siswa = SiswaTk::when($search, function ($query, $search) {
-            return $query->where('id_tk', 'like', "%{$search}%")
-                         ->orWhere('nama', 'like', "%{$search}%");
-        })->paginate(10);
+        $siswa = SiswaTk::with('tahunAjaran') // 🔑 KUNCI
+            ->when($search, function ($query, $search) {
+                $query->where('id_tk', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%");
+            })
+            ->orderBy('id_tk')
+            ->paginate(10);
 
         return view('tk.siswa-tk.index', compact('siswa'));
     }
+
 
     public function create()
     {
@@ -32,40 +37,43 @@ class SiswaTkController extends Controller
         $request->validate([
             'id_tk' => 'required|unique:siswa_tk,id_tk',
             'nama' => 'required|string|max:100',
-            'email' => 'required|email|unique:siswas_mi,email',
+            'email' => 'required|email|unique:siswa_tk,email',
             'tahun' => 'required|digits:4|integer|min:1900|max:' . date('Y'),
             'nama_wali' => 'required|string|max:100',
             'no_hp_wali' => 'nullable|string|max:20',
             'alamat_siswa' => 'nullable|string',
-            'kelas_id'      => 'nullable|exists:kelas_tk,id',
-            'kk' => 'nullable|string|max:255',
-            'akte' => 'nullable|string|max:255',
-            'foto_siswa' => 'nullable|string|max:255',
-            'butuh_pembayaran' => 'nullable|string|max:255',
+            'kelas_id' => 'nullable|exists:kelas_tk,id',
         ]);
 
-        $data = $request->all();
+        // 🔥 AMBIL TAHUN AJARAN AKTIF
+        $tahunAjaranAktif = TahunAjaranTk::where('aktif', true)->first();
 
-        // Jika kelas tidak dipilih, default ke kelas 1
-        if (empty($data['kelas_id'])) {
-            $kelasAwal = \App\Models\KelasTk::where('tingkat', 1)->first();
-            if ($kelasAwal) {
-                $data['kelas_id'] = $kelasAwal->id;
-            }
+        if (!$tahunAjaranAktif) {
+            return back()->with('error', 'Tahun ajaran TK aktif belum ditentukan.');
         }
 
-        if (empty($data['kelas_id'])) {
-            $kelasAwal = \App\Models\Kelas_Mi::where('tingkat', 1)->first();
-            if ($kelasAwal) {
-                $data['kelas_id'] = $kelasAwal->id;
-            }
+        // DEFAULT KELAS TK AWAL (TINGKAT 1)
+        $kelasAwal = KelasTk::where('tingkat', 1)->first();
+        if (!$kelasAwal) {
+            return back()->with('error', 'Kelas TK tingkat awal belum tersedia.');
         }
 
-        SiswaTk::create($data);
+        SiswaTk::create([
+            'id_tk'            => $request->id_tk,
+            'nama'             => $request->nama,
+            'email'            => $request->email,
+            'tahun'            => $request->tahun,
+            'nama_wali'        => $request->nama_wali,
+            'no_hp_wali'       => $request->no_hp_wali,
+            'alamat_siswa'     => $request->alamat_siswa,
+            'kelas_id'         => $request->kelas_id ?? $kelasAwal->id,
+            'tahun_ajaran_id'  => $tahunAjaranAktif->id, // ✅ KUNCI UTAMA
+        ]);
 
         return redirect()->route('siswa-tk.index')
-                         ->with('success', 'Data siswa berhasil ditambahkan.');
+            ->with('success', 'Data siswa TK berhasil ditambahkan.');
     }
+
 
     public function edit($id)
     {
@@ -80,7 +88,7 @@ class SiswaTkController extends Controller
         $siswa->update($request->all());
 
         return redirect()->route('siswa-tk.index')
-                        ->with('success', 'Data siswa berhasil diperbarui.');
+            ->with('success', 'Data siswa berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -89,7 +97,7 @@ class SiswaTkController extends Controller
         $siswa->delete();
 
         return redirect()->route('siswa-tk.index')
-                         ->with('success', 'Data siswa berhasil dihapus.');
+            ->with('success', 'Data siswa berhasil dihapus.');
     }
 
     public function show($id)
@@ -97,40 +105,4 @@ class SiswaTkController extends Controller
         $siswa = SiswaTk::with('kelas')->findOrFail($id);
         return view('tk.siswa-tk.show', compact('siswa'));
     }
-
-    public function naikKelasTk()
-    {
-        $siswas = SiswaTk::with('kelas','nilais')->get();
-        $totalMapel = MapelTk::count(); // total mapel wajib, misalnya 20
-
-       foreach ($siswas as $siswa) {
-            if (!$siswa->kelas) continue;
-
-            // Hitung jumlah mapel yang sudah diisi nilainya
-            $jumlahNilai = $siswa->nilais()
-                ->where('kelas_id', $siswa->kelas_id)
-                ->count();
-
-            // Kalau jumlah nilai kurang dari jumlah mapel → tidak bisa naik
-            if ($jumlahNilai < $totalMapel) {
-                continue;
-            }
-
-            // Hitung rata-rata semua nilai akhir
-            $rataNilai = $siswa->nilais()
-                ->where('kelas_id', $siswa->kelas_id)
-                ->avg('nilai_akhir');
-
-            // Syarat minimal rata-rata 70
-            if ($rataNilai >= 70) {
-                $kelasBerikut = KelasTk::where('tingkat', $siswa->kelas->tingkat + 1)->first();
-                if ($kelasBerikut) {
-                    $siswa->update(['kelas_id' => $kelasBerikut->id]);
-                }
-            }
-        }
-
-        return redirect()->back()->with('success', 'Proses kenaikan kelas selesai!');
-    }
-
 }

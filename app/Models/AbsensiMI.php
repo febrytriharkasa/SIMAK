@@ -12,6 +12,8 @@ class AbsensiMI extends Model
     protected $table = 'absensi_mi'; // konsisten pakai plural
     protected $fillable = [
         'siswa_id',
+        'kelas_id',
+        'tahun_ajaran_id',
         'tanggal',
         'status', // hadir, izin, sakit, alfa
         'keterangan'
@@ -25,6 +27,11 @@ class AbsensiMI extends Model
     public function kelas()
     {
         return $this->belongsTo(Kelas_MI::class, 'kelas_id');
+    }
+
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaranMI::class, 'tahun_ajaran_id');
     }
 
 }

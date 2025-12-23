@@ -35,8 +35,8 @@
                                 <th>No</th>
                                 <th class="text-start">Nama Siswa</th>
                                 <th>Tahun Masuk</th>
-                                <th>Kartu Keluarga</th>
-                                <th>Akte Kelahiran</th>
+                                <th>KK</th>
+                                <th>Akte</th>
                                 <th>Foto Siswa</th>
                                 <th>Bukti Pembayaran</th>
                                 <th>Status</th>
@@ -57,33 +57,48 @@
 
                                     <td>{{ $siswa->tahun }}</td>
 
+                                    {{-- KK --}}
                                     <td>
-                                        <a href="{{ asset('storage/'.$siswa->kk) }}"
-                                           target="_blank"
-                                           class="btn btn-outline-primary btn-sm">
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm show-image"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#imageModal"
+                                                data-img="{{ asset('storage/'.$siswa->kk) }}">
                                             <i class="bi bi-file-earmark-image"></i> Lihat
-                                        </a>
+                                        </button>
                                     </td>
 
+                                    {{-- Akte --}}
                                     <td>
-                                        <a href="{{ asset('storage/'.$siswa->akte) }}"
-                                           target="_blank"
-                                           class="btn btn-outline-primary btn-sm">
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm show-image"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#imageModal"
+                                                data-img="{{ asset('storage/'.$siswa->akte) }}">
                                             <i class="bi bi-file-earmark-image"></i> Lihat
-                                        </a>    
+                                        </button>
                                     </td>
+
+                                    {{-- Foto Siswa --}}
                                     <td>
-                                        <a href="{{ asset('storage/'.$siswa->foto_siswa) }}"
-                                           target="_blank"
-                                           class="btn btn-outline-primary btn-sm">
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm show-image"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#imageModal"
+                                                data-img="{{ asset('storage/'.$siswa->foto_siswa) }}">
                                             <i class="bi bi-file-earmark-image"></i> Lihat
-                                        </a>
+                                        </button>
+                                    </td>
+
+                                    {{-- Bukti Pembayaran --}}
                                     <td>
-                                        <a href="{{ asset('storage/'.$siswa->bukti_pembayaran) }}"
-                                           target="_blank"
-                                           class="btn btn-outline-primary btn-sm">
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm show-image"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#imageModal"
+                                                data-img="{{ asset('storage/'.$siswa->bukti_pembayaran) }}">
                                             <i class="bi bi-file-earmark-image"></i> Lihat
-                                        </a>
+                                        </button>
                                     </td>
 
                                     <td>
@@ -99,19 +114,16 @@
                                             <form action="{{ route('admin.pendaftaran.mi.approve', $siswa->id) }}"
                                                   method="POST" class="d-flex gap-1">
                                                 @csrf
-
-                                                <button class="btn btn-success btn-sm"
-                                                        title="Setujui">
+                                                <button class="btn btn-success btn-sm" title="Setujui">
                                                     <i class="bi bi-check-circle"></i>
                                                 </button>
                                             </form>
 
-                                            {{-- OPTIONAL: TOLAK --}}
+                                            {{-- FORM TOLAK --}}
                                             <form action="{{ route('admin.pendaftaran.mi.reject', $siswa->id) }}"
                                                   method="POST">
                                                 @csrf
-                                                <button class="btn btn-danger btn-sm"
-                                                        title="Tolak">
+                                                <button class="btn btn-danger btn-sm" title="Tolak">
                                                     <i class="bi bi-x-circle"></i>
                                                 </button>
                                             </form>
@@ -132,4 +144,35 @@
     @endif
 
 </div>
+
+{{-- Modal untuk preview gambar --}}
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-body p-0">
+        <img src="" id="modalImage" class="img-fluid w-100" alt="Preview">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const imageButtons = document.querySelectorAll('.show-image');
+        const modalImage = document.getElementById('modalImage');
+
+        imageButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const src = this.getAttribute('data-img');
+                modalImage.src = src;
+            });
+        });
+    });
+</script>
+@endpush

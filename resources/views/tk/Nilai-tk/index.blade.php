@@ -53,6 +53,7 @@
                             <th>No Induk</th>
                             <th>Nama Siswa</th>
                             <th>Kelas</th>
+                            <th>Tahun Ajaran</th>
                             <th style="width: 150px;">Aksi</th>
                         </tr>
                     </thead>
@@ -78,6 +79,11 @@
                                 @else
                                     <em class="text-muted">-</em>
                                 @endif
+                            </td>
+
+                            {{-- Tahun Ajaran --}}
+                            <td>
+                                {{ $siswa->tahunAjaran ? $siswa->tahunAjaran->nama_tahun : '-' }}
                             </td>
 
                             {{-- Aksi --}}

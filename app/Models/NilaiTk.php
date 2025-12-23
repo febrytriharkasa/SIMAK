@@ -14,7 +14,7 @@ class NilaiTk extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'siswa_id', 'guru_id', 'mapel_id', 'kelas_id',
-        'tugas', 'uts', 'eas', 'nilai_akhir', 'semester',
+        'tugas', 'uts', 'eas', 'nilai_akhir', 'semester','tahun_ajaran_id'
     ];
 
     protected $casts = [
@@ -45,4 +45,9 @@ class NilaiTk extends Model
     {
         return $this->hasMany(AbsensiTk::class, 'kelas_id');
     }
+
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaranTK::class, 'tahun_ajaran_id');
+    }   
 }

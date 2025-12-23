@@ -47,6 +47,7 @@
                             <th>NISN</th>
                             <th>Nama Siswa</th>
                             <th>Kelas</th>
+                            <th>Tahun Ajaran</th>
                             <th style="width: 150px;">Aksi</th>
                         </tr>
                     </thead>
@@ -67,6 +68,10 @@
                             </td>
 
                             <td>
+                                {{ $siswa->tahunAjaran ? $siswa->tahunAjaran->nama_tahun : '-' }} 
+                            </td>
+
+                            <td>
                                 <a href="{{ route('nilai.show', $siswa->id) }}"
                                     class="btn btn-sm btn-info text-white"
                                     title="Lihat Nilai">
@@ -84,7 +89,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="text-center p-3">
+                            <td colspan="6" class="text-center p-3">
                                 <span class="text-muted">Belum ada data siswa untuk kelas ini.</span>
                             </td>
                         </tr>

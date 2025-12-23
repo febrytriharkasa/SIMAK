@@ -4,19 +4,21 @@
 
 @section('content')
 
-
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
+        <div class="col-lg-10 col-md-12">
             <div class="card shadow-lg border-0 rounded-3">
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">Detail Siswa TK</h5>
                 </div>
                 <div class="card-body">
-                    <table class="table table-bordered">
+
+                    {{-- Data Siswa --}}
+                    <h6 class="mb-3">Data Siswa</h6>
+                    <table class="table table-bordered mb-4">
                         <tr>
-                            <th width="200">NISN</th>
-                            <td>{{ $siswa->id_tk }}</td>
+                            <th width="200">No Induk / NISN</th>
+                            <td>{{ $siswa->id_tk ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th>Nama</th>
@@ -31,24 +33,74 @@
                             <td>{{ $siswa->kelas ? $siswa->kelas->nama_kelas : '-' }}</td>
                         </tr>
                         <tr>
-                            <th>Nama Wali</th>
+                            <th>Alamat Siswa</th>
+                            <td>{{ $siswa->alamat_siswa }}</td>
+                        </tr>
+                    </table>
+
+                    {{-- Data Wali --}}
+                    <h6 class="mb-3">Data Wali</h6>
+                    <table class="table table-bordered mb-4">
+                        <tr>
+                            <th width="200">Nama Wali</th>
                             <td>{{ $siswa->nama_wali }}</td>
                         </tr>
-
                         <tr>
                             <th>Email Wali</th>
-                            <td>{{ $siswa->email }}</td>
+                            <td>{{ $siswa->email ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th>No HP Wali</th>
                             <td>{{ $siswa->no_hp_wali }}</td>
                         </tr>
+                    </table>
+
+                    {{-- Data Orang Tua --}}
+                    <h6 class="mb-3">Data Orang Tua Kandung</h6>
+                    <table class="table table-bordered mb-4">
                         <tr>
-                            <th>Alamat</th>
-                            <td>{{ $siswa->alamat_siswa }}</td>
+                            <th width="200">Nama Ayah</th>
+                            <td>{{ $siswa->nama_ayah ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nama Ibu</th>
+                            <td>{{ $siswa->nama_ibu ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Alamat Orang Tua</th>
+                            <td>{{ $siswa->alamat_orangtua ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>No HP Orang Tua</th>
+                            <td>{{ $siswa->no_hp_orangtua ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Pekerjaan Ayah</th>
+                            <td>{{ $siswa->pekerjaan_ayah ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Pekerjaan Ibu</th>
+                            <td>{{ $siswa->pekerjaan_ibu ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Pendidikan Ayah</th>
+                            <td>{{ $siswa->pendidikan_ayah ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Pendidikan Ibu</th>
+                            <td>{{ $siswa->pendidikan_ibu ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Penghasilan Ayah</th>
+                            <td>{{ $siswa->penghasilan_ayah ? 'Rp ' . number_format($siswa->penghasilan_ayah,0,',','.') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Penghasilan Ibu</th>
+                            <td>{{ $siswa->penghasilan_ibu ? 'Rp ' . number_format($siswa->penghasilan_ibu,0,',','.') : '-' }}</td>
                         </tr>
                     </table>
 
+                    {{-- Aksi --}}
                     <div class="d-flex justify-content-end">
                         <a href="{{ route('siswa-tk.edit', $siswa->id) }}" class="btn btn-warning me-2">
                             <i class="fas fa-edit"></i> Edit
@@ -64,9 +116,11 @@
                             <i class="bi bi-arrow-left-circle"></i> Kembali
                         </a>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 @endsection

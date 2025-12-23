@@ -91,41 +91,42 @@ document.getElementById('kelas_id').addEventListener('change', function () {
     }
 
     fetch(`/absensi-tk/siswa/${kelasId}`)
-        .then(res => res.json())
-        .then(data => {
-            container.innerHTML = '';
+    .then(res => res.json())
+    .then(data => {
+        container.innerHTML = '';
 
-            if (data.length === 0) {
-                container.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="text-muted">Tidak ada siswa</td>
-                    </tr>`;
-                return;
-            }
+        if (data.length === 0) {
+            container.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-muted">Tidak ada siswa</td>
+                </tr>`;
+            return;
+        }
 
-            data.forEach((siswa, index) => {
-                container.innerHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td class="text-start">${siswa.nama}</td>
-                        <td>
-                            <select name="status[${siswa.id}]" class="form-select" required>
-                                <option value="hadir">Hadir</option>
-                                <option value="izin">Izin</option>
-                                <option value="sakit">Sakit</option>
-                                <option value="alfa">Alfa</option>
-                            </select>
-                        </td>
-                        <td>
-                            <input type="text"
-                                   name="keterangan[${siswa.id}]"
-                                   class="form-control"
-                                   placeholder="Opsional">
-                        </td>
-                    </tr>
-                `;
-            });
+        data.forEach((siswa, index) => {
+            container.innerHTML += `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td class="text-start">${siswa.nama}</td>
+                    <td>
+                        <select name="status[${siswa.id}]" class="form-select" required>
+                            <option value="hadir">Hadir</option>
+                            <option value="izin">Izin</option>
+                            <option value="sakit">Sakit</option>
+                            <option value="alfa">Alfa</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text"
+                               name="keterangan[${siswa.id}]"
+                               class="form-control"
+                               placeholder="Opsional">
+                    </td>
+                </tr>
+            `;
         });
+    });
+
 });
 </script>
 @endsection

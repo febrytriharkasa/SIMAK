@@ -14,7 +14,7 @@ class NilaiMi extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'siswa_id', 'guru_id', 'mapel_id', 'kelas_id',
-        'tugas', 'uts', 'eas', 'nilai_akhir', 'semester',
+        'tugas', 'uts', 'eas', 'nilai_akhir', 'semester','tahun_ajaran_id'
     ];
 
     protected $casts = [
@@ -44,5 +44,10 @@ class NilaiMi extends Model
     public function absensis()
     {
         return $this->hasMany(AbsensiMI::class, 'kelas_id');
+    }
+
+    public function tahunAjaran()
+    {
+        return $this->belongsTo(TahunAjaranMI::class, 'tahun_ajaran_id');
     }
 }
