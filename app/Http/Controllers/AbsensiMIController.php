@@ -7,6 +7,9 @@ use App\Models\Siswa_MI;
 use App\Models\Kelas_Mi;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AbsensiMIMail;
+
 
 class AbsensiMIController extends Controller
 {
@@ -72,13 +75,19 @@ class AbsensiMIController extends Controller
             }
 
             try {
-                AbsensiMI::create([
+                 $absensi = AbsensiMI::create([
                     'siswa_id'   => $siswa_id,
                     'kelas_id'   => $request->kelas_id,
                     'tanggal'    => $request->tanggal,
                     'status'     => $status,
                     'keterangan' => $request->keterangan[$siswa_id] ?? null
                 ]);
+
+                 // Kirim email ke wali/siswa
+                if ($absensi->siswa->email) {
+                    Mail::to($absensi->siswa->email)
+                        ->send(new AbsensiMIMail($absensi));
+                }
             } catch (QueryException $e) {
                 // Skip duplikasi (unique siswa + tanggal)
                 continue;

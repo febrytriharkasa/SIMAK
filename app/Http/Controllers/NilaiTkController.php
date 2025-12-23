@@ -7,6 +7,7 @@ use App\Models\SiswaTk;
 use App\Models\MapelTk;
 use App\Models\GuruTk;
 use App\Models\KelasTk;
+use App\Models\AbsensiTk;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,7 @@ class NilaiTkController extends Controller
 
 
     // Menampilkan form tambah nilai
-   public function create()
+    public function create()
     {
         // Ambil semua kelas beserta siswa
         $kelasList = KelasTk::where('tingkat', '<', 4)
@@ -51,7 +52,7 @@ class NilaiTkController extends Controller
 
 
     // Menyimpan data nilai baru
-   public function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'kelas_id' => 'required|exists:kelas_tk,id',
@@ -112,7 +113,7 @@ class NilaiTkController extends Controller
     }
 
     // Mengupdate data nilai
-   public function update(Request $request, NilaiTk $nilai)
+    public function update(Request $request, NilaiTk $nilai)
     {
         // Konversi string tugas menjadi array
         if (is_string($request->tugas)) {
@@ -182,48 +183,66 @@ class NilaiTkController extends Controller
         ));
     }
 
-    public function cetakRaporPdf($siswaId, $kelasId, $semester)
+    public function cetakRaporPdfAllKelas($siswaId)
     {
-        if (!in_array($semester, ['ganjil', 'genap'])) {
-            abort(400, 'Semester tidak valid');
-        }
+        $siswa = SiswaTk::with('kelas', 'absensis')->findOrFail($siswaId);
 
-        $siswa = SiswaTk::with('kelas')->findOrFail($siswaId);
-
-        // ambil semua mapel
-        $mapels = MapelTk::orderBy('nama_mapel')->get();
-
-        // ambil nilai SESUAI kelas yg dipilih
-        $nilais = NilaiTk::with('mapel')
-            ->where('siswa_id', $siswaId)
-            ->where('kelas_id', $kelasId)
-            ->where('semester', $semester)
+        $kelasList = KelasTk::where('tingkat', '<=', $siswa->kelas->tingkat)
+            ->orderBy('tingkat')
             ->get();
 
-        $rataRata = $nilais->count() > 0
-            ? round($nilais->avg('nilai_akhir'), 2)
-            : 0;
+        $mapels = MapelTk::orderBy('nama_mapel')->get(); // ambil semua mapel
 
-        $status = '-';
-        if ($semester === 'genap' && $nilais->count() > 0) {
-            $status = $rataRata >= 70 ? 'NAIK KELAS' : 'TINGGAL KELAS';
+        $dataRapor = [];
+
+        foreach ($kelasList as $kelas) {
+            foreach (['ganjil', 'genap'] as $semester) {
+                $nilais = NilaiTk::with('mapel')
+                    ->where('siswa_id', $siswa->id)
+                    ->where('kelas_id', $kelas->id)
+                    ->where('semester', $semester)
+                    ->get();
+
+                $rataRata = $nilais->count() ? round($nilais->avg('nilai_akhir'), 2) : 0;
+
+                $status = '-';
+                if ($semester === 'genap' && $nilais->count()) {
+                    $status = $rataRata >= 70 ? 'NAIK KELAS' : 'TINGGAL KELAS';
+                }
+
+                $absensi = $siswa->absensis->where('semester', $semester);
+                $absensiSummary = [
+                    'hadir' => $absensi->where('status', 'hadir')->count(),
+                    'izin'  => $absensi->where('status', 'izin')->count(),
+                    'sakit' => $absensi->where('status', 'sakit')->count(),
+                    'alfa'  => $absensi->where('status', 'alfa')->count(),
+                ];
+
+                // siapkan nilai per mapel (walau belum ada)
+                $nilaiPerMapel = $mapels->map(function ($mapel) use ($nilais) {
+                    $nilai = $nilais->firstWhere('mapel_id', $mapel->id);
+                    return [
+                        'mapel' => $mapel,
+                        'nilai_akhir' => $nilai->nilai_akhir ?? null,
+                    ];
+                });
+
+                $dataRapor[] = [
+                    'kelas' => $kelas,
+                    'semester' => $semester,
+                    'nilais' => $nilaiPerMapel,
+                    'rataRata' => $rataRata,
+                    'status' => $status,
+                    'absensi' => $absensiSummary,
+                ];
+            }
         }
 
-        $kelas = KelasTk::findOrFail($kelasId);
-
         $pdf = Pdf::loadView('tk.nilai-tk.rapor-pdf', [
-            'siswa'    => $siswa,
-            'kelas'    => $kelas,
-            'mapels'   => $mapels,
-            'nilais'   => $nilais,
-            'semester' => $semester,
-            'rataRata' => $rataRata,
-            'status'   => $status,
+            'siswa' => $siswa,
+            'dataRapor' => $dataRapor,
         ])->setPaper('A4', 'portrait');
 
-        return $pdf->stream(
-            'Rapor_' . $siswa->nama . '_' . $kelas->nama_kelas . '_' . strtoupper($semester) . '.pdf'
-        );
+        return $pdf->stream('Rapor_' . $siswa->nama . '.pdf');
     }
-
 }

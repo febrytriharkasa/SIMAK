@@ -40,4 +40,9 @@ class NilaiTk extends Model
     {
         return $this->belongsTo(KelasTk::class);
     }
+
+    public function absensis()
+    {
+        return $this->hasMany(AbsensiTk::class, 'kelas_id');
+    }
 }

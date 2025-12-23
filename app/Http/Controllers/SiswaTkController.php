@@ -32,11 +32,16 @@ class SiswaTkController extends Controller
         $request->validate([
             'id_tk' => 'required|unique:siswa_tk,id_tk',
             'nama' => 'required|string|max:100',
+            'email' => 'required|email|unique:siswas_mi,email',
             'tahun' => 'required|digits:4|integer|min:1900|max:' . date('Y'),
             'nama_wali' => 'required|string|max:100',
             'no_hp_wali' => 'nullable|string|max:20',
             'alamat_siswa' => 'nullable|string',
             'kelas_id'      => 'nullable|exists:kelas_tk,id',
+            'kk' => 'nullable|string|max:255',
+            'akte' => 'nullable|string|max:255',
+            'foto_siswa' => 'nullable|string|max:255',
+            'butuh_pembayaran' => 'nullable|string|max:255',
         ]);
 
         $data = $request->all();

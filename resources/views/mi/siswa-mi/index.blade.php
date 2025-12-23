@@ -4,39 +4,6 @@
 
 @section('content')
 
-<style>
-    /* Light mode */
-    [data-bs-theme="light"] #content-wrapper,
-    [data-bs-theme="light"] .container {
-        background-color: #fff !important;
-        color: #181515;
-    }
-    [data-bs-theme="light"] .card,
-    [data-bs-theme="light"] .form-control {
-        background-color: #f8f9fa !important;
-        color: #000;
-    }
-    [data-bs-theme="light"] label {
-        color: #000;
-    }
-
-    /* Dark mode */
-    [data-bs-theme="dark"] #content-wrapper,
-    [data-bs-theme="dark"] .container {
-        background-color: #1B1B1DFF !important;
-        color: #fff;
-    }
-    [data-bs-theme="dark"] .card,
-    [data-bs-theme="dark"] .form-control {
-        background-color: #2c2c2e !important;
-        color: #fff;
-        border: 1px solid #444;
-    }
-    [data-bs-theme="dark"] label {
-        color: #fff;
-    }
-</style>
-
 <div class="container-fluid">
     {{-- Header --}}
     <div class="d-flex justify-content-between align-items-center mb-4 ms-5">
@@ -76,6 +43,7 @@
                             <th>Kelas</th>
                             <th>Tahun Masuk</th>
                             <th>Nama Wali</th>
+                            <th>Email Wali</th>
                             <th>No HP Wali</th>
                             <th>Alamat</th>
                             <th style="width: 150px;">Aksi</th>
@@ -96,6 +64,7 @@
                             </td>
                             <td>{{ $row->tahun }}</td>
                             <td>{{ $row->nama_wali }}</td>
+                            <td>{{ $row->email_wali }}</td>
                             <td>{{ $row->no_hp_wali }}</td>
                             <td class="text-start">{{ $row->alamat_siswa }}</td>
                             <td>
@@ -128,7 +97,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" class="text-center p-3">
+                            <td colspan="10" class="text-center p-3">
                                 <span class="text-muted">Belum ada data siswa.</span>
                             </td>
                         </tr>

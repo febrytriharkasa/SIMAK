@@ -21,9 +21,9 @@
                 <select name="kelas_id" id="kelas_id" class="form-select me-2" style="width:200px;">
                     <option value="">-- Semua Kelas --</option>
                     @foreach($kelasList as $k)
-                        <option value="{{ $k->id }}" {{ (isset($kelasId) && $kelasId == $k->id) ? 'selected' : '' }}>
-                            {{ $k->nama_kelas }}
-                        </option>
+                    <option value="{{ $k->id }}" {{ (isset($kelasId) && $kelasId == $k->id) ? 'selected' : '' }}>
+                        {{ $k->nama_kelas }}
+                    </option>
                     @endforeach
                 </select>
                 <button type="submit" class="btn btn-primary btn-sm">
@@ -52,34 +52,42 @@
                     </thead>
                     <tbody>
                         @forelse($siswas as $index => $siswa)
-                            <tr class="text-center align-middle">
-                                <td>{{ $index + 1 }}</td>
+                        <tr class="text-center align-middle">
+                            <td>{{ $index + 1 }}</td>
 
-                                {{-- Tambahan NISN --}}
-                                <td>{{ $siswa->nisn }}</td>
+                            {{-- Tambahan NISN --}}
+                            <td>{{ $siswa->nisn }}</td>
 
-                                <td class="text-center align-middle">{{ $siswa->nama }}</td>
+                            <td class="text-center align-middle">{{ $siswa->nama }}</td>
 
-                                <td>
-                                    <span class="badge bg-primary">
-                                        {{ $siswa->kelas->nama_kelas ?? '-' }}
-                                    </span>
-                                </td>
+                            <td>
+                                <span class="badge bg-primary">
+                                    {{ $siswa->kelas->nama_kelas ?? '-' }}
+                                </span>
+                            </td>
 
-                                <td>
-                                    <a href="{{ route('nilai.show', $siswa->id) }}"
+                            <td>
+                                <a href="{{ route('nilai.show', $siswa->id) }}"
                                     class="btn btn-sm btn-info text-white"
                                     title="Lihat Nilai">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                </td>
-                            </tr>
+                                    <i class="fas fa-eye"></i>
+                                </a>
+
+                                {{-- Tombol Cetak Rapor --}}
+                                <a href="{{ route('nilai.cetakRaporPdfAllKelas', $siswa->id) }}"
+                                    class="btn btn-sm btn-success text-white"
+                                    title="Cetak Rapor"
+                                    target="_blank">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                            </td>
+                        </tr>
                         @empty
-                            <tr>
-                                <td colspan="5" class="text-center p-3">
-                                    <span class="text-muted">Belum ada data siswa untuk kelas ini.</span>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="5" class="text-center p-3">
+                                <span class="text-muted">Belum ada data siswa untuk kelas ini.</span>
+                            </td>
+                        </tr>
                         @endforelse
                     </tbody>
                 </table>

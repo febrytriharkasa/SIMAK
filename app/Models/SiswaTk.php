@@ -20,7 +20,11 @@ class SiswaTk extends Model
         'alamat_siswa',
         'kelas_id',
         'bukti_pembayaran',
-        'status'
+        'status',
+        'email',
+        'kk',
+        'akte',
+        'foto_siswa'
     ];
 
     public function pembayarans()

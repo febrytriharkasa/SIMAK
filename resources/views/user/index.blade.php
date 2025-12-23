@@ -4,63 +4,6 @@
 
 @section('content')
 
-<style>
-    /* Light Mode */
-    [data-bs-theme="light"] .container-fluid {
-        background-color: #fff;
-        color: #181515;
-    }
-    [data-bs-theme="light"] .card,
-    [data-bs-theme="light"] .form-control {
-        background-color: #f8f9fa;
-        color: #000;
-    }
-
-    /* Dark Mode */
-    [data-bs-theme="dark"] .container-fluid {
-        background-color: #1b1b1d;
-        color: #fff;
-    }
-    [data-bs-theme="dark"] .card,
-    [data-bs-theme="dark"] .form-control {
-        background-color: #2c2c2e;
-        color: #fff;
-        border: 1px solid #444;
-    }
-
-    /* Custom badge role */
-    .badge-role {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        border-radius: 8px;
-    }
-
-    .badge-admin {
-        background-color: #435ebe;
-        color: #fff;
-    }
-
-    .badge-guru {
-        background-color: #28a745;
-        color: #fff;
-    }
-
-    .badge-staff {
-        background-color: #ffc107;
-        color: #000;
-    }
-
-    .badge-default {
-        background-color: #6c757d;
-        color: #fff;
-    }
-
-    /* Table style sama seperti approval */
-    table.table-hover tbody tr:hover {
-        background-color: rgba(0,0,0,0.05);
-    }
-</style>
-
 <div class="container-fluid">
 
     <!-- Header -->

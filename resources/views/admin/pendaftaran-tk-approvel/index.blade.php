@@ -35,6 +35,9 @@
                                 <th>No</th>
                                 <th class="text-start">Nama Siswa</th>
                                 <th>Tahun Masuk</th>
+                                <th>Kartu Keluarga</th>
+                                <th>Akte Kelahiran</th>
+                                <th>Foto Siswa</th>
                                 <th>Bukti Pembayaran</th>
                                 <th>Status</th>
                                 <th style="width:220px;">Aksi</th>
@@ -53,7 +56,27 @@
                                     </td>
 
                                     <td>{{ $siswa->tahun }}</td>
-
+                                    <td>
+                                        <a href="{{ asset('storage/'.$siswa->kk) }}"
+                                           target="_blank"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-file-earmark-image"></i> Lihat
+                                        </a>   
+                                    </td>
+                                    <td>
+                                        <a href="{{ asset('storage/'.$siswa->akte) }}"
+                                           target="_blank"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-file-earmark-image"></i> Lihat
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ asset('storage/'.$siswa->foto_siswa) }}"
+                                           target="_blank"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="bi bi-file-earmark-image"></i> Lihat
+                                        </a>
+                                    </td>             
                                     <td>
                                         <a href="{{ asset('storage/'.$siswa->bukti_pembayaran) }}"
                                            target="_blank"

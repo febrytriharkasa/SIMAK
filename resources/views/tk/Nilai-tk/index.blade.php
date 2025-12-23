@@ -86,6 +86,14 @@
                                    class="btn btn-sm btn-info text-white" title="Lihat Nilai">
                                     <i class="fas fa-eye"></i>
                                 </a>
+
+                                {{-- Tombol Cetak Rapor --}}
+                                <a href="{{ route('nilai-tk.cetakRaporPdfAllKelas', $siswa->id) }}"
+                                    class="btn btn-sm btn-success text-white"
+                                    title="Cetak Rapor"
+                                    target="_blank">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
                             </td>
                         </tr>
                         @empty

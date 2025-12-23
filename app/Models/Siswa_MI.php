@@ -20,8 +20,13 @@ class Siswa_MI extends Model
         'nama_wali',
         'kelas_id',
         'bukti_pembayaran',
-        'status'
+        'email',
+        'status',
+        'kk',
+        'akte',
+        'foto_siswa'
     ];
+
 
     public function pembayarans()
     {

@@ -7,6 +7,8 @@ use App\Models\SiswaTk;
 use App\Models\KelasTk;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AbsensiTKMail;
 
 class AbsensiTKController extends Controller
 {
@@ -61,13 +63,19 @@ class AbsensiTKController extends Controller
             }
 
             try {
-                AbsensiTK::create([
+                $absensi = AbsensiTK::create([
                     'siswa_id'   => $siswa_id,
                     'kelas_id'   => $request->kelas_id,
                     'tanggal'    => $request->tanggal,
                     'status'     => $status,
                     'keterangan' => $request->keterangan[$siswa_id] ?? null
                 ]);
+
+                // Kirim email ke wali/siswa
+                if ($absensi->siswa->email) {
+                    Mail::to($absensi->siswa->email)
+                        ->send(new AbsensiTKMail($absensi));
+                }
             } catch (QueryException $e) {
                 // duplikasi absensi (unique siswa + tanggal)
                 continue;

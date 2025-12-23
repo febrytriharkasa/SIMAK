@@ -33,12 +33,17 @@ class SiswaMiController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:siswas_mi,email',
             'nisn' => 'required|string|unique:siswas_mi,nisn',
             'tahun' => 'required|digits:4|integer|min:1900|max:' . date('Y'),
             'no_hp_wali' => 'required|string|max:20',
             'alamat_siswa' => 'required|string|max:255',
             'nama_wali' => 'required|string|max:255',
             'kelas_id' => 'nullable|exists:kelas_mi,id',
+            'kk' => 'nullable|string|max:255',
+            'akte' => 'nullable|string|max:255',
+            'foto_siswa' => 'nullable|string|max:255',
+            'butuh_pembayaran' => 'nullable|string|max:255',
         ]);
 
         $data = $request->all();

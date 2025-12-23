@@ -25,20 +25,24 @@ use App\Http\Controllers\AbsensiTKController;
 use App\Http\Controllers\PendaftaranMIController;
 use App\Http\Controllers\PendaftaranTKController;
 
-Route::get('/', fn () => redirect()->route('login'));
+Route::get('/', fn() => redirect()->route('login'));
 
-Route::get('/pendaftaran-mi', 
+Route::get(
+    '/pendaftaran-mi',
     [PendaftaranMIController::class, 'create']
 )->name('pendaftaran.mi.create');
 
-Route::post('/pendaftaran-mi', 
+Route::post(
+    '/pendaftaran-mi',
     [PendaftaranMIController::class, 'store']
 )->name('pendaftaran.mi.store');
 
-Route::get('/pendaftaran-tk', 
+Route::get(
+    '/pendaftaran-tk',
     [PendaftaranTKController::class, 'create']
 )->name('pendaftaran.tk.create');
-Route::post('/pendaftaran-tk', 
+Route::post(
+    '/pendaftaran-tk',
     [PendaftaranTKController::class, 'store']
 )->name('pendaftaran.tk.store');
 
@@ -47,8 +51,6 @@ Route::post('/pendaftaran-tk',
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->middleware('role:admin')->name('admin.dashboard');
-    Route::get('/guru/tk/dashboard', [GuruTkDbController::class, 'index'])->middleware('role:guru_tk')->name('guru-tk.dashboard');
-    Route::get('/guru/mi/dashboard', [GuruMiDbController::class, 'index'])->middleware('role:guru_mi')->name('guru-mi.dashboard');
 });
 
 // ================== ADMIN ==================
@@ -71,78 +73,92 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // ✅ Evaluasi
     Route::resource('evaluasi', EvaluasiKinerjaController::class);
 
-Route::get('/pendaftaran-mi-approvel', 
+    Route::get(
+        '/pendaftaran-mi-approvel',
         [PendaftaranMIController::class, 'index']
     )->name('admin.pendaftaran-mi-approvel.mi.index');
 
-    Route::post('/pendaftaran-mi-approvel/{id}/approve', 
+    Route::post(
+        '/pendaftaran-mi-approvel/{id}/approve',
         [PendaftaranMIController::class, 'approve']
     )->name('admin.pendaftaran.mi.approve');
 
-    Route::post('/pendaftaran-mi-approvel/{id}/reject', 
+    Route::post(
+        '/pendaftaran-mi-approvel/{id}/reject',
         [PendaftaranMIController::class, 'reject']
     )->name('admin.pendaftaran.mi.reject');
 
-        Route::get('/pendaftaran-tk-approvel', 
-                [PendaftaranTKController::class, 'index']
-        )->name('admin.pendaftaran-tk-approvel.tk.index');
-        Route::post('/pendaftaran-tk-approvel/{id}/approve', 
-                [PendaftaranTKController::class, 'approve']
-        )->name('admin.pendaftaran.tk.approve');
-        Route::post('/pendaftaran-tk-approvel/{id}/reject', 
-                [PendaftaranTKController::class, 'reject']
-        )->name('admin.pendaftaran.tk.reject');
-});
+    Route::get(
+        '/pendaftaran-tk-approvel',
+        [PendaftaranTKController::class, 'index']
+    )->name('admin.pendaftaran-tk-approvel.tk.index');
+    Route::post(
+        '/pendaftaran-tk-approvel/{id}/approve',
+        [PendaftaranTKController::class, 'approve']
+    )->name('admin.pendaftaran.tk.approve');
+    Route::post(
+        '/pendaftaran-tk-approvel/{id}/reject',
+        [PendaftaranTKController::class, 'reject']
+    )->name('admin.pendaftaran.tk.reject');
 
-// ================== ADMIN DAN GURU MI==================
-Route::middleware(['auth', 'role:admin|guru_mi'])->group(function () {
     Route::resource('siswa-mi', SiswaMiController::class);
     Route::resource('guru-mi', GuruMiController::class);
+    Route::resource('siswa-tk', SiswaTkController::class);
+    Route::resource('guru-tk', GuruTkController::class);
+});
+
+Route::middleware(['auth', 'role:admin|guru_mi|guru_tk'])->group(function () {
+    // ✅ Users
+    Route::resource('siswa-mi', SiswaMiController::class);
+    Route::resource('guru-mi', GuruMiController::class);
+    Route::resource('siswa-tk', SiswaTkController::class);
+    Route::resource('guru-tk', GuruTkController::class);
+});
+
+// ================== GURU MI==================
+Route::middleware(['auth', 'role:guru_mi'])->group(function () {
     Route::resource('pembayaran-mi', PembayaranMiController::class)->except(['show']);
     Route::get('pembayaran-mi/{id}/kwitansi-pdf', [PembayaranMiController::class, 'kwitansiPdf'])
-            ->name('pembayaran-mi.kwitansi-pdf');
+        ->name('pembayaran-mi.kwitansi-pdf');
     Route::get('/pembayaran-mi/export-pdf', [PembayaranMiController::class, 'exportPdf'])
-            ->name('pembayaran-mi.export-pdf');
+        ->name('pembayaran-mi.export-pdf');
     Route::get('/naik-kelas-mi', [SiswaMiController::class, 'naikKelas'])->name('siswa.naikKelas');
     Route::get('/get-siswa-detail-mi/{id}', [PembayaranMiController::class, 'getSiswaDetail']);
     Route::get('/siswa-mi/{id}', [SiswaMiController::class, 'show'])->name('siswa-mi.show');
     Route::get('/pembayaran-mi/generate-mi', [PembayaranMiController::class, 'generateFormMI'])->name('pembayaran-mi.generateForm-mi');
     Route::post('/pembayaran-mi/generate-mi', [PembayaranMiController::class, 'generateSPPMI'])->name('pembayaran-mi.generate-mi');
     Route::post('/pembayaran-mi/{id}/approve', [PembayaranMIController::class, 'approvePembayaran'])
-            ->name('pembayaran-mi.approve');
+        ->name('pembayaran-mi.approve');
     Route::resource('nilai', NilaiMiController::class);
     Route::get('/laporan-pembayaran-mi', [LaporanPembayaranMIController::class, 'index'])
-            ->name('laporan-pembayaran-mi.index');
+        ->name('laporan-pembayaran-mi.index');
     Route::get('nilai/siswa/{siswaId}', [NilaiMiController::class, 'show'])->name('nilai.show');
     Route::resource('absensi-mi', AbsensiMIController::class);
     Route::get('/absensi-mi/siswa/{kelas}', [AbsensiMIController::class, 'getSiswaByKelas']);
-    Route::get('/mi/nilai/rapor/{siswa}/{kelas}/{semester}',[NilaiMiController::class, 'cetakRaporPdf'])->name('nilai.rapor.pdf');
-
-
+    Route::get('/nilai/rapor/{siswa}', [NilaiMiController::class, 'cetakRaporPdfAllKelas'])
+        ->name('nilai.cetakRaporPdfAllKelas');
 });
 
 
 
 
 
-// ================== ADMIN DAN GURU TK==================
-Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
-    Route::resource('siswa-tk', SiswaTkController::class);
-    Route::resource('guru-tk', GuruTkController::class);
+// ================== GURU TK==================
+Route::middleware(['auth', 'role:guru_tk'])->group(function () {
     Route::resource('pembayaran-tk', PembayaranTkController::class)->except(['show']);
     Route::get('pembayaran-tk/{id}/kwitansi-pdf', [PembayaranTkController::class, 'kwitansiPdf'])
-            ->name('pembayaran-tk.kwitansi-pdf');
+        ->name('pembayaran-tk.kwitansi-pdf');
     Route::get('/pembayaran-tk/export-pdf', [PembayaranTkController::class, 'exportPdf'])
-            ->name('pembayaran-tk.export-pdf');
+        ->name('pembayaran-tk.export-pdf');
     Route::get('/naik-kelas-tk', [SiswaTkController::class, 'naikKelasTk'])->name('siswa.naikKelasTk');
     Route::get('/get-siswa-detail-tk/{id}', [PembayaranTkController::class, 'getSiswaDetail']);
     Route::get('/siswa-mi/{id}', [SiswaTkController::class, 'show'])->name('siswa-tk.show');
     Route::get('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateFormTK'])->name('pembayaran-tk.generateForm-tk');
     Route::post('/pembayaran-tk/generate-tk', [PembayaranTkController::class, 'generateSPPTK'])->name('pembayaran-tk.generate-tk');
-     Route::post('/pembayaran-tk/{id}/approve', [PembayaranTkController::class, 'approvePembayaran'])
-            ->name('pembayaran-tk.approve');
+    Route::post('/pembayaran-tk/{id}/approve', [PembayaranTkController::class, 'approvePembayaran'])
+        ->name('pembayaran-tk.approve');
     Route::get('/laporan-pembayaran-tk', [LaporanPembayaranTKController::class, 'index'])
-            ->name('laporan-pembayaran-tk.index');
+        ->name('laporan-pembayaran-tk.index');
     Route::resource('nilai-tk', NilaiTkController::class)->parameters([
         'nilai-tk' => 'nilai'
     ]);
@@ -150,9 +166,9 @@ Route::middleware(['auth', 'role:admin|guru_tk'])->group(function () {
     Route::get('nilai-tk/siswa/{siswaId}', [NilaiTkController::class, 'show'])->name('nilai-tk.show');
 
     Route::resource('absensi-tk', AbsensiTKController::class);
-    Route::get('/absensi-tk/siswa/{kelas}', [AbsensiTkController::class, 'getSiswaByKelas']);
-    Route::get('/tk/nilai-tk/rapor/{siswa}/{kelas}/{semester}',[NilaiTkController::class, 'cetakRaporPdf'])->name('nilai-tk.rapor.pdf');
-
+    Route::get('/absensi-tk/siswa/{kelas}', [AbsensiTKController::class, 'getSiswaByKelas']);
+    Route::get('/nilai-tk/rapor/{siswa}', [NilaiTkController::class, 'cetakRaporPdfAllKelas'])
+        ->name('nilai-tk.cetakRaporPdfAllKelas');
 });
 
 // ================== PROFILE ==================
@@ -177,14 +193,4 @@ Route::middleware('guest')->group(function () {
     Route::post('/password-reset-request', [PasswordResetController::class, 'submitRequest'])->name('password-request.submit');
 });
 
-require __DIR__.'/auth.php';
-
-
-
-
-
-
-
-
-
-
+require __DIR__ . '/auth.php';

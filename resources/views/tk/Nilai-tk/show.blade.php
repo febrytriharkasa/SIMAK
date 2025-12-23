@@ -53,14 +53,6 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-end mb-3">
-        <a href="#" class="btn btn-danger btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#raporModal">
-            <i class="bi bi-file-earmark-pdf"></i> Cetak Rapor
-        </a>
-    </div>
-
     {{-- Tabel Nilai --}}
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
@@ -111,36 +103,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="raporModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Cetak Rapor</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-            <div class="modal-body text-center">
-                <p>Pilih Semester</p>
-
-                <a href="{{ route('nilai-tk.rapor.pdf', [$siswa->id, $kelasId, 'ganjil']) }}"
-                    target="_blank"
-                    class="btn btn-outline-primary w-100 mb-2">
-                        Semester Ganjil
-                </a>
-
-                <a href="{{ route('nilai-tk.rapor.pdf', [$siswa->id, $kelasId, 'genap']) }}"
-                    target="_blank"
-                    class="btn btn-outline-success w-100">
-                        Semester Genap
-                </a>
-
-            </div>
-
         </div>
     </div>
 </div>

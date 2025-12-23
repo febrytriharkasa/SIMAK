@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\SiswaTk;
 use App\Models\KelasTk;
 use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Storage;
+use App\Mail\PendaftaranTKStatusMail;
+use Illuminate\Support\Facades\Mail;
 
 class PendaftaranTKController extends Controller
 {
@@ -22,11 +22,15 @@ class PendaftaranTKController extends Controller
     {
         $request->validate([
             'nama' => 'required',
+            'email' => 'required|email|unique:siswas_mi,email',
             'tahun' => 'required|digits:4',
             'nama_wali' => 'required',
             'no_hp_wali' => 'required',
             'alamat_siswa' => 'required',
             'bukti_pembayaran' => 'required|image|max:5120', // 5MB
+            'kk' => 'required|mimes:jpg,jpeg,png,pdf|max:5120',
+            'akte' => 'required|mimes:jpg,jpeg,png,pdf|max:5120',
+            'foto_siswa' => 'required|image|max:2048', // 2MB
         ]);
 
         // ambil kelas 1 otomatis
@@ -36,17 +40,24 @@ class PendaftaranTKController extends Controller
             return back()->with('error', 'Kelas 1 belum tersedia.');
         }
 
-        $file = $request->file('bukti_pembayaran')
-            ->store('bukti-pendaftaran', 'public');
+        // simpan file
+        $buktiPembayaran = $request->file('bukti_pembayaran')->store('bukti-pendaftaran', 'public');
+        $kk = $request->file('kk')->store('dokumen/kk', 'public');
+        $akte = $request->file('akte')->store('dokumen/akte', 'public');
+        $foto3x4 = $request->file('foto_siswa')->store('dokumen/foto_siswa', 'public');
 
         SiswaTk::create([
             'nama' => $request->nama,
+            'email' => $request->email,
             'tahun' => $request->tahun,
             'nama_wali' => $request->nama_wali,
             'no_hp_wali' => $request->no_hp_wali,
             'alamat_siswa' => $request->alamat_siswa,
             'kelas_id' => $kelas1->id, // ✅ OTOMATIS KELAS 1
-            'bukti_pembayaran' => $file,
+            'bukti_pembayaran' => $buktiPembayaran,
+            'kk' => $kk,
+            'akte' => $akte,
+            'foto_siswa' => $foto3x4,
             'status' => 'pending'
         ]);
 
@@ -90,6 +101,8 @@ class PendaftaranTKController extends Controller
             'status' => 'aktif', // ✅ ini penting
         ]);
 
+        Mail::to($siswa->email)->send(new PendaftaranTKStatusMail($siswa, 'approved'));
+
         return back()->with('success', 'Siswa berhasil diaktifkan. No Induk: ' . $nisnBaru);
     }
 
@@ -104,6 +117,7 @@ class PendaftaranTKController extends Controller
             unlink(storage_path('app/public/storage/bukti-pendaftaran/'.$siswa->bukti_pembayaran));
         }
 
+    Mail::to($siswa->email)->send(new PendaftaranTKStatusMail($siswa, 'rejected'));
         // hapus data siswa
         $siswa->delete();
 
