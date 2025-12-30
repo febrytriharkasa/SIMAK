@@ -6,7 +6,7 @@
 <div class="container-fluid">
     <h4 class="fw-bold mb-4 ms-5">Input Absensi MI</h4>
 
-<form action="{{ route('absensi-mi.store') }}" method="POST">
+    <form action="{{ route('absensi-mi.store') }}" method="POST">
         @csrf
 
         <div class="card shadow-sm border-0 mb-4">
@@ -17,18 +17,28 @@
                     <select name="kelas_id" id="kelas_id" class="form-select" required>
                         <option value="">-- Pilih Kelas --</option>
                         @foreach($kelas as $k)
-                            <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
+                        <option value="{{ $k->id }}">{{ $k->nama_kelas }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="col-md-6">
+                    <label class="fw-bold">Semester</label>
+                    <select name="semester" class="form-select" required>
+                        <option value="">-- Pilih Semester --</option>
+                        <option value="ganjil">Ganjil</option>
+                        <option value="genap">Genap</option>
+                    </select>
+                </div>
+
+
+                <div class="col-md-6">
                     <label class="fw-bold">Tanggal</label>
                     <input type="date"
-                           name="tanggal"
-                           class="form-control"
-                           value="{{ date('Y-m-d') }}"
-                           required>
+                        name="tanggal"
+                        class="form-control"
+                        value="{{ date('Y-m-d') }}"
+                        required>
                 </div>
 
             </div>
@@ -75,33 +85,33 @@
 
 {{-- Script --}}
 <script>
-document.getElementById('kelas_id').addEventListener('change', function () {
-    let kelasId = this.value;
-    let container = document.getElementById('siswa-container');
+    document.getElementById('kelas_id').addEventListener('change', function() {
+        let kelasId = this.value;
+        let container = document.getElementById('siswa-container');
 
-    if (!kelasId) {
-        container.innerHTML = `
+        if (!kelasId) {
+            container.innerHTML = `
             <tr>
                 <td colspan="4" class="text-muted">Pilih kelas terlebih dahulu</td>
             </tr>`;
-        return;
-    }
-
-   fetch(`/absensi-tk/siswa/${kelasId}`)
-    .then(res => res.json())
-    .then(data => {
-        container.innerHTML = '';
-
-        if (data.length === 0) {
-            container.innerHTML = `
-                <tr>
-                    <td colspan="4" class="text-muted">Tidak ada siswa</td>
-                </tr>`;
             return;
         }
 
-        data.forEach((siswa, index) => {
-            container.innerHTML += `
+        fetch(`/absensi-mi/siswa/${kelasId}`)
+            .then(res => res.json())
+            .then(data => {
+                container.innerHTML = '';
+
+                if (data.length === 0) {
+                    container.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-muted">Tidak ada siswa</td>
+                </tr>`;
+                    return;
+                }
+
+                data.forEach((siswa, index) => {
+                    container.innerHTML += `
                 <tr>
                     <td>${index + 1}</td>
                     <td class="text-start">${siswa.nama}</td>
@@ -121,9 +131,9 @@ document.getElementById('kelas_id').addEventListener('change', function () {
                     </td>
                 </tr>
             `;
-        });
-    });
+                });
+            });
 
-});
+    });
 </script>
 @endsection

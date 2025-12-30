@@ -14,7 +14,7 @@
     {{-- Form Pencarian --}}
     <div class="card mb-4 shadow-sm border-0">
         <div class="card-body d-flex justify-content-between align-items-center">
-            <a href="{{ route('siswa-tk.create') }}" class="btn btn-primary">
+            <a href="{{ route('pendaftaran.mi.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-lg"></i> Tambah Siswa
             </a>
             <form method="GET" action="{{ route('siswa-tk.index') }}" class="d-flex align-items-center">

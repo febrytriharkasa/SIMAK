@@ -16,7 +16,8 @@ class AbsensiMI extends Model
         'tahun_ajaran_id',
         'tanggal',
         'status', // hadir, izin, sakit, alfa
-        'keterangan'
+        'keterangan',
+        'semester', // ganjil, genap
     ];
 
     public function siswa()

@@ -26,6 +26,14 @@
                 </div>
 
                 <div class="col-md-6">
+                    <label class="fw-bold">Semester</label>
+                    <select name="semester" class="form-select" required>
+                        <option value="">-- Pilih Semester --</option>
+                        <option value="ganjil">Ganjil</option>
+                        <option value="genap">Genap</option>
+                    </select>
+
+                <div class="col-md-6">
                     <label class="fw-bold">Tanggal</label>
                     <input type="date"
                            name="tanggal"

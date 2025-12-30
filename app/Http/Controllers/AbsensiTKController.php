@@ -27,6 +27,10 @@ class AbsensiTKController extends Controller
             if ($request->filled('tanggal')) {
                 $query->whereDate('tanggal', $request->tanggal);
             }
+            if ($request->filled('semester')) {
+                $query->where('semester', $request->semester);
+            }
+
 
             $absensi = $query
                 ->orderBy('tanggal')
@@ -52,6 +56,7 @@ class AbsensiTKController extends Controller
         $request->validate([
             'kelas_id'   => 'required|exists:kelas_tk,id',
             'tanggal'    => 'required|date',
+            'semester'   => 'required|in:ganjil,genap',
             'status'     => 'required|array',
             'status.*'   => 'in:hadir,izin,sakit,alfa',
             'keterangan' => 'nullable|array'
@@ -82,6 +87,7 @@ class AbsensiTKController extends Controller
                 $absensi = AbsensiTK::create([
                     'siswa_id'        => $siswa_id,
                     'kelas_id'        => $request->kelas_id,
+                    'semester'        => $request->semester,
                     'tahun_ajaran_id' => $tahunAjaranAktif->id,
                     'tanggal'         => $request->tanggal,
                     'status'          => $status,

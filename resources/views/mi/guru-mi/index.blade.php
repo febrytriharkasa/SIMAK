@@ -82,7 +82,7 @@
 
                                         {{-- Tombol Show --}}
                                         <a href="{{ route('guru-mi.show', $g->id) }}" 
-                                           class="btn btn-sm btn-info text-black" title="Detail">
+                                           class="btn btn-sm btn-info text-white" title="Detail">
                                            <i class="fas fa-eye"></i>
                                         </a>
 

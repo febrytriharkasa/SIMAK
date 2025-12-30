@@ -60,6 +60,16 @@
                         value="{{ request('tanggal') }}">
                 </div>
 
+                <div class="col-md-4">
+                    <label class="fw-bold">Semester</label>
+                    <select name="semester" class="form-select">
+                        <option value="">-- Semua Semester --</option>
+                        <option value="ganjil" {{ request('semester') == 'ganjil' ? 'selected' : '' }}>Ganjil</option>
+                        <option value="genap" {{ request('semester') == 'genap' ? 'selected' : '' }}>Genap</option>
+                    </select>
+                </div>
+
+
 
                 <div class="col-md-4 d-flex align-items-end">
                     <button class="btn btn-primary w-100">
@@ -85,6 +95,7 @@
                         <tr>
                             <th>No</th>
                             <th>Nama Siswa</th>
+                            <th>Semester</th>
                             <th>Kelas</th>
                             <th>Tahun Ajaran</th>
                             <th>Tanggal</th>
@@ -98,6 +109,7 @@
                         <tr class="align-middle">
                             <td>{{ $loop->iteration }}</td>
                             <td class="text-start">{{ $a->siswa->nama }}</td>
+                            <td>{{ $a->semester }}</td>
                             <td>{{ $a->siswa->kelas->nama_kelas }}</td>
                             <td>{{ $a->tahunAjaran->nama_tahun ?? '-' }}</td>
                             <td>{{ \Carbon\Carbon::parse($a->tanggal)->format('d-m-Y') }}</td>

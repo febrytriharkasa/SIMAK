@@ -17,7 +17,8 @@ class AbsensiTK extends Model
         'tahun_ajaran_id',
         'tanggal',
         'status',
-        'keterangan'
+        'keterangan',
+        'semester',
     ];
 
     public function siswa()

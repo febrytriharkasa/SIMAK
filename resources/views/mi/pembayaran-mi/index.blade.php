@@ -29,6 +29,15 @@
             {{-- Baris Filter (Mengikuti Desain Gambar 2) --}}
             <form action="{{ route('pembayaran-mi.index') }}" method="GET">
                 <div class="row g-3 align-items-end">
+
+                    {{-- Filter NISN --}}
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-secondary">NISN</label>
+                        <input type="text" name="nisn" class="form-control border-light-subtle" 
+                               placeholder="Masukkan NISN" 
+                               value="{{ request('nisn') }}">
+                    </div>
+
                     {{-- Filter Kelas --}}
                     <div class="col-md-2">
                         <label class="form-label small fw-bold text-secondary">Kelas</label>
@@ -59,7 +68,7 @@
                     </div>
 
                     {{-- Filter Jenis Tagihan --}}
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <label class="form-label small fw-bold text-secondary">Jenis Tagihan</label>
                         <select name="jenis_tagihan" class="form-select border-light-subtle">
                             <option value="">Contoh: SPP</option>
