@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tahun_ajaran_mi', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama_tahun'); // contoh: 2024/2025
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
-            $table->boolean('aktif')->default(false);
-            $table->timestamps();
+        Schema::table('siswas_mi', function (Blueprint $table) {
+            // Cek dulu kalau kolom belum ada
+            if (!Schema::hasColumn('siswas_mi', 'tahun_ajaran_id')) {
+                $table->foreignId('tahun_ajaran_id')
+                      ->nullable()
+                      ->after('tahun')
+                      ->constrained('tahun_ajaran_mi')
+                      ->onDelete('set null');
+            }
         });
-
     }
 
     /**
@@ -27,6 +28,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('siswas_mi', function (Blueprint $table) {
+            // Hapus kolom kalau ada
+            if (Schema::hasColumn('siswas_mi', 'tahun_ajaran_id')) {
+                $table->dropConstrainedForeignId('tahun_ajaran_id');
+            }
+        });
     }
 };

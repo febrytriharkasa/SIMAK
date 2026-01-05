@@ -159,8 +159,18 @@
         <!-- DATA SISWA -->
         <div class="section-title">Data Siswa</div>
         <input type="text" name="nama" placeholder="Nama Siswa" required>
+        <input type="date" name="tanggal_lahir" placeholder="Tanggal Lahir Siswa" required>
+
+        <!-- Tambahkan jenis kelamin -->
+        <select name="jenis_kelamin" required>
+            <option value="">-- Pilih Jenis Kelamin --</option>
+            <option value="L">Laki-laki</option>
+            <option value="P">Perempuan</option>
+        </select>
+
         <input type="number" name="tahun" placeholder="Tahun Masuk" required>
         <textarea name="alamat_siswa" placeholder="Alamat Siswa" rows="3" required></textarea>
+        <input type="email" name="email" placeholder="Email orang tua / Wali" required>
 
         <!-- DATA ORANG TUA KANDUNG -->
         <div class="section-title">Data Orang Tua Kandung</div>
@@ -184,9 +194,9 @@
 
         <!-- DATA WALI -->
         <div class="section-title">Data Wali</div>
-        <input type="text" name="nama_wali" placeholder="Nama Wali" required>
-        <input type="text" name="no_hp_wali" placeholder="No HP Wali" required>
-        <input type="email" name="email" placeholder="Email Siswa / Wali" required>
+        <input type="text" name="nama_wali" placeholder="Nama Wali" >
+        <input type="text" name="no_hp_wali" placeholder="No HP Wali" >
+        <small class="text-muted">Jika tidak ada wali, bisa dikosongi atau isi dengan tanda "-"</small>        
 
         <!-- BERKAS -->
         <div class="section-title">Berkas Persyaratan</div>

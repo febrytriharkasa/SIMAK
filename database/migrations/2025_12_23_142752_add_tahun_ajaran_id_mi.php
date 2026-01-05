@@ -9,23 +9,32 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('siswas_mi', function (Blueprint $table) {
-            $table->unsignedBigInteger('tahun_ajaran_id')
-                ->after('tahun')
-                ->nullable(); // PENTING
+            if (!Schema::hasColumn('siswas_mi', 'tahun_ajaran_id')) {
+                $table->unsignedBigInteger('tahun_ajaran_id')
+                    ->nullable()
+                    ->after('tahun');
+            }
         });
 
-        // ISI DATA LAMA
-        DB::table('siswas_mi')->update([
-            'tahun_ajaran_id' => 2 // ← ID tahun ajaran yang kamu mau
-        ]);
-
-        // BARU TAMBAHKAN FOREIGN KEY
+        // Baru tambahkan foreign key kalau kolom ada tapi belum FK
         Schema::table('siswas_mi', function (Blueprint $table) {
-            $table->foreign('tahun_ajaran_id')
-                ->references('id')
-                ->on('tahun_ajaran')
-                ->cascadeOnUpdate()
-                ->restrictOnDelete();
+            $sm = Schema::getColumnListing('siswas_mi');
+            if (in_array('tahun_ajaran_id', $sm)) {
+                $table->foreign('tahun_ajaran_id')
+                    ->references('id')
+                    ->on('tahun_ajaran_mi')
+                    ->cascadeOnUpdate()
+                    ->restrictOnDelete();
+            }
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('siswas_mi', function (Blueprint $table) {
+            if (Schema::hasColumn('siswas_mi', 'tahun_ajaran_id')) {
+                $table->dropConstrainedForeignId('tahun_ajaran_id');
+            }
         });
     }
 };

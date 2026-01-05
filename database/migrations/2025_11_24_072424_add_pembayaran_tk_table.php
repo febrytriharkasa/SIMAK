@@ -11,17 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pembayaran_tk', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('siswa_id')->constrained('siswa_tk')->onDelete('cascade');
-            $table->string('jenis_tagihan'); // kolom jenis tagihan
-            $table->decimal('jumlah', 10, 2);
-            $table->date('tanggal');
-            $table->date('tanggal_bayar');
-            $table->enum('status', ['lunas', 'belum'])->default('belum'); // kolom status
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('pembayaran_tk')) {
+            Schema::create('pembayaran_tk', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('siswa_id');
+                $table->string('jenis_tagihan');
+                $table->decimal('jumlah', 10, 2);
+                $table->date('tanggal');
+                $table->date('tanggal_bayar');
+                $table->enum('status', ['lunas', 'belum'])->default('belum');
+                $table->timestamps();
+            });
+        }
     }
+
 
     /**
      * Reverse the migrations.

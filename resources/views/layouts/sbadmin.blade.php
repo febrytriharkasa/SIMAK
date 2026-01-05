@@ -121,7 +121,7 @@
             </li>
 
             <li class="nav-item {{ request()->is('pendaftaran-mi-approvel') ? 'active' : '' }}">
-                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('admin.pendaftaran-mi-approvel.mi.index') }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('admin.pendaftaran-mi-approvel.index') }}">
                     <i class="fas fa-user-check me-2"></i>
                     <span class="sidebar-text">Approval Pendaftaran MI</span>
                 </a>
@@ -171,6 +171,28 @@
                     <span class="sidebar-text">Data Guru</span>
                 </a>
             </li>
+
+            <li class="nav-item {{ request()->is('user-approvals*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('user.approvals.index') }}">
+                    <i class="fas fa-user-check me-2"></i>
+                    <span class="sidebar-text">Approval User</span>
+                </a>
+            </li>
+
+            <li class="nav-item {{ request()->is('pendaftaran-mi-approvals*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('admin.pendaftaran-mi-approvel.index') }}">
+                    <i class="fas fa-user-check me-2"></i>
+                    <span class="sidebar-text">Approval Pendaftaran MI</span>
+                </a>
+            </li>
+
+            <li class="nav-item {{ request()->is('pendaftaran-tk-approvals*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('admin.pendaftaran-tk-approvel.tk.index') }}">
+                    <i class="fas fa-user-check me-2"></i>
+                    <span class="sidebar-text">Approval Pendaftaran TK</span>
+                </a>
+            </li>
+
             @endrole
 
             <!-- Manajemen MI -->
@@ -274,6 +296,29 @@
                 </a>
             </li>
             @endhasanyrole
+
+            @hasanyrole('ortu')
+            <li class="nav-item {{ request()->is('ortu/dashboard') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="{{ route('ortu.dashboard') }}">
+                    <i class="fas fa-fw fa-tachometer-alt me-2"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </a>
+            </li>
+            {{-- <li class="nav-item {{ request()->is('ortu/nilai*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="#">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    <span class="sidebar-text">Nilai Anak</span>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->is('ortu/absensi*') ? 'active' : '' }}">
+                <a class="nav-link d-flex align-items-center py-2 px-3 rounded hover-bg-light" href="#">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    <span class="sidebar-text">Absensi Anak</span>
+                </a>
+            </li> --}}
+            @endhasanyrole
+            
+
 
             <!-- Logout
             <li class="nav-item logout-item d-flex justify-content-center">

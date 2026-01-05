@@ -37,7 +37,7 @@
     <form action="{{ route('login') }}" method="POST" class="space-y-4">
       @csrf
       <div>
-        <input type="email" name="email" placeholder="Email" required
+        <input type="text" name="login" placeholder="Email/NISN" required
           class="w-full px-4 py-2 border border-gray-300 rounded-lg 
                  focus:ring-2 focus:ring-sky-400 focus:outline-none">
       </div>

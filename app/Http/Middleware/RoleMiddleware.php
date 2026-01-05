@@ -1,5 +1,3 @@
-<?php
-
 namespace App\Http\Middleware;
 
 use Closure;
@@ -9,10 +7,10 @@ class RoleMiddleware
 {
     public function handle($request, Closure $next, $role)
     {
-        if (!Auth::check() || Auth::user()->role !== $role) {
+        $roles = explode('|', $role); // support multiple roles
+        if (!Auth::check() || !in_array(Auth::user()->role, $roles)) {
             abort(403, 'Unauthorized');
         }
         return $next($request);
     }
 }
-

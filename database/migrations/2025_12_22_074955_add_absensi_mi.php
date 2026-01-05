@@ -7,21 +7,23 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('absensi_mi', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('siswa_id')
-                  ->constrained('siswas_mi')
-                  ->onDelete('cascade');
+        if (!Schema::hasTable('absensi_mi')) {
+            Schema::create('absensi_mi', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('siswa_id')
+                      ->constrained('siswas_mi')
+                      ->onDelete('cascade');
 
-            $table->date('tanggal');
-            $table->enum('status', ['hadir', 'izin', 'sakit', 'alfa']);
-            $table->string('keterangan')->nullable();
+                $table->date('tanggal');
+                $table->enum('status', ['hadir', 'izin', 'sakit', 'alfa']);
+                $table->string('keterangan')->nullable();
 
-            $table->timestamps();
+                $table->timestamps();
 
-            // mencegah siswa absen dua kali di tanggal yang sama
-            $table->unique(['siswa_id', 'tanggal']);
-        });
+                // mencegah siswa absen dua kali di tanggal yang sama
+                $table->unique(['siswa_id', 'tanggal']);
+            });
+        }
     }
 
     public function down(): void

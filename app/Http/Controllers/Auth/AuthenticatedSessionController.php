@@ -3,46 +3,57 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
     public function create(): View
     {
         return view('auth.login');
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $request->authenticate();
+        $request->validate([
+            'login' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        if (!Auth::attempt([
+            'email' => $request->login, 
+            'password' => $request->password,
+        ])) {
+            return back()->withErrors([
+                'login' => 'Email / NISN atau password salah',
+            ]);
+        }
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // ✅ AMAN UNTUK INTELEPHENSE
+        $user = Auth::user();
+
+        if ($user->role === 'ortu') {
+            return redirect()->route('ortu.dashboard');
+        }
+
+        if ($user->role === 'guru_mi' || $user->role === 'guru_tk') {
+            return redirect()->route('guru.dashboard');
+        }
+
+        return redirect()->route('dashboard');
     }
 
-    /**
-     * Destroy an authenticated session.
-     */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // redirect ke login page setelah logout
-        return redirect()->route('login')->with('status', 'Anda berhasil logout!');
+        return redirect()->route('login');
     }
-
 }

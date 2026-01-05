@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Siswa_MI;
+use App\Models\SiswaTk;
 
 class User extends Authenticatable
 {
@@ -35,6 +37,7 @@ class User extends Authenticatable
         'remember_token',
         'foto', 
         'last_password_changed_at',
+        'siswa_id',
     ];
 
     protected $hidden = [
@@ -47,11 +50,15 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    /**
-     * Relasi: User memiliki banyak Evaluasi Kinerja
-     */
+    // Relasi: Evaluasi Kinerja
     public function evaluasiKinerja()
     {
         return $this->hasMany(EvaluasiKinerja::class);
     }
+
+    public function siswaMi()
+    {
+        return $this->belongsTo(Siswa_MI::class, 'siswa_id');
+    }
+
 }
